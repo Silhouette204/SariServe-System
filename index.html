@@ -4,10 +4,95 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
     <title>Main - SariServe</title>
   </head>
   <body>
-  <h1 class="text-3xl font-bold">Welcome to SariServe</h1>
+
+   <nav class="flex items-center justify-between p-4 bg-dark text-primary sticky top-0 z-50 px-5 lg:px-10">
+  
+  <div class="flex items-center gap-3">
+    <button id="menu-btn" class="cursor-pointer text-2xl text-primary hover:bg-gray-700/50 px-3 py-2 rounded-full lg:hidden transition duration-300">
+      <i class="fa-solid fa-bars"></i>
+    </button>
+    <a href="#" class="text-2xl font-bold tracking-tight text-primary">
+      SariServe
+    </a>
+  </div>
+
+  <div class="hidden lg:flex flex-row gap-6 font-medium">
+    <a href="#main" class="hover:text-gray-300 transition">Home</a>
+    <a href="#about" class="hover:text-gray-300 transition">About</a>
+    <a href="#experiences" class="hover:text-gray-300 transition">Experience</a>
+    <a href="#latest-work" class="hover:text-gray-300 transition">Projects</a>
+  </div>
+
+  <div class="hidden lg:block">
+    <a href="#" class="hover:text-gray-300 font-medium transition">Login</a>
+  </div>
+</nav>
+
+<div id="backdrop" class="fixed inset-0 bg-black/40 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300 z-40"></div>
+
+<aside id="side-menu" class="fixed top-0 left-0 h-screen w-64 text-primary transition-transform duration-300 z-50 transform -translate-x-full bg-secondary">
+  <div class="flex flex-row items-center gap-3 m-5">
+    <button id="close-menu-btn" class="cursor-pointer text-2xl text-primary hover:bg-gray-700 px-4 py-2 rounded-full transition duration-300">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+    <span class="text-2xl font-bold text-primary">SariServe</span>
+  </div>
+
+  <ul class="flex flex-col gap-2 mx-3 mt-5">
+    <li class="flex items-center text-primary hover:bg-gray-700/50 px-4 py-3 rounded-xl transition duration-200 cursor-pointer">
+      <i class="fa-solid fa-house w-6 text-xl"></i>
+      <a href="#main" class="font-medium ml-2 w-full">Home</a>
+    </li>
+    <li class="flex items-center text-primary hover:bg-gray-700/50 px-4 py-3 rounded-xl transition duration-200 cursor-pointer">
+      <i class="fa-solid fa-address-card w-6 text-xl"></i>
+      <a href="#about" class="font-medium ml-2 w-full">About</a>
+    </li>
+    <li class="flex items-center text-primary hover:bg-gray-700/50 px-4 py-3 rounded-xl transition duration-200 cursor-pointer">
+      <i class="fa-solid fa-fire-flame-curved w-6 text-xl"></i>
+      <a href="#experiences" class="font-medium ml-2 w-full">Experience</a>
+    </li>
+    <li class="flex items-center text-primary hover:bg-gray-700/50 px-4 py-3 rounded-xl transition duration-200 cursor-pointer">
+      <i class="fa-solid fa-box-archive w-6 text-xl"></i>
+      <a href="#latest-work" class="font-medium ml-2 w-full">Projects</a>
+    </li>
+    <li class="border-t border-gray-700 my-2"></li> <li class="flex items-center text-primary hover:bg-gray-700/50 px-4 py-3 rounded-xl transition duration-200 cursor-pointer">
+      <i class="fa-solid fa-right-to-bracket w-6 text-xl"></i>
+      <a href="#" class="font-medium ml-2 w-full">Login</a>
+    </li>
+  </ul>
+</aside>
+    </nav>
+    
+    <section id="home" class="bg-primary ">
+<div id="main-image" class="relative bg-cover bg-center min-h-screen pt-15">
+   
+    <div class="absolute inset-0 bg-black/60"></div>
+
+    <div class="container-1 relative z-10 text-center max-w-2xl px-4 flex flex-col gap-3">
+        <h1 class="text-5xl font-bold text-dark mb-2">Welcome to SariServe</h1>
+        <h3 class="text-xl font-medium text-gray-200 mb-4">Bridging traditional community commerce with modern web architecture.</h3>     
+        <p class="text-gray-300 leading-relaxed">
+            A highly responsive dashboard architecture optimized for local merchants. Built with utility-first styling and vanilla JavaScript controllers, SariServe transitions seamlessly from offline browser persistence to an integrated relational data pipeline.
+        </p>
+
+        <div class="flex flex-row gap-4 justify-center mt-6">
+          <a href="" class="bg-dark text-primary font-semibold px-6 py-3 rounded-md hover:bg-secondary transition">Get Started</a>
+          <a href="" class="bg-primary text-secondary font-semibold px-6 py-3 rounded-md hover:bg-gray-300 transition">Learn More</a>
+        </div>
+
+        <div class="mt-6 flex justify-center">
+        <a href="" class="text-primary text-3xl hover:text-primary transition animate-bounce">
+          <i class="fa-solid fa-circle-arrow-down"></i>
+        </a>
+        </div>
+
+    </div>
+</div>
+    </section>
   </body>
 
      <script type="module" src="/src/main.js"></script>

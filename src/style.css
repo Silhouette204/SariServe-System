@@ -13,3 +13,12 @@
   --color-dark: var(--dark);
   --color-light: var(--light);
 }
+
+.container-1{
+ @apply max-w-7xl mx-auto px-4;
+}
+
+#main-image{
+  @apply w-full h-screen bg-cover bg-center;
+  background-image: url('/public/main-img.png');
+}
