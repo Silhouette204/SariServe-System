@@ -7,7 +7,7 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
     <title>Main - SariServe</title>
   </head>
-  <body>
+  <body class="bg-primary font-poppins">
 
    <nav class="flex items-center justify-between p-4 bg-dark text-primary sticky top-0 z-50 px-5 lg:px-10">
   
@@ -53,11 +53,11 @@
     </li>
     <li class="flex items-center text-primary hover:bg-gray-700/50 px-4 py-3 rounded-xl transition duration-200 cursor-pointer">
       <i class="fa-solid fa-fire-flame-curved w-6 text-xl"></i>
-      <a href="#experiences" class="font-medium ml-2 w-full">Experience</a>
+      <a href="#experiences" class="font-medium ml-2 w-full">Services</a>
     </li>
     <li class="flex items-center text-primary hover:bg-gray-700/50 px-4 py-3 rounded-xl transition duration-200 cursor-pointer">
       <i class="fa-solid fa-box-archive w-6 text-xl"></i>
-      <a href="#latest-work" class="font-medium ml-2 w-full">Projects</a>
+      <a href="#latest-work" class="font-medium ml-2 w-full">Contacts</a>
     </li>
     <li class="border-t border-gray-700 my-2"></li> <li class="flex items-center text-primary hover:bg-gray-700/50 px-4 py-3 rounded-xl transition duration-200 cursor-pointer">
       <i class="fa-solid fa-right-to-bracket w-6 text-xl"></i>
@@ -95,5 +95,84 @@
     </section>
   </body>
 
+  <section id="about" class="py-16">
+    <div class="container-1">
+      <h2 class="text-3xl font-bold text-dark mb-4">About SariServe</h2>
+      <p class="text-secondary leading-relaxed">
+        SariServe is a modern web solution designed to empower local merchants with a highly responsive dashboard architecture. It seamlessly integrates offline browser persistence with an integrated relational data pipeline, ensuring a smooth user experience across all devices.
+      </p>
+
+      <div class="mt-10">
+        <img src="./public/about-img.png" class="mx-auto rounded-2xl" alt="SariServe">
+      </div>
+
+      <div class="mt-10">
+        <a href="#" class="text-secondary p-3 rounded-2xl  bg-light font-semibold hover:text-secondary transition">See More</a>
+      </div>
+      </div>
+    </div>
+  </section>
+  
+  <section id="services" class="py-16 bg-light">
+    <div class="container-1">
+      <h2 class="text-3xl font-bold text-secondary mb-4">Our Services</h2>
+      <p class="text-secondary leading-relaxed">
+        We offer a range of services to help local merchants thrive in the digital age. From responsive dashboard design to seamless data integration, our solutions are tailored to meet the unique needs of small businesses.</p>
+
+        <div class="mt-15">
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-10">
+            <div class="bg-dark p-6 rounded-lg shadow-md hover:shadow-lg transition duration-300">
+              <h3 class="text-xl font-semibold text-primary mb-2">Responsive Dashboard</h3>
+              <p class="text-secondary leading-relaxed">Our dashboard is designed to be highly responsive, ensuring a seamless experience across all devices.</p>
+            </div>
+            <div class="bg-dark p-6 rounded-lg shadow-md hover:shadow-lg transition duration-300">
+              <h3 class="text-xl font-semibold text-primary mb-2">Data Integration</h3>
+              <p class="text-secondary leading-relaxed">We provide integrated relational data pipelines that allow for efficient data management and analysis.</p>
+            </div>
+            <div class="bg-dark p-6 rounded-lg shadow-md hover:shadow-lg transition duration-300">
+              <h3 class="text-xl font-semibold text-primary mb-2">Offline Persistence</h3>
+              <p class="text-secondary leading-relaxed">Our solutions include offline browser persistence, allowing merchants to continue operations even without an internet connection.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+        
+
+        <section id="contacts" class="mt-16 bg-primary">
+          <div class="container-1">
+            <h2 class="text-3xl font-bold text-dark mb-4">Contact Us</h2>
+            <p class="text-secondary leading-relaxed">
+              Have questions or need assistance? Reach out to us and we'll be happy to help.
+            </p>
+
+            <div class="mt-10">
+              <form class="bg-secondary p-6 rounded-lg shadow-md">
+                <div class="mb-4">
+                  <label for="name" class="block text-primary font-semibold mb-2">Name</label>
+                  <input type="text" id="name" name="name" class="w-full p-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary" required>
+                </div>
+                <div class="mb-4">
+                  <label for="email" class="block text-primary font-semibold mb-2">Email</label>
+                  <input type="email" id="email" name="email" class="w-full p-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary" required>
+                </div>
+                <div class="mb-4">
+                  <label for="message" class="block text-primary font-semibold mb-2">Message</label>
+                  <textarea id="message" name="message" rows="5" class="w-full p-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary" required></textarea>
+                </div>
+                <button type="submit" class="bg-primary text-secondary font-semibold px-6 py-3 rounded-md hover:bg-gray-300  transition">Send Message</button>
+              </form>
+            </div>
+          </div>
+        </section>
+
+<section id="faq">
+</section>
+
+        <footer class="mt-16">
+          <div class="bg-secondary text-primary p-6">
+            <p class="text-center">&copy; 2023 SariServe. All rights reserved.</p>
+          </div>
+        </footer>
      <script type="module" src="/src/main.js"></script>
 </html>
