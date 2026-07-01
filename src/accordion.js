@@ -3,14 +3,35 @@ import './style.css'
 //dito lahat ilalagay yung data yung mga questions and answers in array format
 const accordionData = [
   {
-    question: "Ano ang Recruitment Team?",
-    answer: "Kami ay grupo na tumutulong sa mga aplikante na makahanap ng trabaho.",
+    question: "Ano ang SariServe at para saan ito?",
+    answer: "Ang SariServe ay isang digital monitoring system na ginawa para sa mga maliliit na negosyo gaya ng sari-sari stores at tech shops. Tinutulungan nito ang mga tindero at tindera na palitan ang tradisyunal na paglilista sa notebook sa pamamagitan ng pagbibigay ng digital inventory grid at digital na listahan ng utang.",
     iconClass: "fa-plus"
   },
   {
-    question: "Magkano ba ang dito pag nag apply?",
-    answer: "Kami ay buong tumatanggap ng libre para sa mga aplikante na gusto mag trabaho."
-  }
+    question: "Mawawala ba ang mga inilista ko kapag pinatay ko ang cellphone o computer ko?",
+    answer: "Hindi po. Ang lahat ng inilalagay mong produkto, presyo, at utang ay awtomatikong nase-save sa system ng mismong gamit mong device. Kahit i-refresh mo ang page, isara ang browser, o i-restart ang cellphone mo, nandoon pa rin ang mga listahan mo pagbukas mo.Paalala lang po: Huwag muna pong mag-clear ng browser history/cache para hindi mabura ang mga nakaimbak na data."
+  },
+  {
+    question: "Paano ko malalaman kung anong mga paninda ang paubos na?",
+    answer: "Hindi mo na kailangang isa-isahin ang mga estante mo! Sa iyong Dashboard, may makikita kang kahon na may nakasulat na. Low Stock Items. Kapag ang stock ng isang produkto ay bumaba sa 5 piraso pababa, awtomatiko itong magpapakita doon at magkukulay dilaw para mabilis mong malaman kung ano ang dapat mong ipamili ulit."
+  },
+  {
+    question: "Paano po magbawas ng stock kapag may bumili sa tindahan?",
+    answer: "Pumunta lang sa Inventory Grid page. Hanapin ang produkto na binili (halimbawa: Lucky Me Supreme), at i-click ang minus (-) button para mabawasan ang stock nito. Kung may bagong dating na paninda, plus (+) button naman ang pipindutin mo para magdagdag."
+  },
+  {
+    question: "Paano ko naman po ililista ang mga kapitbahay na umutang muna?",
+    answer: "Pumunta sa Debt Listing page at i-click ang Add New Debt (Magdagdag ng Utang). Ilagay ang pangalan ng suki, magkano ang kinuha niya, at ang petsa. Awtomatiko itong papasok sa listahan mo at magpapakita sa Dashboard mo sa ilalim ng Active Debts (Utang) para lagi mong natatandaan kung magkano pa ang kabuuang sisingilin mo."
+  },
+  {
+    question: "Paano ko tatandian na nagbayad na ang may utang?",
+    answer: "Sa iyong Debt Listing, hanapin mo lang ang pangalan ng nagbayad na suki. May makikita kang status button na nakasulat ay Unpaid. I-click mo lang 'yan, at awtomatiko itong magiging berde at magiging Paid na. Mababawasan din agad ang kabuuang utang na nakalista sa dashboard mo."
+  },
+  {
+    question: "Kailangan ko ba ng load o internet para magamit ang SariServe?",
+    answer: "Hindi po kailangan! Ang SariServe ay offline-friendly sa kasalukuyan. Ibig sabihin, kahit wala kang Wi-Fi o mobile data, pwedeng-pwede mong buksan at gamitin ang app para mag-update ng benta, magbawas ng stock, o maglista ng utang habang nagbabantay ka sa tindahan."
+  },
+
 ];
 
 //kuukunin natin yung div sa accordion at dito na tayo maglalagay ng layout like items buttons and icon para isahan nalang para di na iredeclare sa html ng paulit ulit
@@ -23,7 +44,7 @@ export function renderFAQ(){
    accordionContainer.innerHTML = accordionData.map((item, index) => `
         <div class="accordion-items border-b border-gray-300">
       <button class="accordion-question w-full flex justify-between items-center py-5 cursor-pointer">
-        <span class="text-lg font-medium text-dark">${item.question}</span>
+        <span class="text-start text-lg font-medium text-dark">${item.question}</span>
       <i class="dropdown fa-solid fa-chevron-down transition-transform duration-300"></i>
     </button>
 
