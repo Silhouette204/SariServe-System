@@ -4,132 +4,125 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
     <title>Main - SariServe</title>
   </head>
+
+
   <body class="bg-primary font-poppins">
 
-   <nav class="flex items-center justify-between p-4 bg-dark text-primary sticky top-0 z-50 px-5 lg:px-10">
-  
-  <div class="flex items-center gap-3">
-    <button id="menu-btn" class="cursor-pointer text-2xl text-primary hover:bg-gray-700/50 px-3 py-2 rounded-full lg:hidden transition duration-300">
-      <i class="fa-solid fa-bars"></i>
-    </button>
-    <a href="#" class="text-2xl font-bold tracking-tight text-primary">
-      SariServe
-    </a>
-  </div>
-
-  <div class="hidden lg:flex flex-row gap-6 font-medium">
-    <a href="#main" class="hover:text-gray-300 transition">Home</a>
-    <a href="#about" class="hover:text-gray-300 transition">About</a>
-    <a href="#experiences" class="hover:text-gray-300 transition">Experience</a>
-    <a href="#latest-work" class="hover:text-gray-300 transition">Projects</a>
-  </div>
-
-  <div class="hidden lg:block">
-    <a href="#" class="hover:text-gray-300 font-medium transition">Login</a>
-  </div>
-</nav>
-
-<div id="backdrop" class="fixed inset-0 bg-black/40 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300 z-40"></div>
-
-<aside id="side-menu" class="fixed top-0 left-0 h-screen w-64 text-primary transition-transform duration-300 z-50 transform -translate-x-full bg-secondary">
-  <div class="flex flex-row items-center gap-3 m-5">
-    <button id="close-menu-btn" class="cursor-pointer text-2xl text-primary hover:bg-gray-700 px-4 py-2 rounded-full transition duration-300">
-      <i class="fa-solid fa-xmark"></i>
-    </button>
-    <span class="text-2xl font-bold text-primary">SariServe</span>
-  </div>
-
-  <ul class="flex flex-col gap-2 mx-3 mt-5">
-    <li class="flex items-center text-primary hover:bg-gray-700/50 px-4 py-3 rounded-xl transition duration-200 cursor-pointer">
-      <i class="fa-solid fa-house w-6 text-xl"></i>
-      <a href="#main" class="font-medium ml-2 w-full">Home</a>
-    </li>
-    <li class="flex items-center text-primary hover:bg-gray-700/50 px-4 py-3 rounded-xl transition duration-200 cursor-pointer">
-      <i class="fa-solid fa-address-card w-6 text-xl"></i>
-      <a href="#about" class="font-medium ml-2 w-full">About</a>
-    </li>
-    <li class="flex items-center text-primary hover:bg-gray-700/50 px-4 py-3 rounded-xl transition duration-200 cursor-pointer">
-      <i class="fa-solid fa-bell-concierge w-6 text-xl"></i>
-      <a href="#experiences" class="font-medium ml-2 w-full">Services</a>
-    </li>
-    <li class="flex items-center text-primary hover:bg-gray-700/50 px-4 py-3 rounded-xl transition duration-200 cursor-pointer">
-      <i class="fa-solid fa-address-book w-6 text-xl"></i>
-      
-      <a href="#latest-work" class="font-medium ml-2 w-full">Contacts</a>
-    </li>
-    <li class="border-t border-gray-700 my-2"></li> <li class="flex items-center text-primary hover:bg-gray-700/50 px-4 py-3 rounded-xl transition duration-200 cursor-pointer">
-      <i class="fa-solid fa-right-to-bracket w-6 text-xl"></i>
-      <a href="#" class="font-medium ml-2 w-full">Login</a>
-    </li>
-  </ul>
-</aside>
-    </nav>
-    
-    <section id="home" class="bg-primary ">
-<div id="main-image" class="relative bg-cover bg-center min-h-screen pt-15">
-   
-    <div class="absolute inset-0 bg-black/60"></div>
-
-    <div class="container-1 relative z-10 text-center max-w-2xl px-4 flex flex-col gap-3 lg:gap-6 lg:mt-30">
-        <h1 class="text-5xl font-bold text-dark mb-2 lg:text-7xl">Welcome to SariServe</h1>
-        <h3 class="text-xl font-medium text-gray-200 mb-4">Bridging traditional community commerce with modern web architecture.</h3>     
-        <p class="text-gray-300 leading-relaxed lg:mx-50">
-            A highly responsive dashboard architecture optimized for local merchants. Built with utility-first styling and vanilla JavaScript controllers, SariServe transitions seamlessly from offline browser persistence to an integrated relational data pipeline.
-        </p>
-
-        <div class="flex flex-row gap-4 justify-center mt-6">
-          <a href="" class="bg-dark text-primary font-semibold px-6 py-3 rounded-md hover:bg-secondary transition">Get Started</a>
-          <a href="" class="bg-primary text-secondary font-semibold px-6 py-3 rounded-md hover:bg-gray-300 transition">Learn More</a>
-        </div>
-
-        <div class="mt-6 flex justify-center">
-        <a href="" class="text-primary text-3xl hover:text-primary transition animate-bounce">
-          <i class="fa-solid fa-circle-arrow-down"></i>
+    <!-- MAIN STICKY NAVBAR -->
+    <nav class="flex items-center justify-between p-4 bg-dark text-primary sticky top-0 z-50 px-5 lg:px-10">
+      <div class="flex items-center gap-3">
+        <button id="menu-btn" class="cursor-pointer text-2xl text-primary hover:bg-gray-700/50 px-3 py-2 rounded-full lg:hidden transition duration-300">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+        <a href="#" class="text-2xl font-bold tracking-tight text-primary">
+          SariServe
         </a>
+      </div>
+
+      <div class="hidden lg:flex flex-row gap-6 font-medium">
+        <a href="index.html" class="hover:text-gray-300 transition">Home</a>
+        <a href="#about" class="hover:text-gray-300 transition">About</a>
+        <a href="#experiences" class="hover:text-gray-300 transition">Experience</a>
+        <a href="#latest-work" class="hover:text-gray-300 transition">Projects</a>
+      </div>
+
+      <div class="hidden lg:block">
+        <a href="./dashboard.html" class="hover:text-gray-300 font-medium transition">Login</a>
+      </div>
+    </nav>
+
+    <!-- BACKDROP BACKGROUND -->
+    <div id="backdrop" class="fixed inset-0 bg-black/40 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300 z-40"></div>
+
+    <!-- SIDEBAR MENU -->
+    <aside id="side-menu" class="fixed top-0 left-0 h-screen w-64 text-primary transition-transform duration-300 z-50 transform -translate-x-full bg-secondary">
+      <div class="flex flex-row items-center gap-3 m-5">
+        <button id="close-menu-btn" class="cursor-pointer text-2xl text-primary hover:bg-gray-700 px-4 py-2 rounded-full transition duration-300">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+        <span class="text-2xl font-bold text-primary">SariServe</span>
+      </div>
+
+      <ul class="flex flex-col gap-2 mx-3 mt-5">
+        <li class="flex items-center text-primary hover:bg-gray-700/50 px-4 py-3 rounded-xl transition duration-200 cursor-pointer">
+          <i class="fa-solid fa-house w-6 text-xl"></i>
+          <a href="index.html" class="font-medium ml-2 w-full">Home</a>
+        </li>
+        <li class="flex items-center text-primary hover:bg-gray-700/50 px-4 py-3 rounded-xl transition duration-200 cursor-pointer">
+          <i class="fa-solid fa-address-card w-6 text-xl"></i>
+          <a href="#about" class="font-medium ml-2 w-full">About</a>
+        </li>
+        <li class="flex items-center text-primary hover:bg-gray-700/50 px-4 py-3 rounded-xl transition duration-200 cursor-pointer">
+          <i class="fa-solid fa-bell-concierge w-6 text-xl"></i>
+          <a href="#experiences" class="font-medium ml-2 w-full">Services</a>
+        </li>
+        <li class="flex items-center text-primary hover:bg-gray-700/50 px-4 py-3 rounded-xl transition duration-200 cursor-pointer">
+          <i class="fa-solid fa-address-book w-6 text-xl"></i>
+          <a href="#latest-work" class="font-medium ml-2 w-full">Contacts</a>
+        </li>
+        <li class="border-t border-gray-700 my-2"></li> 
+        <li class="flex items-center text-primary hover:bg-gray-700/50 px-4 py-3 rounded-xl transition duration-200 cursor-pointer">
+          <i class="fa-solid fa-right-to-bracket w-6 text-xl"></i>
+          <a href="./dashboard.html" class="font-medium ml-2 w-full">Login</a>
+        </li>
+      </ul>
+    </aside>
+      
+    <!-- HERO SECTION -->
+    <section id="home" class="bg-primary">
+      <div id="main-image" class="relative bg-cover bg-center min-h-screen pt-15">
+        <div class="absolute inset-0 bg-black/60"></div>
+        <div class="container-1 relative z-10 text-center max-w-2xl px-4 flex flex-col gap-3 lg:gap-6 lg:mt-30">
+          <h1 class="text-5xl font-bold text-dark mb-2 lg:text-7xl">Welcome to SariServe</h1>
+          <h3 class="text-xl font-medium text-gray-200 mb-4">Bridging traditional community commerce with modern web architecture.</h3>     
+          <p class="text-gray-300 leading-relaxed lg:mx-50">
+            A highly responsive dashboard architecture optimized for local merchants. Built with utility-first styling and vanilla JavaScript controllers, SariServe transitions seamlessly from offline browser persistence to an integrated relational data pipeline.
+          </p>
+          <div class="flex flex-row gap-4 justify-center mt-6">
+            <a href="" class="bg-dark text-primary font-semibold px-6 py-3 rounded-md hover:bg-secondary transition">Get Started</a>
+            <a href="" class="bg-primary text-secondary font-semibold px-6 py-3 rounded-md hover:bg-gray-300 transition">Learn More</a>
+          </div>
+          <div class="mt-10 flex justify-center">
+            <a href="" class="text-primary text-3xl hover:text-primary transition animate-bounce">
+              <i class="fa-solid fa-circle-arrow-down"></i>
+            </a>
+          </div>
         </div>
-
-    </div>
-</div>
+      </div>
     </section>
-  </body>
 
-  <section id="about" class="py-16">
-    <div class="container-1">
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div class="flex flex-col justify-between">
-        
-      <div class="mt-10">
-      <h2 class="text-3xl font-bold text-dark mb-4">About SariServe</h2>
-      <p class="text-secondary leading-relaxed">
-        SariServe is a modern web solution designed to empower local merchants with a highly responsive dashboard architecture. It seamlessly integrates offline browser persistence with an integrated relational data pipeline, ensuring a smooth user experience across all devices.
-      </p>
-</div>
-
-       <div class="mt-10">
-        <a href="#" class="text-secondary p-3 rounded-2xl  bg-light font-semibold hover:text-secondary transition">See More</a>
+    <!-- ABOUT SECTION -->
+    <section id="about" class="py-16">
+      <div class="container-1">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div class="flex flex-col justify-between">
+            <div class="mt-10">
+              <h2 class="text-3xl font-bold text-dark mb-4">About SariServe</h2>
+              <p class="text-secondary leading-relaxed">
+                SariServe is a modern web solution designed to empower local merchants with a highly responsive dashboard architecture. It seamlessly integrates offline browser persistence with an integrated relational data pipeline, ensuring a smooth user experience across all devices.
+              </p>
+            </div>
+            <div class="mt-10">
+              <a href="#" class="text-secondary p-3 rounded-2xl bg-light font-semibold hover:text-secondary transition">See More</a>
+            </div>
+          </div>
+          <div class="mt-10">
+            <img src="./public/about-img.png" class="mx-auto rounded-2xl" alt="SariServe">
+          </div>
+        </div>
       </div>
+    </section>
     
-</div>
-
-      <div class="mt-10">
-        <img src="./public/about-img.png" class="mx-auto rounded-2xl" alt="SariServe">
-      </div>
-</div>
-
-     
-      </div>
-    </div>
-  </section>
-  
-  <section id="services" class="py-16 bg-light">
-    <div class="container-1">
-      <h2 class="text-3xl font-bold text-secondary mb-4">Our Services</h2>
-      <p class="text-secondary leading-relaxed">
-        We offer a range of services to help local merchants thrive in the digital age. From responsive dashboard design to seamless data integration, our solutions are tailored to meet the unique needs of small businesses.</p>
-
+    <!-- SERVICES SECTION -->
+    <section id="services" class="py-16 bg-light">
+      <div class="container-1">
+        <h2 class="text-3xl font-bold text-secondary mb-4">Our Services</h2>
+        <p class="text-secondary leading-relaxed">
+          We offer a range of services to help local merchants thrive in the digital age. From responsive dashboard design to seamless data integration, our solutions are tailored to meet the unique needs of small businesses.
+        </p>
         <div class="mt-15">
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-10">
             <div class="bg-dark p-6 rounded-lg shadow-md hover:shadow-lg transition duration-300">
@@ -148,64 +141,64 @@
         </div>
       </div>
     </section>
-      
-        <section id="contacts" class="mt-16 bg-primary">
-          <div class="container-1">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-
-              <div class="mt-10">
+        
+    <!-- CONTACTS SECTION -->
+    <section id="contacts" class="mt-16 bg-primary">
+      <div class="container-1">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div class="mt-10">
             <h2 class="text-3xl font-bold text-dark mb-4">Contact Us</h2>
             <p class="text-secondary leading-relaxed">
               Have questions or need assistance? Reach out to us and we'll be happy to help.
             </p>
-</div>
-
-            <div class="mt-10">
-              <form class="bg-secondary p-6 rounded-lg max-w-3xl mx-auto shadow-md">
-                <div class="mb-4">
-                  <label for="name" class="block text-primary font-semibold mb-2">Name</label>
-                  <input type="text" id="name" name="name" class="w-full text-primary p-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary" required>
-                </div>
-                <div class="mb-4">
-                  <label for="email" class="block text-primary font-semibold mb-2">Email</label>
-                  <input type="email" id="email" name="email" class="w-full text-primary p-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary" required>
-                </div>
-                <div class="mb-4">
-                  <label for="message" class="block text-primary font-semibold mb-2">Message</label>
-                  <textarea id="message" name="message" rows="5" class="w-full text-primary p-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary" required></textarea>
-                </div>
-                <button type="submit" class="bg-primary text-secondary font-semibold px-6 py-3 rounded-md hover:bg-gray-300  transition">Send Message</button>
-              </form>
+          </div>
+          <div class="mt-10">
+            <form class="bg-secondary p-6 rounded-lg max-w-3xl mx-auto shadow-md">
+              <div class="mb-4">
+                <label for="name" class="block text-primary font-semibold mb-2">Name</label>
+                <input type="text" id="name" name="name" class="w-full text-primary p-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary" required>
               </div>
-            </div>
+              <div class="mb-4">
+                <label for="email" class="block text-primary font-semibold mb-2">Email</label>
+                <input type="email" id="email" name="email" class="w-full text-primary p-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary" required>
+              </div>
+              <div class="mb-4">
+                <label for="message" class="block text-primary font-semibold mb-2">Message</label>
+                <textarea id="message" name="message" rows="5" class="w-full text-primary p-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary" required></textarea>
+              </div>
+              <button type="submit" class="bg-primary text-secondary font-semibold px-6 py-3 rounded-md hover:bg-gray-300 transition">Send Message</button>
+            </form>
           </div>
-        </section>
+        </div>
+      </div>
+    </section>
 
-<section id="FAQ" class=" py-10 container-1">
-  <h1 class="text-center text-3xl text-dark font-semibold py-10">For more Questions Check here:</h1>
+    <!-- FAQ SECTION -->
+    <section id="FAQ" class="py-10 container-1">
+      <h1 class="text-center text-3xl text-dark font-semibold py-10">For more Questions Check here:</h1>
+      <div id="accordion-container" class="accordion-container w-100 max-w-xl mx-auto lg:w-full"></div>
+    </section>
 
-    <div id="accordion-container" class="accordion-container w-100 max-w-xl mx-auto lg:w-full">
-    </div>
-</section>
-
-        <footer class="mt-16">
-          <div class="bg-secondary text-primary p-6">
-            <div class="flex flex-row justify-between items-center lg:container-1">
-              
-            <div class="">
-              <ul class="flex flex-col gap-2">
-                <li class="mx-2 hover:text-light transition"><a href="#home">Home</a></li>
-                <li class="mx-2 hover:text-light transition"><a href="#about">About</a></li>
-                <li class="mx-2 hover:text-light transition"><a href="#services">Services</a></li>
-                <li class="mx-2 hover:text-light transition"><a href="#contact">Contact</a></li>
-              </ul>
-            </div>
-
-            <div class="">
+    <!-- FOOTER -->
+    <footer class="mt-16">
+      <div class="bg-secondary text-primary p-6">
+        <div class="flex flex-row justify-between items-center lg:container-1">
+          <div>
+            <ul class="flex flex-col gap-2">
+              <li class="mx-2 hover:text-light transition"><a href="#home">Home</a></li>
+              <li class="mx-2 hover:text-light transition"><a href="#about">About</a></li>
+              <li class="mx-2 hover:text-light transition"><a href="#services">Services</a></li>
+              <li class="mx-2 hover:text-light transition"><a href="#contact">Contact</a></li>
+            </ul>
+          </div>
+          <div>
             <p class="text-center">&copy; 2023 SariServe. All rights reserved.</p>
-            </div>
-            </div>
           </div>
-        </footer>
-     <script type="module" src="/src/main.js"></script>
+        </div>
+      </div>
+    </footer>
+
+    <!-- MAIN MODULE IMPORT -->
+    <script type="module" src="/src/main.js"></script>
+  </body>
 </html>

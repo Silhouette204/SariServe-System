@@ -1,32 +1,37 @@
+// src/nav.js
 export function initNav() {
-  const sideNav = document.querySelector('#side-menu');
-  const menuBtn = document.querySelector('#menu-btn');
-  const closeBtn = document.querySelector('#close-menu-btn');
-  const backDrop = document.querySelector('#backdrop');
+ 
+  // 3. Kunin ang mga kakailanganing DOM elements para sa Control Actions pagkatapos mai-render
+  const sideNav = document.getElementById('side-menu');
+  const menuBtn = document.getElementById('menu-btn');
+  const closeBtn = document.getElementById('close-menu-btn');
+  const backDrop = document.getElementById('backdrop');
 
-  // Guard clause para iwas error kung sakaling wala ang mga elemento sa page
-  if (!sideNav || !menuBtn || !closeBtn || !backDrop) return;
+  if (!sideNav || !menuBtn || !closeBtn || !backDrop) {
+    console.warn("SariServe Nav Warning: May kulang na element sa initialization.");
+    return;
+  }
 
-  // Open Sidebar & Backdrop
-  menuBtn.addEventListener('click', () => {
+  // 4. Open Sidebar & Backdrop Click Event Controller
+  menuBtn.onclick = function() {
     sideNav.classList.remove('-translate-x-full');
     backDrop.classList.remove('opacity-0', 'pointer-events-none');
     backDrop.classList.add('opacity-100', 'pointer-events-auto');
-  });
+  };
 
-  // Close Sidebar & Backdrop
+  // 5. Close Sidebar & Backdrop Action Function
   function closeAll() {
     sideNav.classList.add('-translate-x-full');
     backDrop.classList.add('opacity-0', 'pointer-events-none');
     backDrop.classList.remove('opacity-100', 'pointer-events-auto');
   }
 
-  closeBtn.addEventListener('click', closeAll);
-  backDrop.addEventListener('click', closeAll);
+  closeBtn.onclick = closeAll;
+  backDrop.onclick = closeAll;
 
-  // Kusa ring magsasara ang menu kapag may pinindot na link sa loob nito
+  // Kusa ring magsasara kapag nag-click ng links sa loob ng sidebar menu
   const navLinks = sideNav.querySelectorAll('ul li a');
   navLinks.forEach(link => {
-    link.addEventListener('click', closeAll);
+    link.onclick = closeAll;
   });
 }
