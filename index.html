@@ -73,10 +73,10 @@
    
     <div class="absolute inset-0 bg-black/60"></div>
 
-    <div class="container-1 relative z-10 text-center max-w-2xl px-4 flex flex-col gap-3">
-        <h1 class="text-5xl font-bold text-dark mb-2">Welcome to SariServe</h1>
+    <div class="container-1 relative z-10 text-center max-w-2xl px-4 flex flex-col gap-3 lg:gap-6 lg:mt-30">
+        <h1 class="text-5xl font-bold text-dark mb-2 lg:text-7xl">Welcome to SariServe</h1>
         <h3 class="text-xl font-medium text-gray-200 mb-4">Bridging traditional community commerce with modern web architecture.</h3>     
-        <p class="text-gray-300 leading-relaxed">
+        <p class="text-gray-300 leading-relaxed lg:mx-50">
             A highly responsive dashboard architecture optimized for local merchants. Built with utility-first styling and vanilla JavaScript controllers, SariServe transitions seamlessly from offline browser persistence to an integrated relational data pipeline.
         </p>
 
@@ -98,18 +98,28 @@
 
   <section id="about" class="py-16">
     <div class="container-1">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="flex flex-col justify-between">
+        
+      <div class="mt-10">
       <h2 class="text-3xl font-bold text-dark mb-4">About SariServe</h2>
       <p class="text-secondary leading-relaxed">
         SariServe is a modern web solution designed to empower local merchants with a highly responsive dashboard architecture. It seamlessly integrates offline browser persistence with an integrated relational data pipeline, ensuring a smooth user experience across all devices.
       </p>
+</div>
+
+       <div class="mt-10">
+        <a href="#" class="text-secondary p-3 rounded-2xl  bg-light font-semibold hover:text-secondary transition">See More</a>
+      </div>
+    
+</div>
 
       <div class="mt-10">
         <img src="./public/about-img.png" class="mx-auto rounded-2xl" alt="SariServe">
       </div>
+</div>
 
-      <div class="mt-10">
-        <a href="#" class="text-secondary p-3 rounded-2xl  bg-light font-semibold hover:text-secondary transition">See More</a>
-      </div>
+     
       </div>
     </div>
   </section>
@@ -138,36 +148,40 @@
         </div>
       </div>
     </section>
-        
-
+      
         <section id="contacts" class="mt-16 bg-primary">
           <div class="container-1">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+              <div class="mt-10">
             <h2 class="text-3xl font-bold text-dark mb-4">Contact Us</h2>
             <p class="text-secondary leading-relaxed">
               Have questions or need assistance? Reach out to us and we'll be happy to help.
             </p>
+</div>
 
             <div class="mt-10">
-              <form class="bg-secondary p-6 rounded-lg shadow-md">
+              <form class="bg-secondary p-6 rounded-lg max-w-3xl mx-auto shadow-md">
                 <div class="mb-4">
                   <label for="name" class="block text-primary font-semibold mb-2">Name</label>
-                  <input type="text" id="name" name="name" class="w-full p-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary" required>
+                  <input type="text" id="name" name="name" class="w-full text-primary p-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary" required>
                 </div>
                 <div class="mb-4">
                   <label for="email" class="block text-primary font-semibold mb-2">Email</label>
-                  <input type="email" id="email" name="email" class="w-full p-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary" required>
+                  <input type="email" id="email" name="email" class="w-full text-primary p-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary" required>
                 </div>
                 <div class="mb-4">
                   <label for="message" class="block text-primary font-semibold mb-2">Message</label>
-                  <textarea id="message" name="message" rows="5" class="w-full p-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary" required></textarea>
+                  <textarea id="message" name="message" rows="5" class="w-full text-primary p-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary" required></textarea>
                 </div>
                 <button type="submit" class="bg-primary text-secondary font-semibold px-6 py-3 rounded-md hover:bg-gray-300  transition">Send Message</button>
               </form>
+              </div>
             </div>
           </div>
         </section>
 
-<section id="FAQ" class=" py-10">
+<section id="FAQ" class=" py-10 container-1">
   <h1 class="text-center text-3xl text-dark font-semibold py-10">For more Questions Check here:</h1>
 
     <div id="accordion-container" class="accordion-container w-100 max-w-xl mx-auto lg:w-full">
@@ -176,7 +190,7 @@
 
         <footer class="mt-16">
           <div class="bg-secondary text-primary p-6">
-            <div class="flex flex-row justify-between items-center">
+            <div class="flex flex-row justify-between items-center lg:container-1">
               
             <div class="">
               <ul class="flex flex-col gap-2">

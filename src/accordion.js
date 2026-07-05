@@ -24,7 +24,7 @@ const accordionData = [
     answer: "Pumunta sa Debt Listing page at i-click ang Add New Debt (Magdagdag ng Utang). Ilagay ang pangalan ng suki, magkano ang kinuha niya, at ang petsa. Awtomatiko itong papasok sa listahan mo at magpapakita sa Dashboard mo sa ilalim ng Active Debts (Utang) para lagi mong natatandaan kung magkano pa ang kabuuang sisingilin mo."
   },
   {
-    question: "Paano ko tatandian na nagbayad na ang may utang?",
+    question: "Paano ko malaman na nagbayad na ang may utang?",
     answer: "Sa iyong Debt Listing, hanapin mo lang ang pangalan ng nagbayad na suki. May makikita kang status button na nakasulat ay Unpaid. I-click mo lang 'yan, at awtomatiko itong magiging berde at magiging Paid na. Mababawasan din agad ang kabuuang utang na nakalista sa dashboard mo."
   },
   {
@@ -45,12 +45,12 @@ export function renderFAQ(){
         <div class="accordion-items border-b border-gray-300">
       <button class="accordion-question w-full flex justify-between items-center py-5 cursor-pointer">
         <span class="text-start text-lg font-medium text-dark">${item.question}</span>
-      <i class="dropdown fa-solid fa-chevron-down transition-transform duration-300"></i>
+      <i class="dropdown fa-solid fa-chevron-down transition-transform duration-300 mr-7"></i>
     </button>
 
        <div class="accordion-content max-h-0 overflow-hidden transition-all duration-300 ease-in-out">
        <div class="pb-5 text-dark/70">
-         <h3>${item.answer}</h3>
+         <h3 class="mr-5">${item.answer}</h3>
          </div>
        </div>
       </div>
