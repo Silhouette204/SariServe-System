@@ -7,15 +7,75 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
     <title>Dashboard - SariServe</title>
   </head>
-  <body class="bg-primary font-poppins">
+  <body class="bg-primary font-poppins lg:pl-64">
 
     <div id="dashboard-nav"> 
     </div>
 
     <!-- Content ng Dashboard View mo -->
-    <main class="p-10">
-      <h1 class="text-3xl font-bold text-dark">Dashboard Active View</h1>
-    </main>
+    <main class="pt-10 px-5">
+      <div class="flex flex-col gap-3 border-b-1 pb-5">
+      <h1 class="text-3xl text-secondary font-semibold">Welcome Back, User!</h1>
+      <p class="text-secondary/70">Here's what's happening with your store today.</p>
+    </div>
+  </main>
+
+  <section id="dashboard-view" class="container-1 pt-5 pb-10">
+      <h3 class="text-2xl font-bold text-secondary my-6">Dashboard Active View</h1>
+
+ <div class="container-1">
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+    <div class=" bg-dark p-25">
+    </div>
+
+    <div class=" bg-dark p-25">
+    </div>
+
+    <div class=" bg-dark p-25">
+    </div>
+
+    <div class=" bg-dark p-25">
+    </div>
+  </div>
+ </div>
+</section>
+ 
+<section id="sales" class="mt-10">
+  <div class="container-1 mb-10">
+   <h1 class="text-2xl font-semibold text-secondary border-t-2 pt-5">Sales Report</h1>
+
+   <div class="container-1 my-5 gap-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2">
+    <div class="p-25 bg-dark">
+    
+    </div>
+
+    <div class="p-20 bg-dark">
+
+    </div>
+   </div>
+
+  </div>
+</section>
+
+
+<section id="inventory" class="mt-10 mb-20">
+  <div class="container-1">
+    <div class="mb-10 border-t-2">
+   <h1 class="text-2xl text-secondary font-semibold mt-5">Inventory & Debt Report</h1>
+  </div>
+
+  <div class="container-1 grid grid-cols-1 gap-6 md:grid-cols-2">
+    <div class="p-20 bg-dark">
+
+    </div>
+
+    <div class="p-20 bg-dark">
+      
+    </div>
+  </div>
+
+  </div>
+</section>
 
     <!-- CRITICAL: Siguraduhing mayroon nito sa ilalim para gumana ang JavaScript! -->
     <script type="module" src="/src/main.js"></script>

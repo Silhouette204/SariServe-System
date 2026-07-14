@@ -6,7 +6,7 @@ export function renderDashboardNav() {
   }
 
  dashboardNav.innerHTML = ` 
-  <nav class="flex items-center justify-between p-4 bg-dark text-primary sticky top-0 z-50 px-5 lg:px-10">
+  <nav class="flex items-center justify-between p-4 bg-dark text-primary sticky top-0 z-50 px-5 lg:px-10 lg:hidden">
       <div class="flex items-center gap-3">
         <button id="menu-btn" class="cursor-pointer text-2xl text-primary hover:bg-gray-700/50 px-3 py-2 rounded-full lg:hidden transition duration-300">
           <i class="fa-solid fa-bars"></i>
@@ -15,55 +15,55 @@ export function renderDashboardNav() {
           SariServe
         </a>
       </div>
-
-      <div class="hidden lg:flex flex-row gap-6 font-medium">
-        <a href="index.html" class="hover:text-gray-300 transition">Home</a>
-        <a href="#about" class="hover:text-gray-300 transition">About</a>
-        <a href="#experiences" class="hover:text-gray-300 transition">Experience</a>
-        <a href="#latest-work" class="hover:text-gray-300 transition">Projects</a>
-      </div>
-
-      <div class="hidden lg:block">
-        <a href="./dashboard.html" class="hover:text-gray-300 font-medium transition">Login</a>
-      </div>
+     
     </nav>
 
     <!-- BACKDROP BACKGROUND -->
     <div id="backdrop" class="fixed inset-0 bg-black/40 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300 z-40"></div>
 
     <!-- SIDEBAR MENU -->
-    <aside id="side-menu" class="fixed top-0 left-0 h-screen w-64 text-primary transition-transform duration-300 z-50 transform -translate-x-full bg-secondary">
+<aside id="side-menu" class="fixed inset-y-0 left-0 w-64 text-primary transition-transform duration-300 z-50 -translate-x-full bg-secondary lg:translate-x-0">
+
+  <div class="flex h-full flex-col justify-between">
+    <div>
       <div class="flex flex-row items-center gap-3 m-5">
-        <button id="close-menu-btn" class="cursor-pointer text-2xl text-primary hover:bg-gray-700 px-4 py-2 rounded-full transition duration-300">
+        <button id="close-menu-btn" class="lg:hidden cursor-pointer text-2xl text-primary hover:bg-gray-700 px-4 py-2 rounded-full transition duration-300">
           <i class="fa-solid fa-xmark"></i>
         </button>
         <span class="text-2xl font-bold text-primary">SariServe</span>
       </div>
 
-      <ul class="flex flex-col gap-2 mx-3 mt-5">
+     <ul class="flex flex-col gap-2 mx-3 mt-5">
         <li class="flex items-center text-primary hover:bg-gray-700/50 px-4 py-3 rounded-xl transition duration-200 cursor-pointer">
-          <i class="fa-solid fa-house w-6 text-xl"></i>
-          <a href="index.html" class="font-medium ml-2 w-full">Home</a>
+      
+          <i class="fa-solid fa-table-columns w-6 text-xl"></i>
+          <a href="index.html" class="font-medium ml-2 w-full">Dashboard</a>
         </li>
         <li class="flex items-center text-primary hover:bg-gray-700/50 px-4 py-3 rounded-xl transition duration-200 cursor-pointer">
-          <i class="fa-solid fa-address-card w-6 text-xl"></i>
-          <a href="#about" class="font-medium ml-2 w-full">About</a>
+        
+          <i class="fa-solid fa-warehouse  w-6 text-xl"></i>
+          <a href="#about" class="font-medium ml-2 w-full">Inventory</a>
         </li>
         <li class="flex items-center text-primary hover:bg-gray-700/50 px-4 py-3 rounded-xl transition duration-200 cursor-pointer">
           <i class="fa-solid fa-bell-concierge w-6 text-xl"></i>
-          <a href="#experiences" class="font-medium ml-2 w-full">Services</a>
+          <a href="#experiences" class="font-medium ml-2 w-full">Sales</a>
         </li>
         <li class="flex items-center text-primary hover:bg-gray-700/50 px-4 py-3 rounded-xl transition duration-200 cursor-pointer">
           <i class="fa-solid fa-address-book w-6 text-xl"></i>
-          <a href="#latest-work" class="font-medium ml-2 w-full">Contacts</a>
+          <a href="#latest-work" class="font-medium ml-2 w-full">Utang</a>
         </li>
-        <li class="border-t border-gray-700 my-2"></li> 
-        <li class="flex items-center text-primary hover:bg-gray-700/50 px-4 py-3 rounded-xl transition duration-200 cursor-pointer">
-          <i class="fa-solid fa-right-to-bracket w-6 text-xl"></i>
-          <a href="./dashboard.html" class="font-medium ml-2 w-full">Login</a>
-        </li>
+       
       </ul>
-    </aside>
+    </div>
+
+    <div class="mx-3 mb-5">
+      <a href="index.html" class="flex items-center px-4 py-3 rounded-xl hover:bg-gray-700/50 font-medium transition">
+        LogOut
+      </a>
+    </div>
+  </div>
+
+</aside>
  `
 }
 
