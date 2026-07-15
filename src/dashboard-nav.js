@@ -26,7 +26,7 @@ export function renderDashboardNav() {
 
   <div class="flex h-full flex-col justify-between">
     <div>
-      <div class="flex flex-row items-center gap-3 m-5">
+      <div class="flex flex-row items-center gap-3 mx-6 mt-10">
         <button id="close-menu-btn" class="lg:hidden cursor-pointer text-2xl text-primary hover:bg-gray-700 px-4 py-2 rounded-full transition duration-300">
           <i class="fa-solid fa-xmark"></i>
         </button>
@@ -37,20 +37,20 @@ export function renderDashboardNav() {
         <li class="flex items-center text-primary hover:bg-gray-700/50 px-4 py-3 rounded-xl transition duration-200 cursor-pointer">
       
           <i class="fa-solid fa-table-columns w-6 text-xl"></i>
-          <a href="index.html" class="font-medium ml-2 w-full">Dashboard</a>
+          <a href="dashboard.html" class="font-medium ml-2 w-full">Dashboard</a>
         </li>
         <li class="flex items-center text-primary hover:bg-gray-700/50 px-4 py-3 rounded-xl transition duration-200 cursor-pointer">
         
           <i class="fa-solid fa-warehouse  w-6 text-xl"></i>
-          <a href="#about" class="font-medium ml-2 w-full">Inventory</a>
+          <a href="inventory.html" class="font-medium ml-2 w-full">Inventory</a>
         </li>
         <li class="flex items-center text-primary hover:bg-gray-700/50 px-4 py-3 rounded-xl transition duration-200 cursor-pointer">
           <i class="fa-solid fa-bell-concierge w-6 text-xl"></i>
-          <a href="#experiences" class="font-medium ml-2 w-full">Sales</a>
+          <a href="sales.html" class="font-medium ml-2 w-full">Sales</a>
         </li>
         <li class="flex items-center text-primary hover:bg-gray-700/50 px-4 py-3 rounded-xl transition duration-200 cursor-pointer">
           <i class="fa-solid fa-address-book w-6 text-xl"></i>
-          <a href="#latest-work" class="font-medium ml-2 w-full">Utang</a>
+          <a href="utang.html" class="font-medium ml-2 w-full">Utang</a>
         </li>
        
       </ul>
