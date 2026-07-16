@@ -6,7 +6,7 @@ export function renderDashboardNav() {
   }
 
  dashboardNav.innerHTML = ` 
-  <nav class="flex items-center justify-between p-4 bg-dark text-primary sticky top-0 z-50 px-5 lg:px-10 lg:hidden">
+  <nav class="flex items-center justify-between p-4 bg-secondary text-primary sticky top-0 z-50 px-5 lg:px-10 lg:hidden">
       <div class="flex items-center gap-3">
         <button id="menu-btn" class="cursor-pointer text-2xl text-primary hover:bg-gray-700/50 px-3 py-2 rounded-full lg:hidden transition duration-300">
           <i class="fa-solid fa-bars"></i>
