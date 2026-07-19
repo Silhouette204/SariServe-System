@@ -24,11 +24,11 @@
       <div class="my-10 flex flex-row gap-2 justify-between items-center">
       <div class="">
        <h1 class="text-3xl text-secondary font-semibold">Sales Overview</h1>
-       <p class="text-secondary/70 text-xs">Track your sales performance and revenue</p>
+       <p class="text-secondary/70 text-sm">Track your sales and revenue</p>
     </div>
 
     <div class="">
-      <a href="" class="px-5 py-3 bg-secondary text-primary font-semibold text-sm rounded-xl hover:bg-primary transition hover:border border-secondary hover:text-secondary">
+      <a href="" class="px-5 py-3 bg-secondary text-primary font-semibold text-xs rounded-xl hover:bg-primary transition hover:border border-secondary hover:text-secondary">
         <i class="fa-solid fa-file-arrow-down mr-2 text-sm"></i> Export Report
       </a>
     </div>
@@ -107,17 +107,137 @@
   </div>
 
   <div class="mb-10 grid gap-6 grid-cols-1 md:grid-cols-3">
-    <div class="bg-secondary p-40 lg:col-span-2">
-    
+    <div class="border border-secondary rounded-xl p-6 lg:col-span-2">
+
+      <div class="flex flex-row justify-between items-center">
+      <div class="">
+<h3 class="text-xl font-bold text-secondary">Sales Trend</h3>
+<p class="text-base text-secondary/80">Hourly sales performance</p>
+      </div>
+
+      <div class="">
+        <select name="timeframe" id="timeframe" class="border border-secondary p-2 rounded-xl ">
+          <option value="this-week">This Week</option>
+          <option value="last-week">Last Week</option>
+          <option value="last-month">Last Month</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+    <div class="border border-secondary p-6 rounded-xl">
+    <div class="">
+      <h3 class="text-secondary font-semibold text-xl">Top Products</h3>
+      <p class="text-secondary/80">Best sellers today</p>
     </div>
 
-    <div class="bg-secondary p-30">
+    <div class="my-5">
+      <ul>
+        <li>
+          <!-- Pinalawak ang buong row at ginawang justify-between -->
+          <div class="flex flex-row items-center justify-between w-full gap-3 py-2">
+            
+            <!-- Kaliwang Bahagi: Badge at Product Info -->
+            <div class="flex items-center gap-3">
+              <!-- Number Badge -->
+              <span class="bg-secondary py-2 px-4 rounded-xl text-base font-bold text-primary shrink-0">
+                1
+              </span>
+              
+              <!-- Product Name & Sold Count -->
+              <div>
+                <h1 class="text-secondary font-semibold text-base leading-tight">N/A</h1>
+                <p class="text-secondary/80 text-sm"><span>0</span> sold</p>
+              </div>
+            </div>
     
+            <!-- Kanang Bahagi: Presyo (Kusa itong itutulak sa dulo) -->
+            <div class="text-right shrink-0">
+              <h3 class="text-secondary font-bold text-xl">₱ <span>0.00</span></h3>
+            </div>
+    
+          </div>
+        </li>
+      </ul>
+    </div>
+
     </div>
   </div>
 
   <div class="mb-10">
-    <div class="bg-secondary p-50"></div>
+    <div class="border rounded-xl border-secondary p-6">
+      <div class="">
+        <h1 class="text-xl text-secondary font-semibold">Recent Sales</h1>
+        <p class="text-sm text-secondary">Latest transactions and invoices</p>
+      </div>
+
+      <div class="relative flex-1 mt-4">
+        <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+      
+          <i class="fa-solid fa-magnifying-glass text-secondary/70"></i>
+        </div>
+        <input 
+          type="text" 
+          placeholder="Search products..." 
+          class="w-full rounded-xl border border-slate-200 bg-transparent py-2.5 pl-10 pr-4 text-sm text-slate-700 placeholder-slate-400 outline-none transition focus:border-slate-400 focus:ring-0"
+        />
+      </div>
+
+
+      <div class="overflow-x-auto rounded-2xl border border-slate-100 bg-white shadow-sm  mt-5">
+        <table class="w-full text-left border-collapse">    
+          <!-- Table Header -->
+          <thead>
+            <tr class="border-b border-slate-100 bg-slate-50/50 text-xs font-bold uppercase tracking-wider text-slate-400">
+              <th class="px-6 py-4">Invoice ID</th>
+              <th class="px-6 py-4">Customer</th>
+              <th class="px-6 py-4">Items</th>
+              <th class="px-6 py-4">Payment</th>
+              <th class="px-6 py-4">Time</th>
+              <th class="px-6 py-4 text-right">Amount</th>
+            </tr>
+          </thead>
+      
+          <!-- Table Body -->
+          <tbody class="divide-y divide-slate-100 text-sm text-slate-600">
+            
+            <!-- Row 1 -->
+            <tr class="hover:bg-slate-50/30 transition">
+              <!-- Invoice ID na kulay Violet/Blue -->
+              <td class="px-6 py-5 font-semibold text-secondary">INV-2024-0456</td>
+              
+              <!-- Customer Name -->
+              <td class="px-6 py-5 text-slate-800">Maria Santos</td>
+              
+              <!-- Items Count -->
+              <td class="px-6 py-5 text-slate-500">8 items</td>
+              
+              <!-- Payment Badge (Gaya ng nasa pic na may soft green background) -->
+              <td class="px-6 py-5">
+                <span class="inline-flex items-center rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-600 ring-1 ring-inset ring-emerald-600/10">
+                  Cash
+                </span>
+              </td>
+              
+              <!-- Time and Date stacked -->
+              <td class="px-6 py-5">
+                <div class="flex flex-col">
+                  <span class="font-medium text-slate-800">5:45 PM</span>
+                  <span class="text-xs text-slate-400">Today</span>
+                </div>
+              </td>
+              
+              <!-- Bold Amount (Naka-align sa kanan) -->
+              <td class="px-6 py-5 text-right font-bold text-slate-900 text-base">
+                ₱456.50
+              </td>
+            </tr>
+      
+          </tbody>
+        </table>
+      </div>
+
+    </div>
   </div>
 
 </div>
