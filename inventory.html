@@ -24,11 +24,11 @@
     <div class="my-6 flex flex-row justify-between items-center">
       <div class="">
         <h1 class="text-xl text-secondary font-semibold lg:text-2xl">Inventory Management</h1>
-        <p class="text-base lg:text-lg text-secondary/70">Manage your products and stock levels</p>
+        <p class="text-base lg:text-lg text-secondary/70">Manage your products and stock </p>
       </div>
 
       <div class="">
-        <a href="" class="bg-secondary text-primary p-3 rounded-lg font-semibold hover:bg-dark transition">
+        <a href="#" class="bg-secondary text-primary p-2 rounded-lg text-base font-semibold hover:bg-primary hover:border border-secondary transition hover:text-secondary">
           + Add Product
         </a>
       </div>
@@ -36,31 +36,201 @@
 
     <div class="my-10 ">
       <div class="grid gap-5 grid-cols-2 md:grid-cols-2 lg:grid-cols-4">
-        <div class="bg-secondary p-20">  
+       
+        <div class="border border-secondary shadow-lg bg-boxes p-3 rounded-xl">   
+          <div class="flex flex-row justify-between items-center">
+            <div class="">
+            <h3 class="text-base text-secondary font-semibold">Total products</h3>
+            <h1 class="text-2xl font-bold text-secondary"><span>0</span></h1>
+          </div>
+
+          <div class="">
+            <i class="fa-solid fa-box text-2xl p-2 bg-blue-300 text-blue-800 rounded-lg"></i>
+          </div>
+          </div>
         </div>
 
-        <div class="bg-secondary p-20">  
+        <div class="border border-secondary shadow-lg bg-boxes p-3 rounded-xl">   
+          <div class="flex flex-row justify-between items-center">
+            <div class="">
+            <h3 class="text-base text-secondary font-semibold">In Stock</h3>
+            <h1 class="text-2xl font-bold text-secondary"><span>0</span></h1>
+          </div>
+
+          <div class="">
+            <i class="fa-solid fa-box text-2xl p-2 bg-green-300 text-green-800 rounded-lg"></i>
+          </div>
+          </div>
         </div>
 
-        <div class="bg-secondary p-20">  
+        <div class="border border-secondary shadow-lg bg-boxes p-3 rounded-xl">   
+          <div class="flex flex-row justify-between items-center">
+            <div class="">
+            <h3 class="text-base text-secondary font-semibold">Low Stock</h3>
+            <h1 class="text-2xl font-bold text-secondary"><span>0</span></h1>
+          </div>
+
+          <div class="">      
+            <i class="fa-solid fa-circle-exclamation text-2xl p-2 bg-orange-300 text-orange-800 rounded-lg"></i>
+          </div>
+          </div>
         </div>
 
-        <div class="bg-secondary p-20">  
+
+        <div class="border border-secondary shadow-lg bg-boxes p-3 rounded-xl">   
+          <div class="flex flex-row justify-between items-center">
+            <div class="">
+            <h3 class="text-base text-secondary font-semibold">Out of Stock</h3>
+            <h1 class="text-2xl font-bold text-secondary"><span>0</span></h1>
+          </div>
+
+          <div class="">
+            <i class="fa-solid fa-circle-exclamation text-2xl p-2 bg-red-300 text-red-800 rounded-lg"></i>
+          </div>
+          </div>
         </div>
+
       </div>
     </div>
 
-    <div class="flex-1 p-5 bg-secondary flex flex-row gap-6 justify-between items-center">
-     <div class="p-5 px-20 bg-primary">Search Bar</div>
-     <p class="">Filter</p>
+    <div class="flex items-center gap-3 rounded-2xl border border-secondary bg-white p-4 shadow-sm ">
+ 
+      <div class="relative flex-1">
+        <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+      
+          <i class="fa-solid fa-magnifying-glass text-secondary/70"></i>
+        </div>
+        <input 
+          type="text" 
+          placeholder="Search products..." 
+          class="w-full rounded-xl border border-slate-200 bg-transparent py-2.5 pl-10 pr-4 text-sm text-slate-700 placeholder-slate-400 outline-none transition focus:border-slate-400 focus:ring-0"
+        />
+      </div>
+    
+      <!-- Filter Icon -->
+      <button class="text-slate-400 hover:text-slate-600 transition p-1">
+        <i class="fa-solid fa-filter"></i>
+      </button>
+    
+      <!-- Categories Dropdown -->
+      <div class="relative">
+        <select name="timeframe" id="timeframe" class="rounded-xl border border-slate-200 bg-white py-2.5 pl-4 pr-10 text-sm font-medium text-slate-700 outline-none transition focus:border-slate-400 cursor-pointer">
+          <option>All Categories</option>
+          <option>Groceries</option>
+          <option>Beverages</option>
+          <option>Snacks</option>
+        </select>
+        
+      </div>
+    
     </div>
 
    </div>
   </section>
 
   <section id="stocks" class="container-1 my-10">
-    <div class="bg-secondary p-50">
-      
+    <div class="overflow-x-auto rounded-2xl border border-secondary bg-white shadow-sm ">
+      <table class="w-full text-left border-collapse">
+        
+        <!-- Table Header -->
+        <thead>
+          <tr class="border-b border-slate-100 bg-slate-50/70 text-sm font-semibold text-slate-600">
+            <th class="px-6 py-4">Product</th>
+            <th class="px-6 py-4">Category</th>
+            <th class="px-6 py-4">Stock Control</th> <!-- Binago ang heding para sa controls -->
+            <th class="px-6 py-4">Price</th>
+            <th class="px-6 py-4">Status</th>
+            <th class="px-6 py-4 text-right">Actions</th>
+          </tr>
+        </thead>
+    
+        <!-- Table Body -->
+        <tbody class="divide-y divide-slate-100 text-sm text-slate-600">
+          
+          <!-- Row 1: Groceries -->
+          <tr class="hover:bg-slate-50/50 transition">
+            <td class="px-6 py-4 font-medium text-slate-900">Organic Apples</td>
+            <td class="px-6 py-4">Groceries</td>
+            <td class="px-6 py-4">
+              <!-- Stock Adjuster Buttons -->
+              <div class="flex items-center gap-2">
+                <button class="flex h-7 w-7 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 font-bold text-slate-600 hover:bg-slate-100 active:scale-95 transition select-none">
+                  −
+                </button>
+                <span class="w-12 text-center font-semibold text-slate-800">120</span>
+                <button class="flex h-7 w-7 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 font-bold text-slate-600 hover:bg-slate-100 active:scale-95 transition select-none">
+                  +
+                </button>
+              </div>
+            </td>
+            <td class="px-6 py-4">₱150.00</td>
+            <td class="px-6 py-4">
+              <span class="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
+                In Stock
+              </span>
+            </td>
+            <td class="px-6 py-4 text-right">
+              <button class="text-sm font-semibold text-indigo-600 hover:text-indigo-900 mr-3">Edit</button>
+              <button class="text-sm font-semibold text-rose-600 hover:text-rose-900">Delete</button>
+            </td>
+          </tr>
+    
+          <!-- Row 2: Beverages -->
+          <tr class="hover:bg-slate-50/50 transition">
+            <td class="px-6 py-4 font-medium text-slate-900">Fresh Milk 1L</td>
+            <td class="px-6 py-4">Beverages</td>
+            <td class="px-6 py-4">
+              <div class="flex items-center gap-2">
+                <button class="flex h-7 w-7 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 font-bold text-slate-600 hover:bg-slate-100 active:scale-95 transition select-none">
+                  −
+                </button>
+                <span class="w-12 text-center font-semibold text-slate-800">12</span>
+                <button class="flex h-7 w-7 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 font-bold text-slate-600 hover:bg-slate-100 active:scale-95 transition select-none">
+                  +
+                </button>
+              </div>
+            </td>
+            <td class="px-6 py-4">₱95.00</td>
+            <td class="px-6 py-4">
+              <span class="inline-flex items-center rounded-md bg-amber-50 px-2 py-1 text-xs font-medium text-amber-800 ring-1 ring-inset ring-amber-600/20">
+                Low Stock
+              </span>
+            </td>
+            <td class="px-6 py-4 text-right">
+              <button class="text-sm font-semibold text-indigo-600 hover:text-indigo-900 mr-3">Edit</button>
+              <button class="text-sm font-semibold text-rose-600 hover:text-rose-900">Delete</button>
+            </td>
+          </tr>
+    
+          <!-- Row 3: Snacks -->
+          <tr class="hover:bg-slate-50/50 transition">
+            <td class="px-6 py-4 font-medium text-slate-900">Potato Chips</td>
+            <td class="px-6 py-4">Snacks</td>
+            <td class="px-6 py-4">
+              <div class="flex items-center gap-2">
+                <button class="flex h-7 w-7 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 font-bold text-slate-600 hover:bg-slate-100 active:scale-95 transition select-none">
+                  −
+                </button>
+                <span class="w-12 text-center font-semibold text-slate-800">0</span>
+                <button class="flex h-7 w-7 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 font-bold text-slate-600 hover:bg-slate-100 active:scale-95 transition select-none">
+                  +
+                </button>
+              </div>
+            </td>
+            <td class="px-6 py-4">₱45.00</td>
+            <td class="px-6 py-4">
+              <span class="inline-flex items-center rounded-md bg-rose-50 px-2 py-1 text-xs font-medium text-rose-700 ring-1 ring-inset ring-rose-600/10">
+                Out of Stock
+              </span>
+            </td>
+            <td class="px-6 py-4 text-right">
+              <button class="text-sm font-semibold text-indigo-600 hover:text-indigo-900 mr-3">Edit</button>
+              <button class="text-sm font-semibold text-rose-600 hover:text-rose-900">Delete</button>
+            </td>
+          </tr>
+    
+        </tbody>
+      </table>
     </div>
   </section>
 

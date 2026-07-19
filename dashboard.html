@@ -20,21 +20,72 @@
     </div>
   </main>
 
-  <section id="dashboard-view" class="container-1 pt-5 pb-10">
+  <section id="dashboard-view" class="container-1 py-2">
       <h3 class="text-2xl font-bold text-secondary my-6">Dashboard Active View</h1>
 
- <div class="container-1">
+ <div class="">
   <div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3">
-    <div class=" bg-secondary p-25">
+    
+    <div class="border border-secondary bg-boxes shadow-xl rounded-xl px-4 py-5 ">
+      <div class="flex flex-row justify-between items-center">
+     <i class="fa-solid fa-peso-sign bg-secondary text-primary px-4 py-3 text-2xl rounded-xl"></i>
+     <div class="">
+     <i class="fa-solid fa-arrow-trend-up text-secondary text-2xl"></i> <span class="font-semibold text-secondary">0.00%</span>
+    </div>
     </div>
 
-    <div class=" bg-secondary p-25">
+    <div class="flex flex-col gap-2 mt-3">
+      <h3 class="text-base">Today's Sales</h3>
+      <h1 class="text-3xl font-semibold"><span class="">₱ 0.00</span></h1>
+      <p class="text-sm text-secondary/70">vs ₱ 0.00 yesterday</p>
+    </div>
     </div>
 
-    <div class=" bg-secondary p-25">
+
+    <div class="border border-secondary rounded-xl px-4 py-5 bg-boxes shadow-xl">
+      <div class="flex flex-row justify-between items-center">
+     <i class="fa-solid fa-cart-shopping bg-secondary text-primary px-3 py-3 text-2xl rounded-xl"></i>
+     <div class="">
+     <i class="fa-solid fa-arrow-trend-up text-secondary text-2xl"></i> <span class="font-semibold text-secondary">0.00%</span>
+    </div>
     </div>
 
-    <div class=" bg-secondary p-25">
+    <div class="flex flex-col gap-2 mt-3">
+      <h3 class="text-base">Total Product</h3>
+      <h1 class="text-3xl font-semibold"><span class="">0</span></h1>
+      <p class="text-sm text-secondary/70">In Inventory</p>
+    </div>
+    </div>
+
+    <div class="border border-secondary rounded-xl px-3 py-4 bg-boxes shadow-xl">
+      <div class="flex flex-row justify-between items-center">
+     <i class="fa-solid fa-triangle-exclamation  bg-secondary text-primary px-4 py-3 text-2xl rounded-xl"></i>
+     <div class="">
+     <i class="fa-solid fa-arrow-trend-up text-secondary text-2xl"></i> <span class="font-semibold text-secondary">0.00%</span>
+    </div>
+    </div>
+
+    <div class="flex flex-col gap-2 mt-3 ">
+      <h3 class="text-base">Low Stock Items</h3>
+      <h1 class="text-3xl font-semibold"><span class="">0</span></h1>
+      <p class="text-sm text-secondary/70">Need restock soon</p>
+    </div>
+    </div>
+
+
+    <div class="border border-secondary rounded-xl px-4 py-5 bg-boxes shadow-xl ">
+      <div class="flex flex-row justify-between items-center">
+     <i class="fa-solid fa-list  bg-secondary text-primary px-3 py-3 text-2xl rounded-xl"></i>
+     <div class="">
+     <i class="fa-solid fa-arrow-trend-up text-secondary text-2xl"></i> <span class="font-semibold text-secondary">0.00%</span>
+    </div>
+    </div>
+
+    <div class="flex flex-col gap-2 mt-3">
+      <h3 class="text-base">Total Utang</h3>
+      <h1 class="text-3xl font-semibold"><span class="">₱ 0.00</span></h1>
+      <p class="text-sm text-secondary/70">From <span>15</span> customers</p>
+    </div>
     </div>
   </div>
  </div>
@@ -44,14 +95,75 @@
   <div class="container-1 mb-10">
    <h1 class="text-2xl font-semibold text-secondary border-t-2 pt-5">Sales Report</h1>
 
-   <div class="container-1 my-5 gap-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2">
-    <div class="p-25 bg-secondary">
+   <div class=" my-5 gap-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 lg:items-stretch">
+
+    <div class="p-3 border border-secondary h-full rounded-xl lg:col-span-2 bg-boxes shadow-xl">
+      <div class="flex flex-row justify-between items-center">
+        <div class="">
+      <h1 class="font-bold text-secondary text-lg">Weekly Sales</h1>
+      <p class="text-secondary text-sm">Last 7 days performance</p>
+    </div>
     
+    <div class="">
+     
+<select name="timeframe" id="timeframe" class="border border-secondary p-2 rounded-xl ">
+  <option value="this-week">This Week</option>
+  <option value="last-week">Last Week</option>
+  <option value="last-month">Last Month</option>
+</select>
+    </div>
     </div>
 
-    <div class="p-20 bg-secondary">
+    <div id="weekly-sales-chart" class="w-full">
+      
+    </div>
+  </div>
+
+  <div class="p-4 border border-secondary rounded-xl h-full bg-boxes shadow-xl">
+    <h1 class="text-lg text-secondary font-bold">Sales by Category</h1>
+    <p class="text-secondary text-sm">Distribution overview</p>
+
+    <div class="my-5">
+      <ul class="px-5 flex flex-col gap-2">
+        <li class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="h-3 w-3 rounded-full bg-indigo-600"></div>
+            <span>Groceries</span>
+          </div>
+          <span class="font-semibold text-slate-900">0%</span>
+        </li>
+
+        <li class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="h-3 w-3 rounded-full bg-secondary"></div>
+            <span>Beverages </span>
+          </div>
+          <span class="font-semibold text-slate-900">0%</span>
+        </li>
+
+        <li class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="h-3 w-3 rounded-full bg-orange-400"></div>
+            <span>Snacks</span>
+          </div>
+          <span class="font-semibold text-slate-900">0%</span>
+        </li>
+
+        <li class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="h-3 w-3 rounded-full bg-red-600"></div>
+            <span>Others</span>
+          </div>
+          <span class="font-semibold text-slate-900">0%</span>
+        </li>
+
+      </ul>
+    </div>
+  </div>
 
     </div>
+
+   
    </div>
 
   </div>
@@ -64,13 +176,36 @@
    <h1 class="text-2xl text-secondary font-semibold mt-5">Inventory & Utang Report</h1>
   </div>
 
-  <div class="container-1 grid grid-cols-1 gap-6 md:grid-cols-2">
-    <div class="p-20 bg-secondary">
+  <div class=" grid grid-cols-1 gap-6 md:grid-cols-2">
+    <div class="p-4 border border-secondary rounded-xl bg-boxes shadow-xl">
+      <div class="flex flex-row gap-3 items-center">
+        <div class="">
+        <i class="fa-solid fa-triangle-exclamation text-2xl bg-orange-200 p-2 rounded-xl text-orange-400"></i>
+      </div>
+
+      <div class="">
+        <h1 class="font-bold text-lg text-secondary">Low Stock Alert</h1>
+        <p class="text-secondary/80 text-sm">Items need restocking</p>
+      </div>
+      </div>
+
+      <div class="flex items-center justify-center my-5 border border-secondary p-2 rounded-xl text-secondary font-semibold  hover:bg-secondary transition hover:text-primary">
+        <a href="#" class="">View All Low Stocks Items</a>
+      </div>
 
     </div>
 
-    <div class="p-20 bg-secondary">
-      
+    <div class="p-6 border border-secondary rounded-xl bg-boxes shadow-xl">
+      <div class="flex flex-row justify-between items-center">
+      <div class="">
+        <h1 class="text-xl font-bold text-secondary">Recent Transactions</h1>
+        <p class="text-sm text-secondary/80">Latest customer purchases</p>
+      </div>
+
+      <div class="">
+        <a href="#" class="font-semibold text-secondary text-base hover:bg-secondary transition hover:text-primary p-2 rounded-xl">View All</a>
+      </div>
+    </div>
     </div>
   </div>
 

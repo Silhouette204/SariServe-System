@@ -5,6 +5,7 @@
   --secondary: #176B87;
   --light:#B4D4FF;
   --dark:#86B6F6;
+  --boxes:#f8f8ff;
 }
 
 @theme{
@@ -12,6 +13,7 @@
   --color-secondary: var(--secondary);
   --color-dark: var(--dark);
   --color-light: var(--light);
+  --color-boxes: var(--boxes);
 }
 
 .container-1{
