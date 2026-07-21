@@ -14,125 +14,195 @@
 
     <main class="pt-10 px-5">
       <div class="flex flex-col gap-3 border-b-1 pb-5">
-      <h1 class="text-3xl text-secondary font-semibold">Welcome Back, User!</h1>
-      <p class="text-secondary/70">Here's what's happening with your store today.</p>
-    </div>
-  </main>
-
-<div class="container-1">
-<div class="my-10 flex flex-row justify-between items-center">
-  <div class="">
-    <h1 class="text-2xl font-semibold text-secondary my-1">Utang Management</h1>
-      <p class="text-secondary/70 text-xs">Track customer credits and payments</p>
-  </div>
-
-  <div class="">
-    <a href="#" class="py-3 px-3 font-semibold text-xs text-primary bg-secondary rounded-xl hover:bg-primary transition hover:border border-secondary hover:text-secondary "><i class="fa-solid fa-user-plus mr-2"></i>Add Customer</a>
-  </div>
-</div>
-
-<div class="mb-10 grid gap-4 grid-cols-2 lg:grid-cols-4">
-
-  <div class="border border-secondary bg-boxes shadow-xl rounded-xl px-4 py-5 ">
-    <div class="flex flex-row justify-between items-center">
-
-   <i class="fa-regular fa-credit-card bg-purple-200 text-purple-800 px-4 py-3 text-3xl rounded-xl"></i>
- 
- 
-  </div>
-
-  <div class="flex flex-col gap-2 mt-3">
-    <h3 class="text-base">Total Utang</h3>
-    <h1 class="text-3xl font-semibold"><span class="">₱ 0.00</span></h1>
-    <p class="text-sm text-secondary/70">From <span>0</span> customers</p>
-  </div>
-  </div>
-
-  
-  <div class="border border-secondary bg-boxes shadow-xl rounded-xl px-4 py-5 ">
-    <div class="flex flex-row justify-between items-center">
-
-   <i class="fa-regular fa-circle-check bg-green-200 text-green-800 px-4 py-3 text-3xl rounded-xl"></i>
- 
-  </div>
-
-  <div class="flex flex-col gap-2 mt-3">
-    <h3 class="text-base">Total Paid</h3>
-    <h1 class="text-3xl font-semibold"><span class="">₱ 0.00</span></h1>
-    <p class="text-sm text-secondary/70">Collected Payments</p>
-  </div>
-  </div>
-
-    
-  <div class="border border-secondary bg-boxes shadow-xl rounded-xl px-4 py-5 ">
-    <div class="flex flex-row justify-between items-center">
-
-   <i class="fa-solid fa-circle-exclamation bg-red-200 text-red-800 px-4 py-3 text-3xl rounded-xl"></i>
- 
-  </div>
-
-  <div class="flex flex-col gap-2 mt-3">
-    <h3 class="text-base">Overdue Accounts</h3>
-    <h1 class="text-3xl font-semibold"><span class="">0</span></h1>
-    <p class="text-sm text-secondary/70">Need Attention</p>
-  </div>
-  </div>
-
-  <div class="border border-secondary bg-boxes shadow-xl rounded-xl px-4 py-5 ">
-    <div class="flex flex-row justify-between items-center">
-
-   <i class="fa-solid fa-peso-sign bg-blue-200 text-blue-800 px-4 py-3 text-3xl rounded-xl"></i>
- 
-  </div>
-
-  <div class="flex flex-col gap-2 mt-3">
-    <h3 class="text-base">Balance</h3>
-    <h1 class="text-3xl font-semibold"><span class="">0</span></h1>
-    <p class="text-sm text-secondary/70">Outstanding amount</p>
-  </div>
-  </div>
-</div>
-
-<div class="grid mb-10 gap-6 grid-cols-1 lg:grid-cols-3">
- 
-  <div class="lg:col-span-2 flex items-center gap-3 rounded-2xl border border-secondary bg-white p-4 shadow-sm ">
- 
-    <div class="relative flex-1">
-      <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-    
-        <i class="fa-solid fa-magnifying-glass text-secondary/70"></i>
+        <h1 class="text-3xl text-secondary font-semibold">Welcome Back, User!</h1>
+        <p class="text-secondary/70">Here's what's happening with your store today.</p>
       </div>
-      <input 
-        type="text" 
-        placeholder="Search products..." 
-        class="w-full rounded-xl border border-slate-200 bg-transparent py-2.5 pl-10 pr-4 text-sm text-slate-700 placeholder-slate-400 outline-none transition focus:border-slate-400 focus:ring-0"
-      />
+    </main>
+
+    <div class="container-1">
+      <div class="my-10 flex flex-row justify-between items-center">
+        <div class="">
+          <h1 class="text-2xl font-semibold text-secondary my-1">Utang Management</h1>
+          <p class="text-secondary/70 text-xs">Track customer credits and payments</p>
+        </div>
+
+        <div class="">
+          <a href="#" class="py-3 px-3 font-semibold text-xs text-primary bg-secondary rounded-xl hover:bg-primary transition hover:border border-secondary hover:text-secondary "><i class="fa-solid fa-user-plus mr-2"></i>Add Customer</a>
+        </div>
+      </div>
+
+      <!-- Stat Cards -->
+      <div class="mb-10 grid gap-4 grid-cols-2 lg:grid-cols-4">
+
+        <div class="border border-secondary bg-boxes shadow-xl rounded-xl px-4 py-5 ">
+          <div class="flex flex-row justify-between items-center">
+            <i class="fa-regular fa-credit-card bg-purple-200 text-purple-800 px-4 py-3 text-3xl rounded-xl"></i>
+          </div>
+
+          <div class="flex flex-col gap-2 mt-3">
+            <h3 class="text-base">Total Utang</h3>
+            <h1 class="text-3xl font-semibold"><span class="">₱ 0.00</span></h1>
+            <p class="text-sm text-secondary/70">From <span>0</span> customers</p>
+          </div>
+        </div>
+
+        <div class="border border-secondary bg-boxes shadow-xl rounded-xl px-4 py-5 ">
+          <div class="flex flex-row justify-between items-center">
+            <i class="fa-regular fa-circle-check bg-green-200 text-green-800 px-4 py-3 text-3xl rounded-xl"></i>
+          </div>
+
+          <div class="flex flex-col gap-2 mt-3">
+            <h3 class="text-base">Total Paid</h3>
+            <h1 class="text-3xl font-semibold"><span class="">₱ 0.00</span></h1>
+            <p class="text-sm text-secondary/70">Collected Payments</p>
+          </div>
+        </div>
+
+        <div class="border border-secondary bg-boxes shadow-xl rounded-xl px-4 py-5 ">
+          <div class="flex flex-row justify-between items-center">
+            <i class="fa-solid fa-circle-exclamation bg-red-200 text-red-800 px-4 py-3 text-3xl rounded-xl"></i>
+          </div>
+
+          <div class="flex flex-col gap-2 mt-3">
+            <h3 class="text-base">Overdue Accounts</h3>
+            <h1 class="text-3xl font-semibold"><span class="">0</span></h1>
+            <p class="text-sm text-secondary/70">Need Attention</p>
+          </div>
+        </div>
+
+        <div class="border border-secondary bg-boxes shadow-xl rounded-xl px-4 py-5 ">
+          <div class="flex flex-row justify-between items-center">
+            <i class="fa-solid fa-peso-sign bg-blue-200 text-blue-800 px-4 py-3 text-3xl rounded-xl"></i>
+          </div>
+
+          <div class="flex flex-col gap-2 mt-3">
+            <h3 class="text-base">Balance</h3>
+            <h1 class="text-3xl font-semibold"><span class="">0</span></h1>
+            <p class="text-sm text-secondary/70">Outstanding amount</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- MAIN LAYOUT GRID (Search + Table on Left | Recent Payments on Right) -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start mb-10">
+        
+        <!-- KALIWANG COLUMN (Search Bar + Table Container) -->
+        <div class="lg:col-span-2 flex flex-col gap-6">
+          
+          <!-- Search Bar Container -->
+          <div class="flex items-center gap-3 rounded-2xl border border-secondary bg-boxes p-4 shadow-xl w-full">
+            <div class="relative flex-1">
+              <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                <i class="fa-solid fa-magnifying-glass text-secondary/70"></i>
+              </div>
+              <input 
+                type="text" 
+                placeholder="Search products..." 
+                class="w-full rounded-xl border border-slate-200 bg-transparent py-2.5 pl-10 pr-4 text-sm text-slate-700 placeholder-slate-400 outline-none transition focus:border-slate-400 focus:ring-0"
+              />
+            </div>
+          
+            <!-- Filter Icon -->
+            <button class="text-slate-400 hover:text-slate-600 transition p-1">
+              <i class="fa-solid fa-filter"></i>
+            </button>
+          
+            <!-- Categories Dropdown -->
+            <div class="relative">
+              <select name="timeframe" id="timeframe" class="rounded-xl border border-slate-200 bg-white py-2.5 pl-4 pr-10 text-sm font-medium text-slate-700 outline-none transition focus:border-slate-400 cursor-pointer">
+                <option>All Categories</option>
+                <option>Current</option>
+                <option>Overdue</option>
+                <option>Critical</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Table Container (Inilipat dito sa ilalim ng Search Bar) -->
+          <div class="bg-secondary rounded-2xl p-10 min-h-[300px]">
+            <!-- Ilagay dito ang Utang / Customer Table Code mo -->
+          </div>
+
+        </div>
+
+        <!-- KANANG COLUMN (Recent Payments Card) -->
+        <div class="lg:col-span-1 border border-secondary bg-boxes shadow-xl rounded-2xl p-6">
+          <div class="border-b-1 border-secondary/80 pb-10">
+            <div class="flex flex-row items-center">
+              <i class="fa-regular fa-circle-check text-3xl bg-green-200 text-green-700 p-3 rounded-xl mr-3"></i>
+              <div>
+                <h3 class="text-xl text-secondary font-bold">Recent Payments</h3>
+                <p class="text-secondary/80 text-sm">Latest Collections</p>
+              </div>
+            </div>
+
+            <div id="utang-transaction" class="my-6">
+              <div>
+                <h3 class="font-semibold text-xl"><span>Maria Santos</span></h3>
+
+                <div class="flex flex-row justify-between items-center border-b-1 pb-4 border-secondary/80">
+                  <div class="flex flex-row gap-3">
+                    <p class="text-secondary/80"><span>January 1, 2026</span></p>
+                    <div><p>•</p></div>
+                    <p class="text-secondary/80"><span>1:00am</span></p>
+                  </div>
+
+                  <div>
+                    <h3 class="text-green-500 font-bold text-xl">₱<span id="price">0.00</span></h3>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex justify-center items-center">
+              <a href="#" class="border-secondary border text-secondary py-2 px-20 rounded-xl font-semibold hover:bg-secondary transition hover:text-primary">View All Payments</a>
+            </div>
+          </div>
+
+          <div class="my-6">
+            <div class="mt-6 mb-3">
+              <h3 class="text-lg font-semibold">Collection Summary</h3>
+            </div>
+
+            <div class="flex flex-col gap-3">
+              <div>
+                <div class="flex flex-row justify-between items-center">
+                  <h3 class="text-base text-secondary/80">Today</h3>
+                  <p class="text-secondary font-bold text-xl">₱<span>0.00</span></p>
+                </div>
+              </div>
+
+              <div>
+                <div class="flex flex-row justify-between items-center">
+                  <h3 class="text-base text-secondary/80">This Week</h3>
+                  <p class="text-secondary font-bold text-xl">₱<span>0.00</span></p>
+                </div>
+              </div>
+
+              <div>
+                <div class="flex flex-row justify-between items-center">
+                  <h3 class="text-base text-secondary/80">This Month</h3>
+                  <p class="text-secondary font-bold text-xl">₱<span>0.00</span></p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-orange-200 p-5 border-2 border-orange-400 rounded-2xl">
+            <div id="overdue-customer" class="pb-5">
+              <div class="flex flex-row items-center gap-3 my-3">
+                <i class="fa-solid fa-circle-exclamation text-xl text-orange-800"></i>
+                <h3 class="text-base font-semibold text-orange-800">Reminder</h3>
+              </div>
+              <p class="text-orange-500"><span>0</span> customers have overdue payments. Follow up for collection.</p>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+ 
     </div>
-  
-    <!-- Filter Icon -->
-    <button class="text-slate-400 hover:text-slate-600 transition p-1">
-      <i class="fa-solid fa-filter"></i>
-    </button>
-  
-    <!-- Categories Dropdown -->
-    <div class="relative">
-      <select name="timeframe" id="timeframe" class="rounded-xl border border-slate-200 bg-white py-2.5 pl-4 pr-10 text-sm font-medium text-slate-700 outline-none transition focus:border-slate-400 cursor-pointer">
-        <option>All Categories</option>
-        <option>Current</option>
-        <option>Overdue</option>
-        <option>Critical</option>
-      </select>
-      
-    </div>
-  
-  </div>
-
-<div class="bg-secondary lg:row-span-2 p-20"></div>
-
-<div class="bg-secondary lg:col-span-2 p-50"></div>
-</div>
-
-</div>
   
     <script type="module" src="/src/main.js"></script>
   </body>
