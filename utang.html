@@ -119,8 +119,53 @@
           </div>
 
           <!-- Table Container (Inilipat dito sa ilalim ng Search Bar) -->
-          <div class="bg-secondary rounded-2xl p-10 min-h-[300px]">
+          <div class="border border-secondary shadow-xl bg-boxes rounded-2xl p-6 min-h-[300px]">
             <!-- Ilagay dito ang Utang / Customer Table Code mo -->
+<div class="">
+  <div class="flex flex-row justify-between items-center border-b border-secondary pb-5">
+  <div class="flex flex-row items-center">
+    <p class="text-secondary text-lg font-bold bg-green-200 p-3 rounded-full"><span id="customer-initial">NA</span></p>
+    <div class="ml-3">
+      <h3 class="font-bold text-lg"><span>John Doe</span></h3>
+      <p class="text-secondary/80"><span>0912-345-6789</span></p>
+
+      <div class="flex flex-row gap-3 mt-2 items-center">
+        <p class="utang-classified bg-orange-200 border border-orange-800 px-2 rounded-2xl font-semibold text-orange-800"><span>overdue</span></p>
+          <p class="text-sm text-red-800"><i class="fa-regular fa-clock"></i> <span id="utang-days-overdue">0</span> days overdue</p>
+      </div>
+    </div>
+  </div>
+
+    <div class=""><i class="fa-solid fa-ellipsis-vertical text-secondary text-lg"></i></div>
+</div>
+</div>
+
+<div class="mt-3">
+  <div class="flex flex-row justify-between items-center">
+      <div class="">
+        <p class="text-secondary/80">Total Debt</p>
+        <h1 class="text-xl font-bold text-red-600">₱ <span id="utang-totalCustomer-debt">0.00</span></h1>
+      </div>
+
+      <div class="">
+        <p class="text-secondary/80">Paid</p>
+        <h1 class="text-xl font-bold text-green-600">₱ <span id="utang-customer-paid">0.00</span></h1>
+      </div>
+
+      <div class="">
+        <p class="text-secondary/80">Balance</p>
+        <h1 class="text-xl font-bold">₱ <span id="utang-customer-debt">0.00</span></h1>
+      </div>
+  </div>
+</div>
+
+<div class="mt-7">
+  <div class="flex flex-row justify-between items-center">
+    <a href="#" class="bg-secondary font-semibold text-primary px-10 py-2 rounded-xl hover:bg-primary transition border border-secondary hover:text-secondary lg:px-50">Record Payment</a>
+    <a href="#" class="text-secondary font-semibold border border-secondary hover:bg-secondary transition hover:text-primary py-2 px-1 rounded-xl lg:px-10">View Details</a>
+  </div>
+</div>
+
           </div>
 
         </div>
