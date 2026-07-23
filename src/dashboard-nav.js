@@ -56,10 +56,25 @@ export function renderDashboardNav() {
       </ul>
     </div>
 
-    <div class="mx-3 mb-5">
-      <a href="index.html" class="flex items-center px-4 py-3 rounded-xl hover:bg-gray-700/50 font-medium transition">
+    <div>
+
+    <div class= "border border-t-secondary">
+    </div>
+
+    <div class="mx-3 mt-5 mb-5 ">
+
+    <div class="flex flex-row items-center gap-3 px-3 mb-3">
+    <i class="fa-regular fa-circle-user text-2xl "></i>
+    <div>
+    <h3 class="font-semibold text-primary"><span>John Doe</span></h3>
+    <p class="text-primary/80 text-sm">Store Owner</p>
+    </div>
+    </div>
+
+      <a href="index.html" class=" px-3 flex items-center py-3 rounded-xl hover:bg-gray-700/50 font-medium transition"><i class="fa-solid fa-arrow-right-from-bracket text-primary font-semibold mr-5"></i>
         LogOut
       </a>
+    </div>
     </div>
   </div>
 
