@@ -2,7 +2,8 @@ import './style.css'
 
 import { initNav } from './nav.js';
 import { initAccordion } from './accordion.js';
-import { initCharts } from './charts.js';
+import { dashboardInitCharts } from './dashboard-charts.js';
+import { salesInitCharts } from './sales-charts.js';
 
 import {
     renderDashboardNav,
@@ -15,7 +16,8 @@ document.addEventListener('DOMContentLoaded', () => {
         initNav();
         }
        
-        initCharts();
+        dashboardInitCharts();
+        salesInitCharts();
 
         //you need this two to make the navigation appear ang function
     renderDashboardNav();

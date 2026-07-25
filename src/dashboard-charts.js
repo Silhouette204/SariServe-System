@@ -1,7 +1,7 @@
 // src/charts.js
 import ApexCharts from 'apexcharts';
 
-export function initCharts() {
+export function dashboardInitCharts() {
   // --- 1. BAR CHART CONFIGURATION (Weekly Sales) ---
   const barOptions = {
     series: [{
@@ -17,7 +17,7 @@ export function initCharts() {
     colors: ['#176B87'], // Kulay na malapit sa Figma mo (Indigo/Blue)
     plotOptions: {
       bar: {
-        borderRadius: 8, // Rounded corners ng bars gaya ng sa Figma mo!
+        borderRadius: 10, // Rounded corners ng bars gaya ng sa Figma mo!
         columnWidth: '55%',
       }
     },
@@ -64,7 +64,8 @@ const donutOptions = {
   stroke: { 
     show: true, 
     width: 3, 
-    colors: ['#ffffff'] 
+    colors: ['#ffffff'] ,
+ 
   },
   plotOptions: {
     pie: {
@@ -89,4 +90,75 @@ if (donutChartEl) {
   const donutChart = new ApexCharts(donutChartEl, donutOptions);
   donutChart.render();
 }
+}
+
+  const options = {
+    // 1. HARDCODED DUMMY DATA MUNA
+    series: [{
+      name: 'Current Stock',
+      data: [5, 8, 3, 6] // Stock levels para sa 4 na items
+    }],
+    chart: {
+      type: 'bar',
+      height: 230,
+      fontFamily: 'Poppins, sans-serif',
+      toolbar: { show: false }
+    },
+    plotOptions: {
+      bar: {
+        horizontal: true,       // Gagawing pahiga ang bar
+        barHeight: '45%',        // Nipis ng bawat bar
+        borderRadius: 6,        // Rounded ends ng bars gaya ng nasa Figma mo
+      }
+    },
+    colors: ['#f97316'], // Tailwind orange-500
+    dataLabels: {
+      enabled: true,
+      textAnchor: 'start',
+      style: { 
+        colors: ['#ffffff'],
+        fontSize: '12px',
+        fontWeight: 600
+      },
+      formatter: function (val) {
+        return val; // Ipapakita ang numero sa loob ng bar
+      },
+      offsetX: 5
+    },
+    grid: {
+      show: false // Tinatanggal ang gridlines para malinis ang background
+    },
+    xaxis: {
+      // DUMMY PRODUCT NAMES
+      categories: [
+        'Lucky Me Pancit Canton', 
+        'Alaska Evap Milk', 
+        'Colgate 175g', 
+        'Rebisco Crackers'
+      ],
+      labels: { show: false }, // Tinago ang bottom numbers para pumatok sa card style
+      axisBorder: { show: false },
+      axisTicks: { show: false }
+    },
+    yaxis: {
+      labels: {
+        style: { 
+          colors: '#1e293b', // Slate-800 color para sa product names
+          fontSize: '13px',
+          fontWeight: 600 
+        }
+      }
+    },
+    tooltip: {
+      y: {
+        formatter: (val) => `${val} items left`
+      }
+    }
+  };
+
+  const chartEl = document.getElementById('low-stock-chart');
+  if (chartEl) {
+    const chart = new ApexCharts(chartEl, options);
+    chart.render();
+  
 }
