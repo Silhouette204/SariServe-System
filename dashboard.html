@@ -123,22 +123,24 @@
     <h1 class="text-lg text-secondary font-bold">Sales by Category</h1>
     <p class="text-secondary text-sm">Distribution overview</p>
 
+    <div id="category-chart" class="w-full flex justify-center"></div>
+
     <div class="my-5">
       <ul class="px-5 flex flex-col gap-2">
         <li class="flex items-center justify-between">
           <div class="flex items-center gap-3">
             <div class="h-3 w-3 rounded-full bg-indigo-600"></div>
-            <span>Groceries</span>
+            <span >Groceries</span>
           </div>
-          <span class="font-semibold text-slate-900">0%</span>
+          <span id="pct-groceries" class="font-semibold text-slate-900">0%</span>
         </li>
 
         <li class="flex items-center justify-between">
           <div class="flex items-center gap-3">
             <div class="h-3 w-3 rounded-full bg-secondary"></div>
-            <span>Beverages </span>
+            <span>Beverages</span>
           </div>
-          <span class="font-semibold text-slate-900">0%</span>
+          <span id="pct-beverages" class="font-semibold text-slate-900">0%</span>
         </li>
 
         <li class="flex items-center justify-between">
@@ -146,15 +148,15 @@
             <div class="h-3 w-3 rounded-full bg-orange-400"></div>
             <span>Snacks</span>
           </div>
-          <span class="font-semibold text-slate-900">0%</span>
+          <span id="pct-snacks" class="font-semibold text-slate-900">0%</span>
         </li>
 
         <li class="flex items-center justify-between">
           <div class="flex items-center gap-3">
             <div class="h-3 w-3 rounded-full bg-red-600"></div>
-            <span>Others</span>
+            <span >Others</span>
           </div>
-          <span class="font-semibold text-slate-900">0%</span>
+          <span id="pct-others" class="font-semibold text-slate-900">0%</span>
         </li>
 
       </ul>
