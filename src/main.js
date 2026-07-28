@@ -4,6 +4,9 @@ import { initNav } from './nav.js';
 import { initAccordion } from './accordion.js';
 import { dashboardInitCharts } from './dashboard-charts.js';
 import { salesInitCharts } from './sales-charts.js';
+import { initDashboardModals } from './dashboard.js';
+import { initInventoryModals } from './inventory.js';
+import { initSalesModals } from '../sales.js';
 
 import {
     renderDashboardNav,
@@ -22,6 +25,11 @@ document.addEventListener('DOMContentLoaded', () => {
         //you need this two to make the navigation appear ang function
     renderDashboardNav();
     initDashboardNav();
+
+    //modals
+    initDashboardModals();
+    initInventoryModals();
+    initSalesModals();
 
 const accordionContainer = document.getElementById('accordion-container');
 if (accordionContainer) {
