@@ -43,10 +43,12 @@ export function initInventoryModals() {
   }
 
   // --- EDIT PRODUCT MODAL ---
+  const openEditBtn = document.getElementById('open-edit-product-btn');
   const closeEditBtn = document.getElementById('close-edit-modal-btn');
   const cancelEditBtn = document.getElementById('cancel-edit-modal-btn');
   const editForm = document.getElementById('edit-product-form');
 
+  if (openEditBtn) openEditBtn.onclick = () => toggleModal('edit-product-modal', true);
   if (closeEditBtn) closeEditBtn.onclick = () => toggleModal('edit-product-modal', false);
   if (cancelEditBtn) cancelEditBtn.onclick = () => toggleModal('edit-product-modal', false);
 
