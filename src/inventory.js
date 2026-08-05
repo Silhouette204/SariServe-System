@@ -78,12 +78,14 @@ export function initInventoryModals() {
   }
 
   // --- DELETE PRODUCT MODAL ---
+  const openDeleteBtn = document.getElementById('open-delete-product-btn');
   const cancelDeleteBtn = document.getElementById('cancel-delete-modal-btn');
   const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
   let targetDeleteId = null;
 
   if (cancelDeleteBtn) cancelDeleteBtn.onclick = () => toggleModal('delete-product-modal', false);
-
+  if (openDeleteBtn) openDeleteBtn.onclick = () => toggleModal('delete-product-modal', true);
+  
   window.openDeleteProductModal = (productId) => {
     targetDeleteId = productId;
     toggleModal('delete-product-modal', true);
