@@ -279,7 +279,7 @@
       </div>
 
       <div class="flex flex-row justify-between items-center mt-3">
-        <button type="submit" class="bg-secondary font-semibold text-primary px-10 py-2 rounded-xl hover:bg-primary transition border border-secondary hover:text-secondary lg:px-50">Add Customer</button>
+        <button type="submit" class="bg-secondary font-semibold text-primary px-10 py-2 rounded-xl hover:bg-primary transition border border-secondary hover:text-secondary lg:px-15">Add Customer</button>
         <button type="button" id="close-add-customer-modal-btn" class="text-secondary font-semibold border border-secondary hover:bg-secondary transition hover:text-primary py-2 px-4 rounded-xl lg:px-10">Cancel</button>
       </div>
     </form>
@@ -288,7 +288,85 @@
 </div>
 
 <div id="record-payment-modal"  class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden items-center justify-center p-4 transition-all duration-200">
-  <div class="bg-white rounded-2xl p-6 max-w-md w-full"></div>
+  <div class="bg-white rounded-2xl p-6 max-w-md w-full">
+    <div class="flex flex-col gap-3 mb-3">
+      <div class="flex flex-row gap-3 items-center">
+        <i class="fa-solid fa-money-bill-transfer text-secondary text-2xl"></i>
+        <h1 class="text-2xl text-secondary font-semibold">Customer Debt Payment</h1>
+      </div>
+     
+      <p class="text-sm text-secondary/80">Enter payment details for selected customer</p>
+    </div>
+
+    <form id="record-payment-form" class="flex flex-col gap-4">
+      
+      <!-- Locked Customer Info Fields -->
+      <div class="grid grid-cols-3 gap-3">
+        <div class="col-span-1">
+          <label for="payment-customer-id" class="text-secondary/70 text-xs font-medium">Customer ID</label>
+          <input 
+            type="text" 
+            id="payment-customer-id" 
+            readonly 
+            class="w-full rounded-xl border border-slate-200 bg-slate-100 py-2.5 px-3 text-sm text-slate-500 font-mono outline-none cursor-not-allowed select-none" 
+            value="CUST-001" 
+          />
+        </div>
+        
+        <div class="col-span-2">
+          <label for="payment-customer-name" class="text-secondary/70 text-xs font-medium">Customer Name</label>
+          <input 
+            type="text" 
+            id="payment-customer-name" 
+            readonly 
+            class="w-full rounded-xl border border-slate-200 bg-slate-100 py-2.5 px-3 text-sm text-slate-600 font-semibold outline-none cursor-not-allowed select-none" 
+            value="John Doe" 
+          />
+        </div>
+      </div>
+
+      <!-- Balance Display -->
+      <div class="bg-slate-50 border border-slate-200 p-3.5 rounded-xl flex justify-between items-center">
+        <span class="text-xs text-secondary/70 font-medium">Current Debt Balance:</span>
+        <span id="payment-current-balance" class="text-lg font-bold text-red-600">₱ 0.00</span>
+      </div>
+
+      <!-- Amount Input Field -->
+      <div>
+        <label for="payment-amount" class="text-secondary/70 text-xs font-medium">Amount to Pay (₱)</label>
+        <div class="relative mt-1">
+          <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400 font-semibold text-sm">₱</span>
+          <input 
+            required 
+            type="number" 
+            step="0.01" 
+            min="1" 
+            id="payment-amount" 
+            class="w-full rounded-xl border border-slate-200 bg-transparent py-2.5 pl-8 pr-4 text-sm text-slate-800 font-bold placeholder-slate-400 outline-none transition focus:border-slate-400" 
+            placeholder="0.00" 
+          />
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex flex-row justify-between items-center mt-2 gap-3">
+        <button 
+          type="submit" 
+          class="flex-1 bg-secondary font-semibold text-primary py-2.5 rounded-xl hover:bg-primary transition border border-secondary hover:text-secondary text-sm">
+          Save Payment
+        </button>
+        <button 
+          type="button" 
+          id="close-record-payment-btn" 
+          class="flex-1 text-secondary font-semibold border border-secondary hover:bg-secondary transition hover:text-primary py-2.5 rounded-xl text-sm">
+          Cancel
+        </button>
+      </div>
+
+    </form>
+
+
+  </div>
 </div>
 
 <div id="view-details-modal"  class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden items-center justify-center p-4 transition-all duration-200">
@@ -296,7 +374,17 @@
 </div>
 
 <div id="view-all-payment-modal"  class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden items-center justify-center p-4 transition-all duration-200">
-  <div class="bg-white rounded-2xl p-6 max-w-md w-full"></div>
+  <div class="bg-white rounded-2xl p-6 max-w-md w-full">
+  
+  <div class="flex flex-col gap-3">
+    <div class="flex flex-row items-center gap-3">
+    <i class="fa-solid fa-sack-dollar text-secondary text-2xl"></i>
+    <h1 class="text-secondary font-semibold text-xl">All Customer Debt Payments</h1>
+  </div>
+  <p class="text-secondary/80 text-sm">View All Customer Recent Debt payment Activites</p>
+  </div>
+
+  </div>
 </div>
 
     <script type="module" src="/src/main.js"></script>
