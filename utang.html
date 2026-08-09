@@ -287,6 +287,7 @@
 
 </div>
 
+<!--Record Customer Payment-->
 <div id="record-payment-modal"  class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden items-center justify-center p-4 transition-all duration-200">
   <div class="bg-white rounded-2xl p-6 max-w-md w-full">
     <div class="flex flex-col gap-3 mb-3">
@@ -369,14 +370,25 @@
   </div>
 </div>
 
+<!--View Customer Debt Details-->
 <div id="view-details-modal"  class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden items-center justify-center p-4 transition-all duration-200">
   <div class="bg-white rounded-2xl p-6 max-w-md w-full">
+   
+      <div class="flex flex-row justify-between ">
     <div class="flex flex-col gap-3 mb-5">
       <div class="flex flex-row gap-3 items-center">
         <i class="fa-solid fa-hand-holding-dollar text-3xl text-secondary"></i>
         <h1 class="text-xl font-semibold text-secondary">Debt Customer's Information</h1>
       </div>
       <p class="text-sm text-secondary/80">Customer's compilation of debt payments</p>
+    </div>
+
+    <div class="">
+      <button type="button" id="close-customer-details-btn" class="text-slate-400 hover:text-slate-600 transition p-1 text-lg">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+    
     </div>
 
     <div class="flex flex-row justify-between items-start border-b border-slate-100 pb-4">
@@ -393,9 +405,6 @@
           </p>
         </div>
       </div>
-      <button type="button" id="close-customer-details-btn" class="text-slate-400 hover:text-slate-600 transition p-1 text-lg">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
     </div>
 
     <!-- Scrollable Body Content -->
@@ -472,16 +481,6 @@
 
     </div>
 
-    <!-- Modal Footer -->
-    <div class="pt-3 border-t border-slate-100 flex justify-end">
-      <button 
-        type="button" 
-        id="close-details-footer-btn" 
-        class="text-secondary font-semibold border border-secondary hover:bg-secondary transition hover:text-primary py-2 px-6 rounded-xl text-xs">
-        Close
-      </button>
-    </div>
-
   </div>
 </div>
 
@@ -500,7 +499,7 @@
           <p class="text-xs text-secondary/70">View all customer recent debt payment activities</p>
         </div>
       </div>
-      <button type="button" id="close-all-payment-modal-btn" class="text-slate-400 hover:text-slate-600 transition p-1 text-lg">
+      <button type="button" id="close-customer-all-payment-btn" class="text-slate-400 hover:text-slate-600 transition p-1 text-lg">
         <i class="fa-solid fa-xmark"></i>
       </button>
     </div>
@@ -582,16 +581,6 @@
         No payment records found for the selected timeframe.
       </div>
 
-    </div>
-
-    <!-- Modal Footer -->
-    <div class="pt-4 mt-2 border-t border-slate-100 flex justify-end">
-      <button 
-        type="button" 
-        id="close-all-payment-footer-btn" 
-        class="text-secondary font-semibold border border-secondary hover:bg-secondary transition hover:text-primary py-2 px-6 rounded-xl text-xs">
-        Close
-      </button>
     </div>
 
   </div>

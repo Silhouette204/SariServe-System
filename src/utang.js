@@ -122,6 +122,9 @@ export function initUtangModals() {
     };
   }
 
+
+
+
 //Customer View Details
 const openCustomerDetailstBtn = document.getElementById('open-customer-details-btn');
 const closeCustomerDetailstBtn = document.getElementById('close-customer-details-btn');
@@ -132,6 +135,9 @@ if (openCustomerDetailstBtn) openCustomerDetailstBtn.onclick = (e) => {
 };
 if (closeCustomerDetailstBtn) closeCustomerDetailstBtn.onclick = () => toggleModal('view-details-modal', false);
 
+
+
+
  //View All Customer Payment
   const openCustomerPaymentBtn = document.getElementById('open-customer-all-payment-btn');
   const closeCustomerPaymentBtn = document.getElementById('close-customer-all-payment-btn');
@@ -141,7 +147,6 @@ if (closeCustomerDetailstBtn) closeCustomerDetailstBtn.onclick = () => toggleMod
     toggleModal('view-all-payment-modal', true);
   };
   if (closeCustomerPaymentBtn) closeCustomerPaymentBtn.onclick = () => toggleModal('view-all-payment-modal', false);
-
 
   // Back-drop click listener para isara ang kahit anong open modal
   window.addEventListener('click', (e) => {
