@@ -27,7 +27,7 @@
         </div>
 
         <div class="">
-          <a href="#" class="py-3 px-3 font-semibold text-xs text-primary bg-secondary rounded-xl hover:bg-primary transition hover:border border-secondary hover:text-secondary "><i class="fa-solid fa-user-plus mr-2"></i>Add Customer</a>
+          <a id="open-add-customer-modal-btn" href="#" class="py-3 px-3 font-semibold text-xs text-primary bg-secondary rounded-xl hover:bg-primary transition hover:border border-secondary hover:text-secondary "><i class="fa-solid fa-user-plus mr-2"></i>Add Customer</a>
         </div>
       </div>
 
@@ -161,8 +161,8 @@
 
 <div class="mt-7">
   <div class="flex flex-row justify-between items-center">
-    <a href="#" class="bg-secondary font-semibold text-primary px-10 py-2 rounded-xl hover:bg-primary transition border border-secondary hover:text-secondary lg:px-50">Record Payment</a>
-    <a href="#" class="text-secondary font-semibold border border-secondary hover:bg-secondary transition hover:text-primary py-2 px-1 rounded-xl lg:px-10">View Details</a>
+    <a href="#" id="open-record-payment-btn" class="bg-secondary font-semibold text-primary px-10 py-2 rounded-xl hover:bg-primary transition border border-secondary hover:text-secondary lg:px-50">Record Payment</a>
+    <a href="#" id="open-customer-details-btn" class="text-secondary font-semibold border border-secondary hover:bg-secondary transition hover:text-primary py-2 px-1 rounded-xl lg:px-10">View Details</a>
   </div>
 </div>
 
@@ -200,7 +200,7 @@
             </div>
 
             <div class="flex justify-center items-center">
-              <a href="#" class="border-secondary border text-secondary py-2 px-20 rounded-xl font-semibold hover:bg-secondary transition hover:text-primary">View All Payments</a>
+              <a href="#" id="open-customer-all-payment-btn" class="border-secondary border text-secondary py-2 px-10 rounded-xl font-semibold hover:bg-secondary transition hover:text-primary">View All Customer Payments</a>
             </div>
           </div>
 
@@ -244,11 +244,61 @@
           </div>
 
         </div>
-
       </div>
- 
     </div>
   
+
+    <!-- Add Utang Customer Modal -->
+<div id="add-customer-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden items-center justify-center p-4 transition-all duration-200">
+  <div class="bg-white rounded-2xl p-6 max-w-md w-full">
+    <div class="flex flex-row items-center justify-start gap-2">
+    <i class="fa-solid fa-user-plus text-xl text-secondary"></i>
+    <h3 class="text-2xl font-semibold text-secondary mb-2">Add Customer</h3>
+  </div>
+    <p class="text-secondary/70 text-sm">Add a new mangungutang customer to your store</p>
+
+    <form action="" class="mt-5 flex flex-col gap-3">
+      <div class="flex flex-row gap-3">
+      <div class="">
+        <label for="customer-name"  class="text-secondary/70 text-sm">Customer Name</label>
+        <input type="text" required id="customer-name" class="w-full rounded-xl border border-slate-200 bg-transparent py-2.5 pl-3 pr-4 text-sm text-slate-700 placeholder-slate-400 outline-none transition focus:border-slate-400 focus:ring-0" placeholder="Enter Name:" />
+      </div>
+      <div class="">
+        <label for="customer-phone"  class="text-secondary/70 text-sm">Customer Phone</label>
+        <input required type="text" id="customer-phone" class="w-full rounded-xl border border-slate-200 bg-transparent py-2.5 pl-3 pr-4 text-sm text-slate-700 placeholder-slate-400 outline-none transition focus:border-slate-400 focus:ring-0" placeholder="Enter Phone:" />
+      </div>
+    </div>
+      <div class="">
+        <label for="customer-email"  class="text-secondary/70 text-sm">Customer Email</label>
+        <input required type="email" id="customer-email" class="w-full rounded-xl border border-slate-200 bg-transparent py-2.5 pl-3 pr-4 text-sm text-slate-700 placeholder-slate-400 outline-none transition focus:border-slate-400 focus:ring-0" placeholder="Enter Email:" />
+      </div>
+
+      <div class="">
+        <label for="customer-email"  class="text-secondary/70 text-sm">Set amount of utang:</label>
+        <input required type="number" id="customer-utang-amount" class="w-full rounded-xl border border-slate-200 bg-transparent py-2.5 pl-3 pr-4 text-sm text-slate-700 placeholder-slate-400 outline-none transition focus:border-slate-400 focus:ring-0" placeholder="Set amount of utang:" />
+      </div>
+
+      <div class="flex flex-row justify-between items-center mt-3">
+        <button type="submit" class="bg-secondary font-semibold text-primary px-10 py-2 rounded-xl hover:bg-primary transition border border-secondary hover:text-secondary lg:px-50">Add Customer</button>
+        <button type="button" id="close-add-customer-modal-btn" class="text-secondary font-semibold border border-secondary hover:bg-secondary transition hover:text-primary py-2 px-4 rounded-xl lg:px-10">Cancel</button>
+      </div>
+    </form>
+  </div>
+
+</div>
+
+<div id="record-payment-modal"  class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden items-center justify-center p-4 transition-all duration-200">
+  <div class="bg-white rounded-2xl p-6 max-w-md w-full"></div>
+</div>
+
+<div id="view-details-modal"  class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden items-center justify-center p-4 transition-all duration-200">
+  <div class="bg-white rounded-2xl p-6 max-w-md w-full"></div>
+</div>
+
+<div id="view-all-payment-modal"  class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden items-center justify-center p-4 transition-all duration-200">
+  <div class="bg-white rounded-2xl p-6 max-w-md w-full"></div>
+</div>
+
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>

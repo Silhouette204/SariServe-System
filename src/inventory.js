@@ -1,6 +1,13 @@
 // src/inventory-modals.js
 
 export function initInventoryModals() {
+
+  // --- ADD PRODUCT MODAL ---
+  const openAddBtn = document.getElementById('open-add-product-btn');
+  const closeAddBtn = document.getElementById('close-add-modal-btn');
+  const cancelAddBtn = document.getElementById('cancel-add-modal-btn');
+  const addForm = document.getElementById('add-product-form');
+
   const toggleModal = (modalId, show = true) => {
     const modal = document.getElementById(modalId);
     if (!modal) return;
@@ -12,12 +19,6 @@ export function initInventoryModals() {
       modal.classList.remove('flex');
     }
   };
-
-  // --- ADD PRODUCT MODAL ---
-  const openAddBtn = document.getElementById('open-add-product-btn');
-  const closeAddBtn = document.getElementById('close-add-modal-btn');
-  const cancelAddBtn = document.getElementById('cancel-add-modal-btn');
-  const addForm = document.getElementById('add-product-form');
 
   if (openAddBtn) openAddBtn.onclick = () => toggleModal('add-product-modal', true);
   if (closeAddBtn) closeAddBtn.onclick = () => toggleModal('add-product-modal', false);

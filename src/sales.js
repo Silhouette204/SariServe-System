@@ -2,7 +2,7 @@
 
 export function initSalesModals() {
   const modal = document.getElementById('export-sales-modal');
-  const openBtn = document.getElementById('open-export-modal-btn'); // I-bind ang ID na ito sa "Export Report" button sa Sales page
+  const openBtn = document.getElementById('open-export-modal-btn'); // I-bind ang ID na ito sa "Export Rep</div>ort" button sa Sales page
   const closeBtn = document.getElementById('close-export-modal-btn');
   const cancelBtn = document.getElementById('cancel-export-modal-btn');
   const downloadPdfBtn = document.getElementById('download-pdf-btn');
