@@ -5,51 +5,30 @@ import { initAccordion } from './accordion.js';
 import { dashboardInitCharts } from './dashboard-charts.js';
 import { salesInitCharts } from './sales-charts.js';
 import { initDashboardModals, loadDashboardData } from './dashboard.js';
-import { initInventoryModals } from './inventory.js';
-import { initSalesModals } from './sales.js';
-import { initUtangModals } from './utang.js';
-
-
-import {
-    renderDashboardNav,
-    initDashboardNav
-} from "./dashboard-nav.js";
+import { initInventory } from './inventory.js'; // Single import lang
+import { renderDashboardNav, initDashboardNav } from './dashboard-nav.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
+  if (document.getElementById('side-menu') !== null) {  
+    initNav();
+  }
 
-    if (document.getElementById('side-menu') !== null) {  
-        initNav();
-        }
+  renderDashboardNav();
+  initDashboardNav();
 
-        //you need this two to make the navigation appear ang function
-    renderDashboardNav();
-    initDashboardNav();
-    
-       // 2. Chart Initializers (Initial Empty State)
-        dashboardInitCharts();
-        salesInitCharts();
-
-
-    //modals
-    //dashboard
+  // Dashboard Page Route Check
+  if (document.getElementById('dashboard')) {
+    dashboardInitCharts();
     initDashboardModals();
+    await loadDashboardData();
+  }
 
-    //inventory
-    initInventoryModals();
+    // Inventory Page Route Check
+    if (document.getElementById('inventory-dashboard')) {
+        initInventory();
+      }
 
-    //sales
-    initSalesModals();
-
-    //utang modals
-    initUtangModals();
-   
-  // 4. Accordion setup  
-const accordionContainer = document.getElementById('accordion-container');
-if (accordionContainer) {
-   initAccordion();
-}
-
-// 5. Fetch & Load Database Data into Cards & Charts
-await loadDashboardData();
-
+      // Patakbuhin kung nandoon ang elements ng sales/utang
+  if (typeof initSalesModals === 'function') initSalesModals(); //[cite: 6]
+  if (typeof initUtangModals === 'function') initUtangModals(); //[cite: 6]
 });
