@@ -1,61 +1,75 @@
 import ApexCharts from 'apexcharts';
 
-export function salesInitCharts() {
-  const options = {
-    // Dummy Hourly Data (Nakasunod sa wave ng screenshot mo)
+let mainChart = null;
+let modalChart = null;
+
+// Helper para sa base chart configuration
+function getChartOptions(categories = [], seriesData = [], height = 300) {
+  return {
     series: [{
       name: 'Sales Trend',
-      data: [450, 800, 1250, 980, 1600, 1120, 890, 1350, 1700, 2150, 1900]
+      data: seriesData
     }],
     chart: {
       type: 'line',
-      height: 300,
+      height: height,
       fontFamily: 'Poppins, sans-serif',
       toolbar: { show: false },
       zoom: { enabled: false }
     },
-    colors: ['#176B87'], // Indigo/Purple color na katulad sa screenshot
-    stroke: {
-      curve: 'smooth', // Gagawing curved/smooth ang linya
-      width: 3        // Nipis/kapal ng linya
-    },
+    colors: ['#176B87'],
+    stroke: { curve: 'smooth', width: 3 },
     markers: {
-      size: 6,                 // Lalabas ang bilog na tuldok sa bawat point
+      size: 5,
       colors: ['#176B87'],
-      strokeColors: '#ffffff', // Puting border sa palibot ng tuldok
+      strokeColors: '#ffffff',
       strokeWidth: 2,
-      hover: { size: 8 }
+      hover: { size: 7 }
     },
-    grid: {
-      borderColor: '#f1f5f9',
-      strokeDashArray: 3      // Dashed background grid lines
-    },
+    grid: { borderColor: '#f1f5f9', strokeDashArray: 3 },
     xaxis: {
-      categories: ['8 AM', '9 AM', '10 AM', '11 AM', '12 PM', '1 PM', '2 PM', '3 PM', '4 PM', '5 PM', '6 PM'],
-      labels: {
-        style: { colors: '#94a3b8', fontSize: '12px' }
-      },
+      categories: categories,
+      labels: { style: { colors: '#94a3b8', fontSize: '11px' } },
       axisBorder: { show: false },
       axisTicks: { show: false }
     },
     yaxis: {
-      min: 0,
-      max: 2200,
-      tickAmount: 4, // Magpapakita ng 0, 550, 1100, 1650, 2200 na pagitan
       labels: {
-        style: { colors: '#94a3b8', fontSize: '12px' }
+        style: { colors: '#94a3b8', fontSize: '11px' },
+        formatter: (val) => `₱${val}`
       }
     },
     tooltip: {
-      y: {
-        formatter: (val) => `₱${val}`
-      }
+      y: { formatter: (val) => `₱${val.toLocaleString()}` }
     }
   };
+}
 
+// Function para sa initial render o re-render kapag may bagong DB data
+export function renderSalesChart(categories = [], seriesData = []) {
   const chartEl = document.getElementById('sales-trend-chart');
-  if (chartEl) {
-    const chart = new ApexCharts(chartEl, options);
-    chart.render();
+  if (!chartEl) return;
+
+  if (mainChart) {
+    mainChart.updateOptions({
+      xaxis: { categories: categories },
+      series: [{ data: seriesData }]
+    });
+  } else {
+    mainChart = new ApexCharts(chartEl, getChartOptions(categories, seriesData, 300));
+    mainChart.render();
   }
+}
+
+// Separate renderer para sa Export Modal Chart
+export function renderModalSalesChart(categories = [], seriesData = []) {
+  const modalChartEl = document.getElementById('report-sales-trend-chart');
+  if (!modalChartEl) return;
+
+  if (modalChart) {
+    modalChart.destroy(); // Clear existing instance if re-opening
+  }
+
+  modalChart = new ApexCharts(modalChartEl, getChartOptions(categories, seriesData, 175));
+  modalChart.render();
 }

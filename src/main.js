@@ -2,11 +2,17 @@ import './style.css';
 
 import { initNav } from './nav.js';
 import { initAccordion } from './accordion.js';
+
+// Dashboard
 import { dashboardInitCharts } from './dashboard-charts.js';
-import { salesInitCharts } from './sales-charts.js';
 import { initDashboardModals, loadDashboardData } from './dashboard.js';
-import { initInventory } from './inventory.js'; // Single import lang
 import { renderDashboardNav, initDashboardNav } from './dashboard-nav.js';
+
+// Inventory
+import { initInventory } from './inventory.js';
+
+// Sales (Gawin mong initSalesPage ang i-import)
+import { initSalesPage } from './sales.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
   if (document.getElementById('side-menu') !== null) {  
@@ -23,12 +29,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     await loadDashboardData();
   }
 
-    // Inventory Page Route Check
-    if (document.getElementById('inventory-dashboard')) {
-        initInventory();
-      }
+  // Inventory Page Route Check
+  if (document.getElementById('inventory-dashboard')) {
+    initInventory();
+  }
 
-      // Patakbuhin kung nandoon ang elements ng sales/utang
-  if (typeof initSalesModals === 'function') initSalesModals(); //[cite: 6]
-  if (typeof initUtangModals === 'function') initUtangModals(); //[cite: 6]
+  // Sales Page Route Check
+  if (document.getElementById('sales-dashboard')) {
+    await initSalesPage();
+  }
 });

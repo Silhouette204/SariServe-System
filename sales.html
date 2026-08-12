@@ -37,72 +37,65 @@
 <div class="">
   <div class="mb-10 grid gap-4 grid-cols-2 md:grid-cols-4">
     
-    <div class="border border-secondary bg-boxes shadow-xl rounded-xl px-4 py-5 ">
-      <div class="flex flex-row justify-between items-center">
-     <i class="fa-solid fa-peso-sign bg-secondary text-primary px-4 py-3 text-2xl rounded-xl"></i>
-   
-     <div class="">
-     <i class="fa-solid fa-plus text-secondary text-base mr-2"></i><span class="font-semibold text-secondary">0.00%</span>
+   <!-- Today's Revenue -->
+<div class="border border-secondary bg-boxes shadow-xl rounded-xl px-4 py-5 ">
+  <div class="flex flex-row justify-between items-center">
+    <i class="fa-solid fa-peso-sign bg-secondary text-primary px-4 py-3 text-2xl rounded-xl"></i>
+    <div>
+      <i class="fa-solid fa-plus text-secondary text-base mr-2"></i><span id="kpi-sales-today-revenue" class="font-semibold text-secondary">0.00%</span>
     </div>
-    </div>
+  </div>
+  <div class="flex flex-col gap-2 mt-3">
+    <h3 class="text-base">Today's Revenue</h3>
+    <h1 class="text-3xl font-semibold"><span id="sales-today-revenue">₱ 0.00</span></h1>
+    <p class="text-sm text-secondary/70">vs <span id="prev-sales-today-revenue">₱ 0.00</span> yesterday</p>
+  </div>
+</div>
 
-    <div class="flex flex-col gap-2 mt-3">
-      <h3 class="text-base">Today's Revenue</h3>
-      <h1 class="text-3xl font-semibold"><span class="">₱ 0.00</span></h1>
-      <p class="text-sm text-secondary/70">vs <span> ₱ 0.00</span> yesterday</p>
+<!-- Total Transaction -->
+<div class="border border-secondary bg-boxes shadow-xl rounded-xl px-4 py-5 ">
+  <div class="flex flex-row justify-between items-center">
+    <i class="fa-solid fa-receipt bg-secondary text-primary px-4 py-3 text-2xl rounded-xl"></i>
+    <div>
+      <i class="fa-solid fa-plus text-secondary text-base mr-2"></i><span id="kpi-sales-total-transaction" class="font-semibold text-secondary">0.00%</span>
     </div>
-    </div>
+  </div>
+  <div class="flex flex-col gap-2 mt-3">
+    <h3 class="text-base">Total Transaction</h3>
+    <h1 class="text-3xl font-semibold"><span id="sales-total-transaction">0</span></h1>
+    <p class="text-sm text-secondary/70">vs <span id="prev-sales-total-transaction">0</span> yesterday</p>
+  </div>
+</div>
 
-    <div class="border border-secondary bg-boxes shadow-xl rounded-xl px-4 py-5 ">
-      <div class="flex flex-row justify-between items-center">
+<!-- Average Sale -->
+<div class="border border-secondary bg-boxes shadow-xl rounded-xl px-4 py-5 ">
+  <div class="flex flex-row justify-between items-center">
+    <i class="fa-solid fa-arrow-trend-up bg-secondary text-primary px-3 py-3 text-2xl rounded-xl"></i>
+    <div>
+      <i class="fa-solid fa-plus text-secondary text-base mr-2"></i><span id="kpi-sales-average-sale" class="font-semibold text-secondary">0.00%</span>
+    </div>
+  </div>
+  <div class="flex flex-col gap-2 mt-3">
+    <h3 class="text-base">Average Sale</h3>
+    <h1 class="text-3xl font-semibold"><span id="sales-average-sale">₱ 0.00</span></h1>
+    <p class="text-sm text-secondary/70">per transaction</p>
+  </div>
+</div>
 
-     <i class="fa-solid fa-receipt bg-secondary text-primary px-4 py-3 text-2xl rounded-xl"></i>
-   
-     <div class="">
-     <i class="fa-solid fa-plus text-secondary text-base mr-2"></i><span class="font-semibold text-secondary">0.00%</span>
+<!-- Monthly Revenue -->
+<div class="border border-secondary bg-boxes shadow-xl rounded-xl px-4 py-5 ">
+  <div class="flex flex-row justify-between items-center">
+    <i class="fa-solid fa-peso-sign bg-secondary text-primary px-4 py-3 text-2xl rounded-xl"></i>
+    <div>
+      <i class="fa-solid fa-plus text-secondary text-base mr-2"></i><span id="kpi-sales-monthly-revenue" class="font-semibold text-secondary">0.00%</span>
     </div>
-    </div>
-
-    <div class="flex flex-col gap-2 mt-3">
-      <h3 class="text-base">Total Transaction</h3>
-      <h1 class="text-3xl font-semibold"><span class="">₱ 0.00</span></h1>
-      <p class="text-sm text-secondary/70">vs <span>0</span> yesterday</p>
-    </div>
-    </div>
-
-    <div class="border border-secondary bg-boxes shadow-xl rounded-xl px-4 py-5 ">
-      <div class="flex flex-row justify-between items-center">
-
-     <i class="fa-solid fa-arrow-trend-up bg-secondary text-primary px-3 py-3 text-2xl rounded-xl"></i>
-   
-     <div class="">
-     <i class="fa-solid fa-plus text-secondary text-base mr-2"></i><span class="font-semibold text-secondary">0.00%</span>
-    </div>
-    </div>
-
-    <div class="flex flex-col gap-2 mt-3">
-      <h3 class="text-base">Average Sale</h3>
-      <h1 class="text-3xl font-semibold"><span class="">₱ 0.00</span></h1>
-      <p class="text-sm text-secondary/70">per transaction</p>
-    </div>
-    </div>
-
-    <div class="border border-secondary bg-boxes shadow-xl rounded-xl px-4 py-5 ">
-      <div class="flex flex-row justify-between items-center">
-
-        <i class="fa-solid fa-peso-sign bg-secondary text-primary px-4 py-3 text-2xl rounded-xl"></i>
-   
-     <div class="">
-     <i class="fa-solid fa-plus text-secondary text-base mr-2"></i><span class="font-semibold text-secondary">0.00%</span>
-    </div>
-    </div>
-
-    <div class="flex flex-col gap-2 mt-3">
-      <h3 class="text-base">Monthly Revenue</h3>
-      <h1 class="text-3xl font-semibold"><span class="">₱ 0.00</span></h1>
-      <p class="text-sm text-secondary/70"><span>0</span> days completed</p>
-    </div>
-    </div>
+  </div>
+  <div class="flex flex-col gap-2 mt-3">
+    <h3 class="text-base">Monthly Revenue</h3>
+    <h1 class="text-3xl font-semibold"><span id="sales-monthly-revenue">₱ 0.00</span></h1>
+    <p class="text-sm text-secondary/70"><span id="completed-days">0</span> days completed</p>
+  </div>
+</div>
 
   </div>
 
@@ -382,7 +375,7 @@
         <div class="p-4 bg-slate-50 border border-slate-200 rounded-xl">
           <!-- Canvas area para sa Chart.js o image preview -->
           <div class="h-44 w-full flex items-center justify-center">
-            <canvas id="report-sales-trend-chart"></canvas>
+            <div id="report-sales-trend-chart" class="w-full h-44"></div>
           </div>
         </div>
       </div>
