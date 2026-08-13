@@ -31,7 +31,15 @@ export function initUtangModals() {
     });
   };
 
-  // 1. ADD CUSTOMER FORM SUBMIT
+  // Helper para sa Button Loading States
+  const setSubmitting = (form, isSubmitting) => {
+    const submitBtn = form.querySelector('button[type="submit"]');
+    if (!submitBtn) return;
+    submitBtn.disabled = isSubmitting;
+    submitBtn.style.opacity = isSubmitting ? '0.6' : '1';
+  };
+
+  // 1. ADD CUSTOMER FORM SUBMIT (POST Request)
   const addForm = document.getElementById('add-customer-form');
   if (addForm) {
     addForm.onsubmit = async (e) => {
@@ -43,30 +51,43 @@ export function initUtangModals() {
       const initialUtang = parseFloat(document.getElementById('customer-utang-amount')?.value || 0);
 
       const payload = { 
-        id: `CUST-00${stateCustomers.length + 1}`,
         name, 
         phone, 
         email, 
-        status: 'current',
-        daysOverdue: 0,
-        totalDebt: initialUtang, 
-        totalPaid: 0,
-        payments: [] 
+        totalDebt: initialUtang 
       };
 
       try {
-        stateCustomers.unshift(payload);
+        setSubmitting(addForm, true);
+
+        const response = await fetch('/api/utang', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to add customer.');
+        }
+
+        const newCustomer = await response.json();
+        
+        // Dagdag sa local state pagkatapos ng tagumpay sa backend
+        stateCustomers.unshift(newCustomer);
+        
         applyFiltersAndRender();
         updateDashboardStats(stateCustomers);
-        
         toggleModal('add-customer-modal', false);
       } catch (err) {
-        console.error(err);
+        console.error('Error adding customer:', err);
+        alert(err.message || 'Something went wrong while adding customer.');
+      } finally {
+        setSubmitting(addForm, false);
       }
     };
   }
 
-  // 2. RECORD PAYMENT FORM SUBMIT
+  // 2. RECORD PAYMENT FORM SUBMIT (PATCH / POST Request)
   const paymentForm = document.getElementById('record-payment-form');
   if (paymentForm) {
     paymentForm.onsubmit = async (e) => {
@@ -81,62 +102,72 @@ export function initUtangModals() {
         return;
       }
 
-      const customer = stateCustomers.find(c => (c.id || c._id) === customerId);
+      const customer = stateCustomers.find(c => (c._id || c.id) === customerId);
 
       if (customer) {
-        const balance = customer.totalDebt - customer.totalPaid;
+        const balance = (customer.totalDebt || 0) - (customer.totalPaid || 0);
         
         if (amountPaid > balance) {
           alert("Payment amount cannot exceed remaining balance.");
           return;
         }
 
-        // 1. Update totalPaid
-        customer.totalPaid += amountPaid;
+        try {
+          setSubmitting(paymentForm, true);
 
-        // 2. Auto status update kapag cleared na
-        if (customer.totalPaid >= customer.totalDebt) {
-          customer.status = 'paid';
-          customer.daysOverdue = 0;
+          const response = await fetch(`/api/utang/${customerId}/pay`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ amount: amountPaid })
+          });
+
+          if (!response.ok) {
+            throw new Error('Failed to record payment.');
+          }
+
+          const updatedCustomer = await response.json();
+
+          // I-update ang customer record sa state gamit ang galing sa database
+          const index = stateCustomers.findIndex(c => (c._id || c.id) === customerId);
+          if (index !== -1) {
+            stateCustomers[index] = updatedCustomer;
+          }
+
+          applyFiltersAndRender();
+          updateDashboardStats(stateCustomers);
+          toggleModal('record-payment-modal', false);
+        } catch (err) {
+          console.error('Error recording payment:', err);
+          alert(err.message || 'Something went wrong while recording payment.');
+        } finally {
+          setSubmitting(paymentForm, false);
         }
-
-        // 3. Record payment transaction
-        if (!customer.payments) customer.payments = [];
-        customer.payments.unshift({
-          amount: amountPaid,
-          date: new Date().toISOString()
-        });
-
-        // 4. Update UI
-        applyFiltersAndRender();
-        updateDashboardStats(stateCustomers);
-        toggleModal('record-payment-modal', false);
       }
     };
   }
 
   // Modal Openers
   window.openRecordPaymentModal = (customerId) => {
-    const customer = stateCustomers.find(c => (c.id || c._id) === customerId);
+    const customer = stateCustomers.find(c => (c._id || c.id) === customerId);
     if (!customer) return;
 
     const balance = (customer.totalDebt || 0) - (customer.totalPaid || 0);
 
-    document.getElementById('payment-customer-id').value = customer.id || customer._id;
+    document.getElementById('payment-customer-id').value = customer._id || customer.id;
     document.getElementById('payment-customer-name').value = customer.name;
     document.getElementById('payment-current-balance').textContent = `₱ ${balance.toLocaleString('en-PH', { minimumFractionDigits: 2 })}`;
     toggleModal('record-payment-modal', true);
   };
 
   window.openCustomerDetailsModal = (customerId) => {
-    const customer = stateCustomers.find(c => (c.id || c._id) === customerId);
+    const customer = stateCustomers.find(c => (c._id || c.id) === customerId);
     if (!customer) return;
 
     const balance = (customer.totalDebt || 0) - (customer.totalPaid || 0);
 
     document.getElementById('modal-customer-name').textContent = customer.name;
     document.getElementById('modal-customer-phone').innerHTML = `<i class="fa-solid fa-phone text-xs"></i> ${customer.phone || 'N/A'}`;
-    document.getElementById('modal-customer-id').textContent = customer.id || customer._id;
+    document.getElementById('modal-customer-id').textContent = customer._id || customer.id;
     
     document.getElementById('modal-total-debt').textContent = (customer.totalDebt || 0).toLocaleString('en-PH', { minimumFractionDigits: 2 });
     document.getElementById('modal-total-paid').textContent = (customer.totalPaid || 0).toLocaleString('en-PH', { minimumFractionDigits: 2 });
@@ -182,12 +213,12 @@ export function initUtangModals() {
   };
 
   // Static Button Modal Listeners
-  document.getElementById('open-add-customer-modal-btn')?.addEventListener('click', (e) => {
+  document.getElementById('open-add-customer-utang-modal-btn')?.addEventListener('click', (e) => {
     e.preventDefault();
     toggleModal('add-customer-modal', true);
   });
 
-  document.getElementById('close-add-customer-modal-btn')?.addEventListener('click', () => toggleModal('add-customer-modal', false));
+  document.getElementById('close-add-customer-utang-modal-btn')?.addEventListener('click', () => toggleModal('add-customer-modal', false));
   document.getElementById('close-record-payment-btn')?.addEventListener('click', () => toggleModal('record-payment-modal', false));
   document.getElementById('close-customer-details-btn')?.addEventListener('click', () => toggleModal('view-details-modal', false));
   document.getElementById('open-customer-all-payment-btn')?.addEventListener('click', (e) => {
@@ -244,8 +275,10 @@ export function renderCustomerCards(customerList) {
     const totalPaid = (customer.totalPaid || 0).toLocaleString('en-PH', { minimumFractionDigits: 2 });
     const balance = ((customer.totalDebt || 0) - (customer.totalPaid || 0)).toLocaleString('en-PH', { minimumFractionDigits: 2 });
 
+    const customerId = customer._id || customer.id;
+
     return `
-      <div class="border border-secondary shadow-xl bg-boxes rounded-2xl p-5 hover:border-slate-400 transition" data-customer-id="${customer._id || customer.id}">
+      <div class="border border-secondary shadow-xl bg-boxes rounded-2xl p-5 hover:border-slate-400 transition" data-customer-id="${customerId}">
         
         <!-- Header -->
         <div class="flex flex-row justify-between items-center border-b border-secondary pb-5">
@@ -292,8 +325,8 @@ export function renderCustomerCards(customerList) {
         <!-- Action Buttons -->
         <div class="mt-5">
           <div class="flex flex-row gap-3 justify-between items-center">
-            <button data-action="record-payment" data-id="${customer._id || customer.id}" class="flex-1 bg-secondary font-semibold text-primary py-2.5 rounded-xl hover:bg-primary transition border border-secondary hover:text-secondary text-center text-sm">Record Payment</button>
-            <button data-action="view-details" data-id="${customer._id || customer.id}" class="flex-1 text-secondary font-semibold border border-secondary hover:bg-secondary transition hover:text-primary py-2.5 rounded-xl text-center text-sm">View Details</button>
+            <button data-action="record-payment" data-id="${customerId}" class="flex-1 bg-secondary font-semibold text-primary py-2.5 rounded-xl hover:bg-primary transition border border-secondary hover:text-secondary text-center text-sm">Record Payment</button>
+            <button data-action="view-details" data-id="${customerId}" class="flex-1 text-secondary font-semibold border border-secondary hover:bg-secondary transition hover:text-primary py-2.5 rounded-xl text-center text-sm">View Details</button>
           </div>
         </div>
 
@@ -390,37 +423,16 @@ function updateDashboardStats(customers) {
   }
 }
 
-// Fetch Initial Data
+// Fetch Initial Data (GET Request)
 export async function fetchUtangData() {
   try {
-    const mockCustomers = [
-      {
-        id: 'CUST-001',
-        name: 'John Doe',
-        phone: '0912-345-6789',
-        status: 'overdue',
-        daysOverdue: 3,
-        totalDebt: 1500,
-        totalPaid: 500,
-        payments: [
-          { amount: 500, date: '2026-01-15T06:30:00.000Z' }
-        ]
-      },
-      {
-        id: 'CUST-002',
-        name: 'Maria Santos',
-        phone: '0998-765-4321',
-        status: 'current',
-        daysOverdue: 0,
-        totalDebt: 2500,
-        totalPaid: 2500,
-        payments: [
-          { amount: 2500, date: '2026-01-10T08:00:00.000Z' }
-        ]
-      }
-    ];
+    const response = await fetch('/api/utang');
+    
+    if (!response.ok) {
+      throw new Error(`Server Error: ${response.status}`);
+    }
 
-    stateCustomers = mockCustomers;
+    stateCustomers = await response.json();
     applyFiltersAndRender();
     updateDashboardStats(stateCustomers);
   } catch (error) {
