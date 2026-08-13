@@ -19,7 +19,7 @@
       </div>
     </main>
 
-    <div class="container-1">
+    <div id="utang-dashboard" class="container-1">
       <div class="my-10 flex flex-row justify-between items-center">
         <div class="">
           <h1 class="text-2xl font-semibold text-secondary my-1">Utang Management</h1>
@@ -41,7 +41,7 @@
 
           <div class="flex flex-col gap-2 mt-3">
             <h3 class="text-base">Total Utang</h3>
-            <h1 class="text-3xl font-semibold"><span class="">₱ 0.00</span></h1>
+            <h1 class="text-xl font-semibold"><span class="">₱ 0.00</span></h1>
             <p class="text-sm text-secondary/70">From <span>0</span> customers</p>
           </div>
         </div>
@@ -53,7 +53,7 @@
 
           <div class="flex flex-col gap-2 mt-3">
             <h3 class="text-base">Total Paid</h3>
-            <h1 class="text-3xl font-semibold"><span class="">₱ 0.00</span></h1>
+            <h1 class="text-xl font-semibold"><span class="">₱ 0.00</span></h1>
             <p class="text-sm text-secondary/70">Collected Payments</p>
           </div>
         </div>
@@ -65,7 +65,7 @@
 
           <div class="flex flex-col gap-2 mt-3">
             <h3 class="text-base">Overdue Accounts</h3>
-            <h1 class="text-3xl font-semibold"><span class="">0</span></h1>
+            <h1 class="text-xl font-semibold"><span class="">0</span></h1>
             <p class="text-sm text-secondary/70">Need Attention</p>
           </div>
         </div>
@@ -77,7 +77,7 @@
 
           <div class="flex flex-col gap-2 mt-3">
             <h3 class="text-base">Balance</h3>
-            <h1 class="text-3xl font-semibold"><span class="">0</span></h1>
+            <h1 class="text-xl font-semibold"><span class="">0</span></h1>
             <p class="text-sm text-secondary/70">Outstanding amount</p>
           </div>
         </div>
@@ -97,7 +97,7 @@
               </div>
               <input 
                 type="text" 
-                placeholder="Search products..." 
+                placeholder="Search customer..." 
                 class="w-full rounded-xl border border-slate-200 bg-transparent py-2.5 pl-10 pr-4 text-sm text-slate-700 placeholder-slate-400 outline-none transition focus:border-slate-400 focus:ring-0"
               />
             </div>
@@ -118,56 +118,64 @@
             </div>
           </div>
 
-          <!-- Table Container (Inilipat dito sa ilalim ng Search Bar) -->
-          <div class="border border-secondary shadow-xl bg-boxes rounded-2xl p-6 min-h-[300px]">
-            <!-- Ilagay dito ang Utang / Customer Table Code mo -->
-<div class="">
-  <div class="flex flex-row justify-between items-center border-b border-secondary pb-5">
-  <div class="flex flex-row items-center">
-    <p class="text-secondary text-lg font-bold bg-green-200 p-3 rounded-full"><span id="customer-initial">NA</span></p>
-    <div class="ml-3">
-      <h3 class="font-bold text-lg"><span>John Doe</span></h3>
-      <p class="text-secondary/80"><span>0912-345-6789</span></p>
+      <!-- Dynamic Customer List Container -->
+<div id="customer-list-container" class="flex flex-col gap-4">
 
-      <div class="flex flex-row gap-3 mt-2 items-center">
-        <p class="utang-classified bg-orange-200 border border-orange-800 px-2 rounded-2xl font-semibold text-orange-800"><span>overdue</span></p>
-          <p class="text-sm text-red-800"><i class="fa-regular fa-clock"></i> <span id="utang-days-overdue">0</span> days overdue</p>
-      </div>
-    </div>
-  </div>
+  <!-- 
+    STATIC REFERENCE TEMPLATE (Buong Card Template):
 
-    <div class=""><i class="fa-solid fa-ellipsis-vertical text-secondary text-lg"></i></div>
-</div>
-</div>
-
-<div class="mt-3">
-  <div class="flex flex-row justify-between items-center">
-      <div class="">
-        <p class="text-secondary/80">Total Debt</p>
-        <h1 class="text-xl font-bold text-red-600">₱ <span id="utang-totalCustomer-debt">0.00</span></h1>
-      </div>
-
-      <div class="">
-        <p class="text-secondary/80">Paid</p>
-        <h1 class="text-xl font-bold text-green-600">₱ <span id="utang-customer-paid">0.00</span></h1>
-      </div>
-
-      <div class="">
-        <p class="text-secondary/80">Balance</p>
-        <h1 class="text-xl font-bold">₱ <span id="utang-customer-debt">0.00</span></h1>
-      </div>
-  </div>
-</div>
-
-<div class="mt-7">
-  <div class="flex flex-row justify-between items-center">
-    <a href="#" id="open-record-payment-btn" class="bg-secondary font-semibold text-primary px-10 py-2 rounded-xl hover:bg-primary transition border border-secondary hover:text-secondary lg:px-50">Record Payment</a>
-    <a href="#" id="open-customer-details-btn" class="text-secondary font-semibold border border-secondary hover:bg-secondary transition hover:text-primary py-2 px-1 rounded-xl lg:px-10">View Details</a>
-  </div>
-</div>
-
+    <div class="border border-secondary shadow-xl bg-boxes rounded-2xl p-5">
+      
+      HEADER SECTION
+      <div class="flex flex-row justify-between items-center border-b border-secondary pb-5">
+        <div class="flex flex-row items-center">
+          <div class="w-12 h-12 flex items-center justify-center text-secondary text-lg font-bold bg-green-200 rounded-full shrink-0">
+            <span>JD</span>
           </div>
+          <div class="ml-3">
+            <h3 class="font-bold text-lg text-slate-800">John Doe</h3>
+            <p class="text-secondary/80 text-sm">0912-345-6789</p>
 
+            <div class="flex flex-row gap-3 mt-2 items-center">
+              <p class="utang-classified border border-orange-800 bg-orange-200 px-2.5 py-0.5 rounded-2xl text-xs font-semibold text-orange-800">overdue</p>
+              <p class="text-sm text-red-800"><i class="fa-regular fa-clock"></i> <span>3</span> days overdue</p>
+            </div>
+          </div>
+        </div>
+
+        <button class="p-2 text-secondary hover:text-slate-800 transition">
+          <i class="fa-solid fa-ellipsis-vertical text-lg"></i>
+        </button>
+      </div>
+
+      TOTALS SECTION
+      <div class="mt-3">
+        <div class="flex flex-row justify-between items-center">
+          <div>
+            <p class="text-secondary/80 text-sm">Total Debt</p>
+            <h1 class="text-xl font-bold text-red-600">₱ <span>1,500.00</span></h1>
+          </div>
+          <div>
+            <p class="text-secondary/80 text-sm">Paid</p>
+            <h1 class="text-xl font-bold text-green-600">₱ <span>500.00</span></h1>
+          </div>
+          <div>
+            <p class="text-secondary/80 text-sm">Balance</p>
+            <h1 class="text-xl font-bold text-slate-800">₱ <span>1,000.00</span></h1>
+          </div>
+        </div>
+      </div>
+
+      ACTION BUTTONS SECTION
+      <div class="mt-5 pt-2">
+        <div class="flex flex-row gap-3 justify-between items-center">
+          <button data-action="record-payment" class="flex-1 bg-secondary font-semibold text-primary py-2.5 rounded-xl hover:bg-primary transition border border-secondary hover:text-secondary text-center text-sm">Record Payment</button>
+          <button data-action="view-details" class="flex-1 text-secondary font-semibold border border-secondary hover:bg-secondary transition hover:text-primary py-2.5 rounded-xl text-center text-sm">View Details</button>
+        </div>
+      </div>
+
+    </div>
+  -->
         </div>
 
         <!-- KANANG COLUMN (Recent Payments Card) -->
@@ -185,7 +193,7 @@
               <div>
                 <h3 class="font-semibold text-xl"><span>Maria Santos</span></h3>
 
-                <div class="flex flex-row justify-between items-center border-b-1 pb-4 border-secondary/80">
+                <div class="flex flex-row justify-between items-center border-b pb-4 border-secondary/80">
                   <div class="flex flex-row gap-3">
                     <p class="text-secondary/80"><span>January 1, 2026</span></p>
                     <div><p>•</p></div>
@@ -257,7 +265,7 @@
   </div>
     <p class="text-secondary/70 text-sm">Add a new mangungutang customer to your store</p>
 
-    <form action="" class="mt-5 flex flex-col gap-3">
+    <form id="add-customer-form" action="" class="mt-5 flex flex-col gap-3">
       <div class="flex flex-row gap-3">
       <div class="">
         <label for="customer-name"  class="text-secondary/70 text-sm">Customer Name</label>
@@ -265,7 +273,7 @@
       </div>
       <div class="">
         <label for="customer-phone"  class="text-secondary/70 text-sm">Customer Phone</label>
-        <input required type="text" id="customer-phone" class="w-full rounded-xl border border-slate-200 bg-transparent py-2.5 pl-3 pr-4 text-sm text-slate-700 placeholder-slate-400 outline-none transition focus:border-slate-400 focus:ring-0" placeholder="Enter Phone:" />
+        <input required type="tel" id="customer-phone" class="w-full rounded-xl border border-slate-200 bg-transparent py-2.5 pl-3 pr-4 text-sm text-slate-700 placeholder-slate-400 outline-none transition focus:border-slate-400 focus:ring-0" placeholder="Enter Phone:" />
       </div>
     </div>
       <div class="">
@@ -273,18 +281,20 @@
         <input required type="email" id="customer-email" class="w-full rounded-xl border border-slate-200 bg-transparent py-2.5 pl-3 pr-4 text-sm text-slate-700 placeholder-slate-400 outline-none transition focus:border-slate-400 focus:ring-0" placeholder="Enter Email:" />
       </div>
 
-      <div class="">
-        <label for="customer-email"  class="text-secondary/70 text-sm">Set amount of utang:</label>
-        <input required type="number" id="customer-utang-amount" class="w-full rounded-xl border border-slate-200 bg-transparent py-2.5 pl-3 pr-4 text-sm text-slate-700 placeholder-slate-400 outline-none transition focus:border-slate-400 focus:ring-0" placeholder="Set amount of utang:" />
+      <div>
+        <label for="customer-utang-amount" class="text-secondary/70 text-sm">Set amount of utang:</label>
+        <!-- In-update ang ID sa customer-utang-amount para tugma sa JS -->
+        <input required type="number" id="customer-utang-amount" class="w-full rounded-xl border border-slate-200 bg-transparent py-2.5 pl-3 pr-4 text-sm text-slate-700 outline-none focus:border-slate-400" placeholder="0.00" />
       </div>
 
-      <div class="flex flex-row justify-between items-center mt-3">
-        <button type="submit" class="bg-secondary font-semibold text-primary px-10 py-2 rounded-xl hover:bg-primary transition border border-secondary hover:text-secondary lg:px-15">Add Customer</button>
-        <button type="button" id="close-add-customer-modal-btn" class="text-secondary font-semibold border border-secondary hover:bg-secondary transition hover:text-primary py-2 px-4 rounded-xl lg:px-10">Cancel</button>
+      <p id="form-error-msg" class="text-xs text-rose-500 hidden">Please fill in all required fields correctly.</p>
+
+      <div class="flex flex-row justify-between items-center mt-3 gap-3">
+        <button type="submit" class="flex-1 bg-secondary font-semibold text-primary py-2.5 rounded-xl hover:bg-primary transition border border-secondary hover:text-secondary">Add Customer</button>
+        <button type="button" id="close-add-customer-modal-btn" class="flex-1 text-secondary font-semibold border border-secondary hover:bg-secondary transition hover:text-primary py-2.5 rounded-xl">Cancel</button>
       </div>
     </form>
   </div>
-
 </div>
 
 <!--Record Customer Payment-->
@@ -347,6 +357,8 @@
             placeholder="0.00" 
           />
         </div>
+        <!-- Idinagdag na Error Message Tag -->
+        <p id="payment-error-msg" class="text-xs text-rose-500 mt-1 hidden">Please enter a valid amount greater than 0.</p>
       </div>
 
       <!-- Action Buttons -->

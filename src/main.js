@@ -14,6 +14,9 @@ import { initInventory } from './inventory.js';
 // Sales (Gawin mong initSalesPage ang i-import)
 import { initSalesPage } from './sales.js';
 
+//Utang
+import { initUtangModals, fetchUtangData } from './utang.js';
+
 document.addEventListener('DOMContentLoaded', async () => {
   if (document.getElementById('side-menu') !== null) {  
     initNav();
@@ -38,4 +41,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (document.getElementById('sales-dashboard')) {
     await initSalesPage();
   }
+
+  // Utang Page Route Check
+  if (document.getElementById('open-add-customer-modal-btn') || document.getElementById('utang-dashboard')) {
+    initUtangModals();
+    await fetchUtangData();
+  }
+
 });

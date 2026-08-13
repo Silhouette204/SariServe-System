@@ -1,20 +1,27 @@
 // src/inventory.js
 
-// 1. Initial State (Palitan ito ng API fetch query sa hinaharap)
-let inventoryItems = [
-  { id: '1', name: 'Organic Apples', category: 'Groceries', stock: 120, price: 150.00 },
-  { id: '2', name: 'Coca-Cola 1.5L', category: 'Beverages', stock: 5, price: 65.00 },
-  { id: '3', name: 'Piattos Cheese', category: 'Snacks', stock: 0, price: 18.00 }
-];
-
+let inventoryItems = [];
 let targetDeleteId = null;
 
-// 2. MAIN INITIALIZER FUNCTION
-export function initInventory() {
+// 1. MAIN INITIALIZER FUNCTION
+export async function initInventory() {
   initModals();
-  renderInventoryTable(inventoryItems);
-  updateKPIs(inventoryItems);
+  await fetchInventory();
   setupSearchAndFilters();
+}
+
+// 2. FETCH DATA FROM BACKEND API
+export async function fetchInventory() {
+  try {
+    const response = await fetch('/api/inventory');
+    if (!response.ok) throw new Error('Failed to fetch inventory');
+    
+    inventoryItems = await response.json();
+    renderInventoryTable(inventoryItems);
+    updateKPIs(inventoryItems);
+  } catch (error) {
+    console.error('Error loading inventory:', error);
+  }
 }
 
 // 3. HELPER: Calculate Status Badge & Style
@@ -54,6 +61,8 @@ export function renderInventoryTable(items) {
 
   tbody.innerHTML = items.map(item => {
     const status = getStockStatus(item.stock);
+    const itemId = item._id || item.id; // Compatible sa MongoDB (_id) o SQL (id)
+
     return `
       <tr class="hover:bg-slate-50/50 transition">
         <td class="px-6 py-4 font-medium text-slate-900">${item.name}</td>
@@ -61,11 +70,11 @@ export function renderInventoryTable(items) {
         <td class="px-6 py-4">
           <!-- Stock Adjuster Buttons -->
           <div class="flex items-center gap-2">
-            <button onclick="window.adjustStock('${item.id}', -1)" class="flex h-7 w-7 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 font-bold text-slate-600 hover:bg-slate-100 active:scale-95 transition select-none cursor-pointer">
+            <button onclick="window.adjustStock('${itemId}', -1)" class="flex h-7 w-7 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 font-bold text-slate-600 hover:bg-slate-100 active:scale-95 transition select-none cursor-pointer">
               −
             </button>
             <span class="w-12 text-center font-semibold text-slate-800">${item.stock}</span>
-            <button onclick="window.adjustStock('${item.id}', 1)" class="flex h-7 w-7 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 font-bold text-slate-600 hover:bg-slate-100 active:scale-95 transition select-none cursor-pointer">
+            <button onclick="window.adjustStock('${itemId}', 1)" class="flex h-7 w-7 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 font-bold text-slate-600 hover:bg-slate-100 active:scale-95 transition select-none cursor-pointer">
               +
             </button>
           </div>
@@ -77,8 +86,8 @@ export function renderInventoryTable(items) {
           </span>
         </td>
         <td class="px-6 py-4 text-right">
-          <button onclick="window.triggerEditProduct('${item.id}')" class="text-sm font-semibold text-secondary hover:underline mr-3 cursor-pointer">Edit</button>
-          <button onclick="window.triggerDeleteProduct('${item.id}')" class="text-sm font-semibold text-red-600 hover:underline cursor-pointer">Delete</button>
+          <button onclick="window.triggerEditProduct('${itemId}')" class="text-sm font-semibold text-secondary hover:underline mr-3 cursor-pointer">Edit</button>
+          <button onclick="window.triggerDeleteProduct('${itemId}')" class="text-sm font-semibold text-red-600 hover:underline cursor-pointer">Delete</button>
         </td>
       </tr>
     `;
@@ -104,26 +113,34 @@ export function updateKPIs(items) {
 // 6. SEARCH & CATEGORY FILTERING
 function setupSearchAndFilters() {
   const searchInput = document.querySelector('#inventory-dashboard input[type="text"]');
-  const categorySelect = document.querySelector('#inventory-dashboard select');
+  const categorySelect = document.querySelector('#timeframe'); // Gamitin ang exact ID ng select dropdown mo
 
   const filterData = () => {
-    const query = searchInput?.value.toLowerCase() || '';
+    const query = searchInput?.value.trim().toLowerCase() || '';
     const selectedCategory = categorySelect?.value || 'All Categories';
 
     const filtered = inventoryItems.filter(item => {
-      const matchesSearch = item.name.toLowerCase().includes(query);
-      const matchesCategory = selectedCategory === 'All Categories' || item.category === selectedCategory;
+      // Safe access gamit ang optional chaining at fallback
+      const productName = (item.name || '').toLowerCase();
+      const productCategory = item.category || '';
+
+      const matchesSearch = productName.includes(query);
+      const matchesCategory = selectedCategory === 'All Categories' || productCategory === selectedCategory;
+
       return matchesSearch && matchesCategory;
     });
 
     renderInventoryTable(filtered);
+    
+    // NOTE: Ang KPIs (Total, In Stock, Low Stock, Out of Stock) ay nananatiling nakabatay 
+    // sa kabuuang imbentaryo (inventoryItems) para hindi magbago ang store summary kapag nagha-hanap lang.
   };
 
   if (searchInput) searchInput.addEventListener('input', filterData);
   if (categorySelect) categorySelect.addEventListener('change', filterData);
 }
 
-// 7. MODAL CONTROLLERS & EVENT LISTENERS
+// 7. MODAL CONTROLLERS & API ACTIONS
 function initModals() {
   const toggleModal = (modalId, show = true) => {
     const modal = document.getElementById(modalId);
@@ -148,22 +165,30 @@ function initModals() {
   if (cancelAddBtn) cancelAddBtn.onclick = () => toggleModal('add-product-modal', false);
 
   if (addForm) {
-    addForm.onsubmit = (e) => {
+    addForm.onsubmit = async (e) => {
       e.preventDefault();
       const newProduct = {
-        id: String(Date.now()),
         name: document.getElementById('add-product-name').value,
         category: document.getElementById('add-product-category').value,
         price: parseFloat(document.getElementById('add-product-price').value),
-        stock: parseInt(document.getElementById('add-product-stock').value) || 0
+        stock: parseInt(document.getElementById('add-product-stock').value, 10) || 0
       };
 
-      inventoryItems.push(newProduct);
-      renderInventoryTable(inventoryItems);
-      updateKPIs(inventoryItems);
+      try {
+        const response = await fetch('/api/inventory', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(newProduct)
+        });
 
-      addForm.reset();
-      toggleModal('add-product-modal', false);
+        if (response.ok) {
+          await fetchInventory(); // Refresh list from DB
+          addForm.reset();
+          toggleModal('add-product-modal', false);
+        }
+      } catch (error) {
+        console.error('Error adding product:', error);
+      }
     };
   }
 
@@ -176,20 +201,29 @@ function initModals() {
   if (cancelEditBtn) cancelEditBtn.onclick = () => toggleModal('edit-product-modal', false);
 
   if (editForm) {
-    editForm.onsubmit = (e) => {
+    editForm.onsubmit = async (e) => {
       e.preventDefault();
       const id = document.getElementById('edit-product-id').value;
-      const item = inventoryItems.find(i => i.id === id);
+      const updatedData = {
+        name: document.getElementById('edit-product-name').value,
+        category: document.getElementById('edit-product-category').value,
+        price: parseFloat(document.getElementById('edit-product-price').value)
+      };
 
-      if (item) {
-        item.name = document.getElementById('edit-product-name').value;
-        item.category = document.getElementById('edit-product-category').value;
-        item.price = parseFloat(document.getElementById('edit-product-price').value);
+      try {
+        const response = await fetch(`/api/inventory/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(updatedData)
+        });
 
-        renderInventoryTable(inventoryItems);
+        if (response.ok) {
+          await fetchInventory(); // Refresh list
+          toggleModal('edit-product-modal', false);
+        }
+      } catch (error) {
+        console.error('Error updating product:', error);
       }
-
-      toggleModal('edit-product-modal', false);
     };
   }
 
@@ -200,13 +234,22 @@ function initModals() {
   if (cancelDeleteBtn) cancelDeleteBtn.onclick = () => toggleModal('delete-product-modal', false);
 
   if (confirmDeleteBtn) {
-    confirmDeleteBtn.onclick = () => {
-      if (targetDeleteId) {
-        inventoryItems = inventoryItems.filter(i => i.id !== targetDeleteId);
-        renderInventoryTable(inventoryItems);
-        updateKPIs(inventoryItems);
+    confirmDeleteBtn.onclick = async () => {
+      if (!targetDeleteId) return;
+
+      try {
+        const response = await fetch(`/api/inventory/${targetDeleteId}`, {
+          method: 'DELETE'
+        });
+
+        if (response.ok) {
+          await fetchInventory(); // Refresh list
+        }
+      } catch (error) {
+        console.error('Error deleting product:', error);
+      } finally {
+        toggleModal('delete-product-modal', false);
       }
-      toggleModal('delete-product-modal', false);
     };
   }
 
@@ -218,20 +261,43 @@ function initModals() {
   });
 }
 
-// 8. GLOBAL WINDOW ACTIONS (Para sa dynamic table row triggers)
-window.adjustStock = (id, amount) => {
-  const item = inventoryItems.find(i => i.id === id);
-  if (item) {
-    item.stock = Math.max(0, item.stock + amount);
-    renderInventoryTable(inventoryItems);
-    updateKPIs(inventoryItems);
+// 8. GLOBAL WINDOW ACTIONS
+window.adjustStock = async (id, amount) => {
+  const item = inventoryItems.find(i => (i._id || i.id) === id);
+  if (!item) return;
+
+  const newStock = Math.max(0, item.stock + amount);
+
+  try {
+    const response = await fetch(`/api/inventory/${id}/stock`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ stock: newStock })
+    });
+
+    if (response.ok) {
+      item.stock = newStock;
+      
+      // I-trigger uli ang filter para manatili sa search results ng user
+      const searchInput = document.querySelector('#inventory-dashboard input[type="text"]');
+      if (searchInput) {
+        searchInput.dispatchEvent(new Event('input')); 
+      } else {
+        renderInventoryTable(inventoryItems);
+      }
+      
+      updateKPIs(inventoryItems);
+    }
+    
+  } catch (error) {
+    console.error('Error adjusting stock:', error);
   }
 };
 
 window.triggerEditProduct = (id) => {
-  const item = inventoryItems.find(i => i.id === id);
+  const item = inventoryItems.find(i => (i._id || i.id) === id);
   if (item) {
-    document.getElementById('edit-product-id').value = item.id;
+    document.getElementById('edit-product-id').value = id;
     document.getElementById('edit-product-name').value = item.name;
     document.getElementById('edit-product-category').value = item.category;
     document.getElementById('edit-product-price').value = item.price;

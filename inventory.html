@@ -13,7 +13,7 @@
     </div>
 
     <main class="pt-10 px-5">
-      <div class="flex flex-col gap-3 border-b-1 pb-5">
+      <div class="flex flex-col gap-3 border-b pb-5">
       <h1 class="text-3xl text-secondary font-semibold">Welcome Back, User!</h1>
       <p class="text-secondary/70">Here's what's happening with your store today.</p>
     </div>
@@ -144,40 +144,17 @@
           </tr>
         </thead>
     
-        <!-- Table Body -->
+  
+        
         <tbody class="divide-y divide-slate-100 text-sm text-slate-600">
-          
-          <!-- Row 1: Groceries -->
-          <tr class="hover:bg-slate-50/50 transition">
-            <td class="px-6 py-4 font-medium text-slate-900">Organic Apples</td>
-            <td class="px-6 py-4">Groceries</td>
-            <td class="px-6 py-4">
-              <!-- Stock Adjuster Buttons -->
-              <div class="flex items-center gap-2">
-                <button class="flex h-7 w-7 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 font-bold text-slate-600 hover:bg-slate-100 active:scale-95 transition select-none">
-                  −
-                </button>
-                <span class="w-12 text-center font-semibold text-slate-800">120</span>
-                <button class="flex h-7 w-7 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 font-bold text-slate-600 hover:bg-slate-100 active:scale-95 transition select-none">
-                  +
-                </button>
-              </div>
-            </td>
-            <td class="px-6 py-4">₱150.00</td>
-            <td class="px-6 py-4">
-              <span class="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
-                In Stock
-              </span>
-            </td>
-            <td class="px-6 py-4 text-right">
-              <button id="open-edit-product-btn" class="text-sm font-semibold text-secondary hover:text-secondary-900 mr-3">Edit</button>
-              <button id="open-delete-product-btn" class="text-sm font-semibold text-red-600 hover:text-red-900">Delete</button>
+          <tr>
+            <td colspan="6" class="px-6 py-8 text-center text-slate-400">
+              <i class="fa-solid fa-spinner animate-spin mr-2"></i> Loading products...
             </td>
           </tr>
-    
-       
-    
         </tbody>
+
+
       </table>
     </div>
   </section>
