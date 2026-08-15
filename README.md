@@ -34,6 +34,7 @@ SariServe provides local micro-retailers with an all-in-one digital dashboard to
 ```bash
 
 sariserve/
+├── frontend            # All frontend components and tools files
 ├── index.html          # Main Dashboard & Sales Counter
 ├── inventory.html      # Product Grid & Stock Management
 ├── debts.html          # Digital Debt Listing (Listahan ng Utang)
@@ -44,7 +45,7 @@ sariserve/
     ├── dashboard.js    # Metric computations & live log handlers
     ├── inventory.js    # Inventory CRUD operations
     └── debts.js        # Debt ledger accounting handlers
-
+├── backend             # All backend components and tools files
 ```
 
 
