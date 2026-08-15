@@ -27,7 +27,7 @@ SariServe provides local micro-retailers with an all-in-one digital dashboard to
 * **Prisma** - Handles database commands and converts from Postgres.
 * **Express** - API endpoints that connect between frontend and backend features
 * **Supabase** - Where data is processed from local to cloudbase.
-* ** Postgres ** - For Open source database.
+* ** Postgres ** - An open-source database.
 
 ### Data Storage Strategy
 ```text
