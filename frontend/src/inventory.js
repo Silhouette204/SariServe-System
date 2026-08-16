@@ -179,7 +179,8 @@ function setupSearchAndFilters() {
       return matchesSearch && matchesCategory;
     });
 
-    renderInventoryTable(filtered);
+    renderInventorySalesTable(filtered);
+renderInventoryAdjustmentTable(filtered);
     
     // NOTE: Ang KPIs (Total, In Stock, Low Stock, Out of Stock) ay nananatiling nakabatay 
     // sa kabuuang imbentaryo (inventoryItems) para hindi magbago ang store summary kapag nagha-hanap lang.
