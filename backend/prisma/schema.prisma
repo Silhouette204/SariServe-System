@@ -11,3 +11,84 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+enum AdjustmentReason {
+  RESTOCK
+  DAMAGED
+  CORRECTION
+  OTHER
+}
+
+model Category {
+  id        Int       @id @default(autoincrement())
+  name      String    @unique
+  products  Product[]
+  createdAt DateTime  @default(now())
+}
+
+model Product {
+  id          Int               @id @default(autoincrement())
+  name        String
+  price       Decimal           @db.Decimal(10, 2)
+  costPrice   Decimal?          @db.Decimal(10, 2) // puhunan, para sa profit calculation
+  stock       Int               @default(0)
+  minStock    Int               @default(5)         // for low-stock alert
+  category    Category?         @relation(fields: [categoryId], references: [id])
+  categoryId  Int?
+  saleItems   SaleItem[]
+  adjustments StockAdjustment[]
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+}
+
+model Sale {
+  id          Int        @id @default(autoincrement())
+  totalAmount Decimal    @db.Decimal(10, 2)
+  items       SaleItem[]
+  createdAt   DateTime   @default(now())
+}
+
+model SaleItem {
+  id           Int      @id @default(autoincrement())
+  sale         Sale     @relation(fields: [saleId], references: [id])
+  saleId       Int
+  product      Product  @relation(fields: [productId], references: [id])
+  productId    Int
+  quantity     Int
+  priceAtSale  Decimal  @db.Decimal(10, 2) // price noong binili, hindi kasalukuyang price
+}
+
+model StockAdjustment {
+  id         Int              @id @default(autoincrement())
+  product    Product          @relation(fields: [productId], references: [id])
+  productId  Int
+  amount     Int              // positive = dagdag stock, negative = bawas stock
+  reason     AdjustmentReason @default(OTHER)
+  createdAt  DateTime         @default(now())
+}
+
+model Customer {
+  id           Int                @id @default(autoincrement())
+  name         String
+  phone        String?
+  email        String?
+  transactions UtangTransaction[]
+  payments     UtangPayment[]
+  createdAt    DateTime           @default(now())
+}
+
+model UtangTransaction {
+  id          Int      @id @default(autoincrement())
+  customer    Customer @relation(fields: [customerId], references: [id])
+  customerId  Int
+  amount      Decimal  @db.Decimal(10, 2)
+  createdAt   DateTime @default(now())
+}
+
+model UtangPayment {
+  id          Int      @id @default(autoincrement())
+  customer    Customer @relation(fields: [customerId], references: [id])
+  customerId  Int
+  amountPaid  Decimal  @db.Decimal(10, 2)
+  paidAt      DateTime @default(now())
+}
