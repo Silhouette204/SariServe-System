@@ -24,6 +24,10 @@ SariServe provides local micro-retailers with an all-in-one digital dashboard to
 * **HTML5** - Semantic markup structuring for multi-view page routing.
 * **Tailwind CSS** - Utility-first styling framework for UI layout and elements.
 * **Vanilla JavaScript (ES6+)** - Core logical layer handling DOM events and transaction states.
+* **Prisma** - Handles database commands and converts from Postgres.
+* **Express** - API endpoints that connect between frontend and backend features
+* **Supabase** - Where data is processed from local to cloudbase.
+* ** Postgres ** - An open-source database.
 
 ### Data Storage Strategy
 ```text
