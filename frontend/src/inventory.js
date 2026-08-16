@@ -17,7 +17,8 @@ export async function fetchInventory() {
     if (!response.ok) throw new Error('Failed to fetch inventory');
     
     inventoryItems = await response.json();
-    renderInventoryTable(inventoryItems);
+    renderInventorySalesTable(inventoryItems);
+    renderInventoryAdjustmentTable(inventoryItems);
     updateKPIs(inventoryItems);
   } catch (error) {
     console.error('Error loading inventory:', error);
@@ -44,12 +45,12 @@ function getStockStatus(stock) {
 }
 
 // 4. RENDER TABLE ROWS
-export function renderInventoryTable(items) {
-  const tbody = document.querySelector('#stocks tbody');
-  if (!tbody) return;
+export function renderInventorySalesTable(items) {
+  const salesTbody = document.querySelector('#sales-tbody');
+  if (!salesTbody) return;
 
   if (items.length === 0) {
-    tbody.innerHTML = `
+    salesTbody.innerHTML = `
       <tr>
         <td colspan="6" class="px-6 py-8 text-center text-slate-400">
           No products found.
@@ -59,7 +60,7 @@ export function renderInventoryTable(items) {
     return;
   }
 
-  tbody.innerHTML = items.map(item => {
+  salesTbody.innerHTML = items.map(item => {
     const status = getStockStatus(item.stock);
     const itemId = item._id || item.id; // Compatible sa MongoDB (_id) o SQL (id)
 
@@ -67,18 +68,15 @@ export function renderInventoryTable(items) {
       <tr class="hover:bg-slate-50/50 transition">
         <td class="px-6 py-4 font-medium text-slate-900">${item.name}</td>
         <td class="px-6 py-4">${item.category}</td>
-        <td class="px-6 py-4">
-          <!-- Stock Adjuster Buttons -->
-          <div class="flex items-center gap-2">
-            <button onclick="window.adjustStock('${itemId}', -1)" class="flex h-7 w-7 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 font-bold text-slate-600 hover:bg-slate-100 active:scale-95 transition select-none cursor-pointer">
-              −
-            </button>
-            <span class="w-12 text-center font-semibold text-slate-800">${item.stock}</span>
-            <button onclick="window.adjustStock('${itemId}', 1)" class="flex h-7 w-7 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 font-bold text-slate-600 hover:bg-slate-100 active:scale-95 transition select-none cursor-pointer">
-              +
-            </button>
-          </div>
-        </td>
+       <td class="px-6 py-4">
+  <!-- Sales lang: bawas stock, walang "+" -->
+  <div class="flex items-center gap-2">
+    <button onclick="window.recordSale('${itemId}')" class="flex h-7 w-7 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 font-bold text-slate-600 hover:bg-slate-100 active:scale-95 transition select-none cursor-pointer">
+      −
+    </button>
+    <span class="w-12 text-center font-semibold text-slate-800">${item.stock}</span>
+  </div>
+</td>
         <td class="px-6 py-4 font-medium">₱${Number(item.price).toFixed(2)}</td>
         <td class="px-6 py-4">
           <span class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset ${status.class}">
@@ -93,6 +91,57 @@ export function renderInventoryTable(items) {
     `;
   }).join('');
 }
+
+export function renderInventoryAdjustmentTable(items) {
+  const adjustmentTbody = document.querySelector('#adjustment-tbody');
+  if (!adjustmentTbody) return;
+
+  if (items.length === 0) {
+    adjustmentTbody.innerHTML = `
+      <tr>
+        <td colspan="6" class="px-6 py-8 text-center text-slate-400">
+          No products found.
+        </td>
+      </tr>
+    `;
+    return;
+  }
+
+  adjustmentTbody.innerHTML = items.map(item => {
+    const status = getStockStatus(item.stock);
+    const itemId = item._id || item.id; // Compatible sa MongoDB (_id) o SQL (id)
+
+    return `
+      <tr class="hover:bg-slate-50/50 transition">
+        <td class="px-6 py-4 font-medium text-slate-900">${item.name}</td>
+        <td class="px-6 py-4">${item.category}</td>
+        <td class="px-6 py-4">
+  <!-- Adjustment: pareho "+" at "-", walang Sale record -->
+  <div class="flex items-center gap-2">
+    <button onclick="window.recordAdjustment('${itemId}', -1)" class="flex h-7 w-7 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 font-bold text-slate-600 hover:bg-slate-100 active:scale-95 transition select-none cursor-pointer">
+      −
+    </button>
+    <span class="w-12 text-center font-semibold text-slate-800">${item.stock}</span>
+    <button onclick="window.recordAdjustment('${itemId}', 1)" class="flex h-7 w-7 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 font-bold text-slate-600 hover:bg-slate-100 active:scale-95 transition select-none cursor-pointer">
+      +
+    </button>
+  </div>
+</td>
+        <td class="px-6 py-4 font-medium">₱${Number(item.price).toFixed(2)}</td>
+        <td class="px-6 py-4">
+          <span class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset ${status.class}">
+            ${status.label}
+          </span>
+        </td>
+        <td class="px-6 py-4 text-right">
+          <button onclick="window.triggerEditProduct('${itemId}')" class="text-sm font-semibold text-secondary hover:underline mr-3 cursor-pointer">Edit</button>
+          <button onclick="window.triggerDeleteProduct('${itemId}')" class="text-sm font-semibold text-red-600 hover:underline cursor-pointer">Delete</button>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
 
 // 5. UPDATE KPI METRICS
 export function updateKPIs(items) {
@@ -262,35 +311,59 @@ function initModals() {
 }
 
 // 8. GLOBAL WINDOW ACTIONS
-window.adjustStock = async (id, amount) => {
+// Para sa SALES table — bawas stock + gumagawa ng Sale record
+window.recordSale = async (id, quantity = 1) => {
+  const item = inventoryItems.find(i => (i._id || i.id) === id);
+  if (!item) return;
+
+  if (item.stock < quantity) {
+    alert('Hindi sapat ang stock!');
+    return;
+  }
+
+  try {
+    const response = await fetch(`/api/inventory/${id}/sale`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ quantity })
+    });
+
+    if (response.ok) {
+      const updated = await response.json();
+      item.stock = updated.stock;
+
+      renderInventorySalesTable(inventoryItems);
+      renderInventoryAdjustmentTable(inventoryItems);
+      updateKPIs(inventoryItems);
+    }
+  } catch (error) {
+    console.error('Error recording sale:', error);
+  }
+};
+
+// Para sa ADJUSTMENT table — bawas/dagdag stock lang, walang Sale record
+window.recordAdjustment = async (id, amount, reason = 'Manual adjustment') => {
   const item = inventoryItems.find(i => (i._id || i.id) === id);
   if (!item) return;
 
   const newStock = Math.max(0, item.stock + amount);
 
   try {
-    const response = await fetch(`/api/inventory/${id}/stock`, {
-      method: 'PATCH',
+    const response = await fetch(`/api/inventory/${id}/adjustment`, {
+      method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ stock: newStock })
+      body: JSON.stringify({ amount, reason })
     });
 
     if (response.ok) {
       item.stock = newStock;
-      
-      // I-trigger uli ang filter para manatili sa search results ng user
-      const searchInput = document.querySelector('#inventory-dashboard input[type="text"]');
-      if (searchInput) {
-        searchInput.dispatchEvent(new Event('input')); 
-      } else {
-        renderInventoryTable(inventoryItems);
-      }
-      
+
+      renderInventorySalesTable(inventoryItems);
+      renderInventoryAdjustmentTable(inventoryItems);
       updateKPIs(inventoryItems);
     }
-    
   } catch (error) {
-    console.error('Error adjusting stock:', error);
+    console.error('Error recording adjustment:', error);
   }
 };
 

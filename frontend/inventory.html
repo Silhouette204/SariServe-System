@@ -128,7 +128,41 @@
    </div>
   </section>
 
-  <section id="stocks" class="container-1 my-10">
+  <section id="sales-stocks" class="container-1 my-10">
+    <h1 class="text-center font-bold text-2xl text-secondary mb-3">For Sales</h1>
+    <div class="overflow-x-auto rounded-2xl border border-secondary bg-white shadow-sm ">
+      <table class="w-full text-left border-collapse">
+        
+        <!-- Table Header -->
+
+        <thead>
+          <tr class="border-b border-slate-100 bg-slate-50/70 text-sm font-semibold text-slate-600">
+            <th class="px-6 py-4">Product</th>
+            <th class="px-6 py-4">Category</th>
+            <th class="px-6 py-4">Stock Control</th> <!-- Binago ang heding para sa controls -->
+            <th class="px-6 py-4">Price</th>
+            <th class="px-6 py-4">Status</th>
+            <th class="px-6 py-4 text-right">Actions</th>
+          </tr>
+        </thead>
+    
+  
+        
+        <tbody id="sales-tbody" class="divide-y divide-slate-100 text-sm text-slate-600">
+          <tr>
+            <td colspan="6" class="px-6 py-8 text-center text-slate-400">
+              <i class="fa-solid fa-spinner animate-spin mr-2"></i> Loading products...
+            </td>
+          </tr>
+        </tbody>
+
+
+      </table>
+    </div>
+  </section>
+
+  <section id="adjustment-stocks" class="container-1 my-10">
+    <h1 class="text-center font-bold text-2xl text-secondary mb-3">For Adjustment</h1>
     <div class="overflow-x-auto rounded-2xl border border-secondary bg-white shadow-sm ">
       <table class="w-full text-left border-collapse">
         
@@ -146,7 +180,7 @@
     
   
         
-        <tbody class="divide-y divide-slate-100 text-sm text-slate-600">
+        <tbody id="adjustment-tbody" class="divide-y divide-slate-100 text-sm text-slate-600">
           <tr>
             <td colspan="6" class="px-6 py-8 text-center text-slate-400">
               <i class="fa-solid fa-spinner animate-spin mr-2"></i> Loading products...
