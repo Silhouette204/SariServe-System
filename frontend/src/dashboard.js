@@ -74,10 +74,11 @@ export async function loadDashboardData() {
 
     // 2. Category Percentages Legend
     if (data.categoryPercentages) {
-      setText('pct-groceries', `${data.categoryPercentages.groceries || 0}%`);
       setText('pct-beverages', `${data.categoryPercentages.beverages || 0}%`);
+      setText('pct-food', `${data.categoryPercentages.food || 0}%`);
+      setText('pct-nonfood', `${data.categoryPercentages.nonFood || 0}%`);
+      setText('pct-frozen', `${data.categoryPercentages.frozen || 0}%`);
       setText('pct-snacks', `${data.categoryPercentages.snacks || 0}%`);
-      setText('pct-others', `${data.categoryPercentages.others || 0}%`);
     }
 
     // 3. Update Charts

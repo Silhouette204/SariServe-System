@@ -69,7 +69,14 @@ export function dashboardInitCharts() {
           fontFamily: 'Poppins, sans-serif'
         }
       },
-      colors: ['#4f46e5', '#0ea5e9', '#fb923c', '#dc2626'],
+      colors: [
+        '#ea580c', // Beverages
+        '#4f46e5', // Food
+        '#176B87', // NonFood
+        '#60a5fa', // Frozen
+        '#dc2626', // Snacks
+      ],
+      
       legend: { show: false },
       stroke: { 
         show: true, 
@@ -83,7 +90,9 @@ export function dashboardInitCharts() {
       },
       dataLabels: { enabled: false },
       tooltip: {
-        y: { formatter: (val) => `${val}%` }
+        y: { formatter: (val) =>
+          `₱${Number(val).toLocaleString('en-PH')}`
+        }
       }
     };
   

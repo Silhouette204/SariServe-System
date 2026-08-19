@@ -228,8 +228,17 @@ function initModals() {
         const response = await fetch('/api/inventory', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(newProduct)
+          body: JSON.stringify(newProduct),
         });
+        
+        if (response.ok) {
+          await fetchInventory();
+          addForm.reset();
+          toggleModal('add-product-modal', false);
+        } else {
+          const errorData = await response.json();
+          alert(errorData.error || 'Failed to add product');
+        }
 
         if (response.ok) {
           await fetchInventory(); // Refresh list from DB

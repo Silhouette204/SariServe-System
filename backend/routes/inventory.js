@@ -29,7 +29,7 @@ router.post('/', async (req, res) => {
   try {
     const { name, category, price, stock } = req.body;
 
-    if (!name || !price) {
+    if (!name || price == null) {
       return res.status(400).json({ error: 'Name at price ay required' });
     }
 
@@ -59,7 +59,7 @@ router.post('/', async (req, res) => {
 router.post('/:id/sale', async (req, res) => {
   try {
     const { id } = req.params;
-    const { quantity } = req.body;
+    const quantity = Number(req.body.quantity);
 
     const product = await prisma.product.findUnique({
       where: { id: Number(id) },
@@ -69,11 +69,17 @@ router.post('/:id/sale', async (req, res) => {
       return res.status(404).json({ error: 'Product not found' });
     }
 
-    if (product.stock < quantity) {
-      return res.status(400).json({ error: 'Hindi sapat ang stock' });
+    if (!Number.isInteger(quantity) || quantity <= 0) {
+      return res.status(400).json({
+        error: 'Quantity must be a positive whole number',
+      });
     }
 
     const totalAmount = Number(product.price) * quantity;
+
+    if (product.stock < quantity) {
+      return res.status(400).json({ error: 'Hindi sapat ang stock' });
+    }
 
     const [updatedProduct] = await prisma.$transaction([
       prisma.product.update({
@@ -107,7 +113,8 @@ router.post('/:id/sale', async (req, res) => {
 router.post('/:id/adjustment', async (req, res) => {
   try {
     const { id } = req.params;
-    const { amount, reason } = req.body;
+    const amount = Number(req.body.amount);
+    const { reason } = req.body;
 
     const product = await prisma.product.findUnique({
       where: { id: Number(id) },
@@ -115,6 +122,12 @@ router.post('/:id/adjustment', async (req, res) => {
 
     if (!product) {
       return res.status(404).json({ error: 'Product not found' });
+    }
+
+    if (!Number.isFinite(amount) || amount === 0) {
+      return res.status(400).json({
+        error: 'Amount must be a valid non-zero number',
+      });
     }
 
     const newStock = Math.max(0, product.stock + amount);
