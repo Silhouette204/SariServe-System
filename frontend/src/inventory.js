@@ -302,8 +302,12 @@ function initModals() {
         });
 
         if (response.ok) {
-          await fetchInventory(); // Refresh list
+          await fetchInventory();
+        } else {
+          const data = await response.json();
+          alert(data.error || 'Failed to delete product');
         }
+
       } catch (error) {
         console.error('Error deleting product:', error);
       } finally {
@@ -323,7 +327,11 @@ function initModals() {
 // 8. GLOBAL WINDOW ACTIONS
 // Para sa SALES table — bawas stock + gumagawa ng Sale record
 window.recordSale = async (id, quantity = 1) => {
-  const item = inventoryItems.find(i => (i._id || i.id) === id);
+
+  const item = inventoryItems.find(
+    (i) => String(i._id || i.id) === String(id)
+  );
+
   if (!item) return;
 
   if (item.stock < quantity) {
@@ -352,8 +360,12 @@ window.recordSale = async (id, quantity = 1) => {
 };
 
 // Para sa ADJUSTMENT table — bawas/dagdag stock lang, walang Sale record
-window.recordAdjustment = async (id, amount, reason = 'Manual adjustment') => {
-  const item = inventoryItems.find(i => (i._id || i.id) === id);
+window.recordAdjustment = async (id, amount, reason = 'OTHER') => {
+
+  const item = inventoryItems.find(
+    (i) => String(i._id || i.id) === String(id)
+  );
+  
   if (!item) return;
 
   const newStock = Math.max(0, item.stock + amount);
@@ -366,19 +378,28 @@ window.recordAdjustment = async (id, amount, reason = 'Manual adjustment') => {
     });
 
     if (response.ok) {
-      item.stock = newStock;
-
+      const updated = await response.json();
+    
+      item.stock = updated.stock;
       renderInventorySalesTable(inventoryItems);
       renderInventoryAdjustmentTable(inventoryItems);
       updateKPIs(inventoryItems);
+    } else {
+      const data = await response.json();
+      alert(data.error || 'Failed to adjust stock');
     }
+    
   } catch (error) {
     console.error('Error recording adjustment:', error);
   }
 };
 
 window.triggerEditProduct = (id) => {
-  const item = inventoryItems.find(i => (i._id || i.id) === id);
+  
+  const item = inventoryItems.find(
+    (i) => String(i._id || i.id) === String(id)
+  );
+  
   if (item) {
     document.getElementById('edit-product-id').value = id;
     document.getElementById('edit-product-name').value = item.name;

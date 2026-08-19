@@ -153,4 +153,79 @@ router.post('/:id/adjustment', async (req, res) => {
   }
 });
 
+// PUT /api/inventory/:id — i-update ang product
+router.put('/:id', async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+    const { name, category, price } = req.body;
+
+    if (!Number.isInteger(id) || id <= 0) {
+      return res.status(400).json({ error: 'Invalid product ID' });
+    }
+
+    if (!name || !category || price == null) {
+      return res.status(400).json({
+        error: 'Name, category, at price ay required',
+      });
+    }
+
+    const updatedProduct = await prisma.product.update({
+      where: { id },
+      data: {
+        name,
+        price: Number(price),
+        category: {
+          connect: { name: category },
+        },
+      },
+      include: { category: true },
+    });
+
+    res.json({
+      ...updatedProduct,
+      category: updatedProduct.category?.name || null,
+    });
+  } catch (error) {
+    console.error(error);
+
+    if (error.code === 'P2025') {
+      return res.status(404).json({
+        error: 'Product o category not found',
+      });
+    }
+
+    res.status(500).json({ error: 'Failed to update product' });
+  }
+});
+
+// DELETE /api/inventory/:id — burahin ang product
+router.delete('/:id', async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+
+    if (!Number.isInteger(id) || id <= 0) {
+      return res.status(400).json({ error: 'Invalid product ID' });
+    }
+
+    await prisma.product.delete({
+      where: { id },
+    });
+
+    res.status(204).send();
+  } catch (error) {
+    if (error.code === 'P2025') {
+      return res.status(404).json({ error: 'Product not found' });
+    }
+  
+    if (error.code === 'P2003') {
+      return res.status(409).json({
+        error: 'Hindi mabura ang product dahil may sales history na ito.',
+      });
+    }
+  
+    console.error(error);
+    res.status(500).json({ error: 'Failed to delete product' });
+  }
+});
+
 export default router;   // ← DAPAT PALAGING NASA DULO NG FILE
