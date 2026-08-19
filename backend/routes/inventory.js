@@ -10,11 +10,134 @@ router.get('/', async (req, res) => {
       include: { category: true },
       orderBy: { name: 'asc' },
     });
-    res.json(products);
+
+    // I-flatten ang category object papuntang plain string (pangalan lang)
+    const formatted = products.map((p) => ({
+      ...p,
+      category: p.category?.name || null,
+    }));
+
+    res.json(formatted);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Failed to fetch inventory' });
   }
 });
 
-export default router;
+// POST /api/inventory — gumawa ng bagong product
+router.post('/', async (req, res) => {
+  try {
+    const { name, category, price, stock } = req.body;
+
+    if (!name || !price) {
+      return res.status(400).json({ error: 'Name at price ay required' });
+    }
+
+    const newProduct = await prisma.product.create({
+      data: {
+        name,
+        price,
+        stock: stock ? Number(stock) : 0,
+        category: category
+          ? { connect: { name: category } }
+          : undefined,
+      },
+      include: { category: true },
+    });
+
+    res.status(201).json({
+      ...newProduct,
+      category: newProduct.category?.name || null,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to create product' });
+  }
+});
+
+// POST /api/inventory/:id/sale — mag-record ng benta
+router.post('/:id/sale', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { quantity } = req.body;
+
+    const product = await prisma.product.findUnique({
+      where: { id: Number(id) },
+    });
+
+    if (!product) {
+      return res.status(404).json({ error: 'Product not found' });
+    }
+
+    if (product.stock < quantity) {
+      return res.status(400).json({ error: 'Hindi sapat ang stock' });
+    }
+
+    const totalAmount = Number(product.price) * quantity;
+
+    const [updatedProduct] = await prisma.$transaction([
+      prisma.product.update({
+        where: { id: Number(id) },
+        data: { stock: { decrement: quantity } },
+      }),
+      prisma.sale.create({
+        data: {
+          totalAmount,
+          items: {
+            create: [
+              {
+                productId: Number(id),
+                quantity,
+                priceAtSale: product.price,
+              },
+            ],
+          },
+        },
+      }),
+    ]);
+
+    res.json(updatedProduct);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to record sale' });
+  }
+});
+
+// POST /api/inventory/:id/adjustment — mag-record ng stock adjustment
+router.post('/:id/adjustment', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { amount, reason } = req.body;
+
+    const product = await prisma.product.findUnique({
+      where: { id: Number(id) },
+    });
+
+    if (!product) {
+      return res.status(404).json({ error: 'Product not found' });
+    }
+
+    const newStock = Math.max(0, product.stock + amount);
+
+    const [updatedProduct] = await prisma.$transaction([
+      prisma.product.update({
+        where: { id: Number(id) },
+        data: { stock: newStock },
+      }),
+      prisma.stockAdjustment.create({
+        data: {
+          productId: Number(id),
+          amount,
+          reason: reason || 'OTHER',
+        },
+      }),
+    ]);
+
+    res.json(updatedProduct);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to record adjustment' });
+  }
+});
+
+export default router;   // ← DAPAT PALAGING NASA DULO NG FILE
