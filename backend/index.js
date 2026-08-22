@@ -1,8 +1,8 @@
 import express from 'express';
 import cors from 'cors';
-import inventoryRouter from './routes/inventory.js';
 import dashboardRouter from './routes/dashboard.js';
-
+import inventoryRouter from './routes/inventory.js';
+import salesRouter from './routes/sales.js';
 
 const app = express();
 
@@ -15,6 +15,7 @@ app.get('/', (req, res) => {
 
 app.use('/api/inventory', inventoryRouter);
 app.use('/api/dashboard', dashboardRouter);
+app.use('/api/sales', salesRouter);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
