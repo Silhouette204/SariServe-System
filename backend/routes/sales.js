@@ -18,6 +18,13 @@ function startOfMonth(date) {
   return d;
 }
 
+function percentChange(current, previous) {
+  if (previous === 0) {
+    return current === 0 ? 0 : 100;
+  }
+  return ((current - previous) / previous) * 100;
+}
+
 // Helper: kunin ang date range base sa timeframe dropdown
 function getTimeframeRange(timeframe, now) {
   const todayStart = startOfDay(now);
@@ -49,6 +56,9 @@ function getTimeframeRange(timeframe, now) {
 // GET /api/sales/dashboard?timeframe=this-week
 router.get('/dashboard', async (req, res) => {
   try {
+
+    res.set('Cache-Control', 'no-store');
+
     const timeframe = req.query.timeframe || 'this-week';
     const now = new Date();
 
@@ -63,31 +73,35 @@ router.get('/dashboard', async (req, res) => {
 
     const { start, end, groupBy } = getTimeframeRange(timeframe, now);
 
-    const [todaySales, yesterdaySales, monthSales, chartSales, recentSales] =
+    const prevMonthStart = new Date(monthStart);
+    prevMonthStart.setMonth(prevMonthStart.getMonth() - 1);
+    const prevMonthEnd = new Date(monthStart);
+    
+    const [todaySales, yesterdaySales, monthSales, prevMonthSales, chartSales, recentSales] =
       await Promise.all([
-        // Today's sales — para sa Today's Revenue at Total Transaction
         prisma.sale.findMany({
           where: { createdAt: { gte: todayStart, lt: tomorrowStart } },
           include: { items: true },
         }),
-
-        // Yesterday's sales — para sa "vs yesterday" comparison
+    
         prisma.sale.findMany({
           where: { createdAt: { gte: yesterdayStart, lt: todayStart } },
         }),
-
-        // This month's sales — para sa Monthly Revenue
+    
         prisma.sale.findMany({
           where: { createdAt: { gte: monthStart, lt: tomorrowStart } },
         }),
-
-        // Sales sa loob ng napiling timeframe — para sa chart
+    
+        // BAGO: sales mula nakaraang buwan — para sa Monthly Revenue % change
+        prisma.sale.findMany({
+          where: { createdAt: { gte: prevMonthStart, lt: prevMonthEnd } },
+        }),
+    
         prisma.sale.findMany({
           where: { createdAt: { gte: start, lt: end } },
           orderBy: { createdAt: 'asc' },
         }),
-
-        // Pinaka-huling 10 sales — para sa Recent Sales table
+    
         prisma.sale.findMany({
           take: 10,
           orderBy: { createdAt: 'desc' },
@@ -97,11 +111,26 @@ router.get('/dashboard', async (req, res) => {
 
     const peso = (val) => Number(val || 0);
 
-    // ===== 1. KPIs =====
-    const todayRevenue = todaySales.reduce((sum, s) => sum + peso(s.totalAmount), 0);
-    const totalTransactions = todaySales.length;
-    const avgSale = totalTransactions ? todayRevenue / totalTransactions : 0;
-    const monthlyRevenue = monthSales.reduce((sum, s) => sum + peso(s.totalAmount), 0);
+// ===== 1. KPIs =====
+const todayRevenue = todaySales.reduce((sum, s) => sum + peso(s.totalAmount), 0);
+const totalTransactions = todaySales.length;
+const avgSale = totalTransactions ? todayRevenue / totalTransactions : 0;
+const monthlyRevenue = monthSales.reduce((sum, s) => sum + peso(s.totalAmount), 0);
+
+// BAGO: "kahapon" at "nakaraang buwan" na values, para sa comparison
+const prevTodayRevenue = yesterdaySales.reduce((sum, s) => sum + peso(s.totalAmount), 0);
+const prevTotalTransactions = yesterdaySales.length;
+const prevAvgSale = prevTotalTransactions ? prevTodayRevenue / prevTotalTransactions : 0;
+const prevMonthlyRevenue = prevMonthSales.reduce((sum, s) => sum + peso(s.totalAmount), 0);
+
+// BAGO: percentage changes
+const todayRevenueChange = percentChange(todayRevenue, prevTodayRevenue);
+const totalTransactionsChange = percentChange(totalTransactions, prevTotalTransactions);
+const avgSaleChange = percentChange(avgSale, prevAvgSale);
+const monthlyRevenueChange = percentChange(monthlyRevenue, prevMonthlyRevenue);
+
+// BAGO: ilang araw na ang lumipas sa kasalukuyang buwan
+const completedDays = now.getDate();
 
     // ===== 2. Chart (base sa timeframe) =====
     const labels = [];
@@ -193,6 +222,13 @@ router.get('/dashboard', async (req, res) => {
         totalTransactions,
         avgSale,
         monthlyRevenue,
+        prevTodayRevenue,
+        prevTotalTransactions,
+        todayRevenueChange,
+        totalTransactionsChange,
+        avgSaleChange,
+        monthlyRevenueChange,
+        completedDays,
       },
       chart: { labels, values },
       recentSales: recentSalesFormatted,

@@ -3,6 +3,7 @@ import { renderSalesChart, renderModalSalesChart } from './sales-charts.js';
 
 // Store last fetched chart data para magamit sa modal
 let currentChartData = { labels: [], values: [] };
+let currentRecentSales = [];
 
 export async function initSalesPage() {
   initSalesModals();
@@ -14,16 +15,27 @@ export async function initSalesPage() {
       await loadDashboardData(e.target.value);
     });
   }
+
+  const searchInput = document.querySelector('#sales-dashboard input[type="text"]');
+  if (searchInput) {
+    searchInput.addEventListener('input', (e) => {
+      const query = e.target.value.trim().toLowerCase();
+      const filtered = currentRecentSales.filter((item) =>
+        item.invoiceId.toLowerCase().includes(query)
+      );
+      populateRecentSalesTable(filtered);
+    });
+  }
 }
+
 
 async function loadDashboardData(timeframe) {
   const data = await fetchSalesDashboardData(timeframe);
   if (!data) return;
 
-  // Save reference para sa modal preview
   currentChartData = data.chart || { labels: [], values: [] };
+  currentRecentSales = data.recentSales || [];
 
-  // 1. Populate KPI Cards (Inayos ang IDs)
   const todayRev = document.getElementById('sales-today-revenue');
   const totalTrans = document.getElementById('sales-total-transaction');
   const avgSale = document.getElementById('sales-average-sale');
@@ -34,10 +46,30 @@ async function loadDashboardData(timeframe) {
   if (avgSale) avgSale.textContent = `₱ ${data.kpis.avgSale.toFixed(2)}`;
   if (monthRev) monthRev.textContent = `₱ ${data.kpis.monthlyRevenue.toFixed(2)}`;
 
-  // 2. Render Main Chart
+  // BAGO: percentage badges
+  const setPercent = (id, value) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const sign = value >= 0 ? '+' : '';
+    el.textContent = `${sign}${value.toFixed(2)}%`;
+  };
+
+  setPercent('kpi-sales-today-revenue', data.kpis.todayRevenueChange);
+  setPercent('kpi-sales-total-transaction', data.kpis.totalTransactionsChange);
+  setPercent('kpi-sales-average-sale', data.kpis.avgSaleChange);
+  setPercent('kpi-sales-monthly-revenue', data.kpis.monthlyRevenueChange);
+
+  // BAGO: "vs yesterday" values
+  const prevTodayRev = document.getElementById('prev-sales-today-revenue');
+  const prevTotalTrans = document.getElementById('prev-sales-total-transaction');
+  const completedDays = document.getElementById('completed-days');
+
+  if (prevTodayRev) prevTodayRev.textContent = `₱ ${data.kpis.prevTodayRevenue.toFixed(2)}`;
+  if (prevTotalTrans) prevTotalTrans.textContent = data.kpis.prevTotalTransactions;
+  if (completedDays) completedDays.textContent = data.kpis.completedDays;
+
   renderSalesChart(data.chart.labels, data.chart.values);
 
-  // 3. Populate Tables & Lists
   populateRecentSalesTable(data.recentSales);
   populateTopProducts(data.topProducts);
 }
