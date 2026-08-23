@@ -172,11 +172,17 @@ const completedDays = now.getDate();
     const recentSalesFormatted = recentSales.map((sale) => {
       const itemCount = sale.items.reduce((sum, i) => sum + i.quantity, 0);
       const createdAt = new Date(sale.createdAt);
-
+    
+      // BAGO: buod ng mga binili, hal. "2x Coca-Cola, 1x Pancit Canton"
+      const itemsSummary = sale.items
+        .map((item) => `${item.quantity}x ${item.product.name}`)
+        .join(', ');
+    
       return {
         invoiceId: `INV-${String(sale.id).padStart(4, '0')}`,
         customerName: 'Walk-in Customer',
         itemCount,
+        itemsSummary,   // BAGO
         paymentMethod: 'Cash',
         time: createdAt.toLocaleTimeString('en-PH', { hour: '2-digit', minute: '2-digit' }),
         date: createdAt.toDateString() === todayStart.toDateString() ? 'Today' : createdAt.toLocaleDateString('en-PH'),

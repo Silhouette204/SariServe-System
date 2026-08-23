@@ -281,19 +281,19 @@
         <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
           <div class="p-3.5 bg-slate-50 border border-slate-200 rounded-xl">
             <p class="text-xs text-slate-500 font-medium">Today's Revenue</p>
-            <p class="text-lg font-bold text-emerald-600">₱2,450.00</p>
+            <p id="report-today-revenue" class="text-lg font-bold text-emerald-600">₱0.00</p>
           </div>
           <div class="p-3.5 bg-slate-50 border border-slate-200 rounded-xl">
             <p class="text-xs text-slate-500 font-medium">Total Transactions</p>
-            <p class="text-lg font-bold text-slate-800">48</p>
+            <p id="report-total-transactions" class="text-lg font-bold text-slate-800">0</p>
           </div>
           <div class="p-3.5 bg-slate-50 border border-slate-200 rounded-xl">
             <p class="text-xs text-slate-500 font-medium">Average Sale</p>
-            <p class="text-lg font-bold text-indigo-600">₱51.04</p>
+            <p id="report-avg-sale" class="text-lg font-bold text-indigo-600">₱0.00</p>
           </div>
           <div class="p-3.5 bg-slate-50 border border-slate-200 rounded-xl">
             <p class="text-xs text-slate-500 font-medium">Monthly Revenue</p>
-            <p class="text-lg font-bold text-slate-800">₱64,200.00</p>
+            <p id="report-monthly-revenue" class="text-lg font-bold text-slate-800">₱0.00</p>
           </div>
         </div>
       </div>
@@ -313,7 +313,7 @@
                   <th class="py-2.5 px-3 text-right">Revenue</th>
                 </tr>
               </thead>
-              <tbody class="divide-y divide-slate-100 text-slate-700">
+              <tbody  id="report-top-products-body" class="divide-y divide-slate-100 text-slate-700">
                 <tr>
                   <td class="py-2 px-3 font-semibold">Lucky Me Pancit Canton</td>
                   <td class="py-2 px-3 text-center">85 pcs</td>
@@ -346,7 +346,7 @@
                   <th class="py-2.5 px-3 text-right">Amount</th>
                 </tr>
               </thead>
-              <tbody class="divide-y divide-slate-100 text-slate-700">
+              <tbody id="report-recent-sales-body" class="divide-y divide-slate-100 text-slate-700">
                 <tr>
                   <td class="py-2 px-3 text-slate-500">10:42 AM</td>
                   <td class="py-2 px-3">2x Canton, 1x Coke</td>

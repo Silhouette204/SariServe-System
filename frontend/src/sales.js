@@ -1,9 +1,11 @@
 import { fetchSalesDashboardData } from './sales-services.js';
 import { renderSalesChart, renderModalSalesChart } from './sales-charts.js';
+import html2pdf from 'html2pdf.js';
 
-// Store last fetched chart data para magamit sa modal
 let currentChartData = { labels: [], values: [] };
 let currentRecentSales = [];
+let currentKpis = {};
+let currentTopProducts = [];
 
 export async function initSalesPage() {
   initSalesModals();
@@ -28,13 +30,14 @@ export async function initSalesPage() {
   }
 }
 
-
 async function loadDashboardData(timeframe) {
   const data = await fetchSalesDashboardData(timeframe);
   if (!data) return;
 
   currentChartData = data.chart || { labels: [], values: [] };
   currentRecentSales = data.recentSales || [];
+  currentKpis = data.kpis || {};
+  currentTopProducts = data.topProducts || [];
 
   const todayRev = document.getElementById('sales-today-revenue');
   const totalTrans = document.getElementById('sales-total-transaction');
@@ -46,7 +49,6 @@ async function loadDashboardData(timeframe) {
   if (avgSale) avgSale.textContent = `₱ ${data.kpis.avgSale.toFixed(2)}`;
   if (monthRev) monthRev.textContent = `₱ ${data.kpis.monthlyRevenue.toFixed(2)}`;
 
-  // BAGO: percentage badges
   const setPercent = (id, value) => {
     const el = document.getElementById(id);
     if (!el) return;
@@ -59,7 +61,6 @@ async function loadDashboardData(timeframe) {
   setPercent('kpi-sales-average-sale', data.kpis.avgSaleChange);
   setPercent('kpi-sales-monthly-revenue', data.kpis.monthlyRevenueChange);
 
-  // BAGO: "vs yesterday" values
   const prevTodayRev = document.getElementById('prev-sales-today-revenue');
   const prevTotalTrans = document.getElementById('prev-sales-total-transaction');
   const completedDays = document.getElementById('completed-days');
@@ -79,14 +80,15 @@ export function initSalesModals() {
   const openBtn = document.getElementById('open-export-modal-btn');
   const closeBtn = document.getElementById('close-export-modal-btn');
   const cancelBtn = document.getElementById('cancel-export-modal-btn');
+  const downloadBtn = document.getElementById('download-pdf-btn');
 
   const toggleModal = (show = true) => {
     if (!modal) return;
     if (show) {
       modal.classList.remove('hidden');
       modal.classList.add('flex');
-      
-      // I-render ang modal chart gamit ang dynamic chart data mula sa DB
+
+      populateReportModal();
       renderModalSalesChart(currentChartData.labels, currentChartData.values);
     } else {
       modal.classList.add('hidden');
@@ -97,6 +99,66 @@ export function initSalesModals() {
   if (openBtn) openBtn.onclick = () => toggleModal(true);
   if (closeBtn) closeBtn.onclick = () => toggleModal(false);
   if (cancelBtn) cancelBtn.onclick = () => toggleModal(false);
+
+  // BAGO: I-download ang report bilang PDF
+  if (downloadBtn) {
+    downloadBtn.onclick = () => {
+      const reportEl = document.getElementById('printable-report-area');
+      if (!reportEl) return;
+
+      const opt = {
+        margin: 10,
+        filename: `SariServe-Sales-Report-${new Date().toISOString().slice(0, 10)}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+      };
+
+      html2pdf().set(opt).from(reportEl).save();
+    };
+  }
+}
+
+// BAGO: i-populate ang modal ng totoong datos mula sa DB
+function populateReportModal() {
+  const dateEl = document.getElementById('report-generated-date');
+  if (dateEl) {
+    dateEl.textContent = new Date().toLocaleDateString('en-PH', {
+      year: 'numeric', month: 'long', day: 'numeric',
+    });
+  }
+
+  const setText = (id, val) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = val;
+  };
+
+  setText('report-today-revenue', `₱${(currentKpis.todayRevenue || 0).toFixed(2)}`);
+  setText('report-total-transactions', currentKpis.totalTransactions || 0);
+  setText('report-avg-sale', `₱${(currentKpis.avgSale || 0).toFixed(2)}`);
+  setText('report-monthly-revenue', `₱${(currentKpis.monthlyRevenue || 0).toFixed(2)}`);
+
+  const topProductsBody = document.getElementById('report-top-products-body');
+  if (topProductsBody) {
+    topProductsBody.innerHTML = currentTopProducts.map((p) => `
+      <tr>
+        <td class="py-2 px-3 font-semibold">${p.name}</td>
+        <td class="py-2 px-3 text-center">${p.soldCount} pcs</td>
+        <td class="py-2 px-3 text-right font-medium">₱${p.totalRevenue.toFixed(2)}</td>
+      </tr>
+    `).join('') || `<tr><td colspan="3" class="py-3 px-3 text-center text-slate-400">Walang datos</td></tr>`;
+  }
+
+  const recentSalesBody = document.getElementById('report-recent-sales-body');
+  if (recentSalesBody) {
+    recentSalesBody.innerHTML = currentRecentSales.map((s) => `
+      <tr>
+        <td class="py-2 px-3 text-slate-500">${s.time}</td>
+        <td class="py-2 px-3">${s.itemCount} items</td>
+        <td class="py-2 px-3 text-right font-semibold text-emerald-600">₱${s.totalAmount.toFixed(2)}</td>
+      </tr>
+    `).join('') || `<tr><td colspan="3" class="py-3 px-3 text-center text-slate-400">Walang datos</td></tr>`;
+  }
 }
 
 function populateRecentSalesTable(transactions = []) {
