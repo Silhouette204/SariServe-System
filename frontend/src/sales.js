@@ -107,35 +107,82 @@ export function initSalesModals() {
       const reportEl = document.getElementById('printable-report-area');
       if (!reportEl) return;
   
-      try {
-        const canvas = await html2canvas(reportEl, { scale: 2 });
-        const imgData = canvas.toDataURL('image/jpeg', 0.98);
+      // Maghintay sandali para fully render ang chart
+      await new Promise(resolve => setTimeout(resolve, 300));
   
-        const pdf = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
+      // Temporary alisin ang constraints
+      const originalStyles = {
+        overflow: reportEl.style.overflow,
+        height: reportEl.style.height,
+        maxHeight: reportEl.style.maxHeight,
+      };
+      reportEl.style.overflow = 'visible';
+      reportEl.style.height = 'auto';
+      reportEl.style.maxHeight = 'none';
+  
+      try {
+        const canvas = await html2canvas(reportEl, {
+          scale: 2,
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: '#ffffff',
+          logging: false,
+          height: reportEl.scrollHeight,
+          windowHeight: reportEl.scrollHeight,
+          onclone: (clonedDoc) => {
+            const canvases = clonedDoc.querySelectorAll('canvas');
+            canvases.forEach(c => {
+              c.style.visibility = 'visible';
+              c.style.display = 'block';
+              c.style.opacity = '1';
+            });
+          }
+        });
+  
+        const imgData = canvas.toDataURL('image/jpeg', 0.95);
+  
+        const pdf = new jsPDF({
+          unit: 'mm',
+          format: 'a4',
+          orientation: 'portrait',
+        });
+  
+        const margin = 10; // 10mm margin sa lahat ng side
         const pageWidth = pdf.internal.pageSize.getWidth();
         const pageHeight = pdf.internal.pageSize.getHeight();
   
-        const imgWidth = pageWidth - 20; // 10mm margin bawat side
-        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+        const usableWidth = pageWidth - margin * 2;
+        const usableHeight = pageHeight - margin * 2;
   
-        let heightLeft = imgHeight;
-        let position = 10;
+        // Kunin ang natural size ng image
+        const imgWidth = canvas.width;
+        const imgHeight = canvas.height;
   
-        pdf.addImage(imgData, 'JPEG', 10, position, imgWidth, imgHeight);
-        heightLeft -= (pageHeight - 20);
+        // Kalkulahin ang scale para kasyahin sa isang page (width O height)
+        const ratio = Math.min(
+          usableWidth / imgWidth,
+          usableHeight / imgHeight
+        );
   
-        // Kung mahaba ang report, magdagdag ng susunod na pages
-        while (heightLeft > 0) {
-          position = heightLeft - imgHeight + 10;
-          pdf.addPage();
-          pdf.addImage(imgData, 'JPEG', 10, position, imgWidth, imgHeight);
-          heightLeft -= (pageHeight - 20);
-        }
+        const finalWidth = imgWidth * ratio;
+        const finalHeight = imgHeight * ratio;
+  
+        // I-center nang pahalang (optional pero mas maganda)
+        const x = margin + (usableWidth - finalWidth) / 2;
+        const y = margin;
+  
+        // Isang page lang
+        pdf.addImage(imgData, 'JPEG', x, y, finalWidth, finalHeight);
   
         pdf.save(`SariServe-Sales-Report-${new Date().toISOString().slice(0, 10)}.pdf`);
       } catch (error) {
         console.error('Error generating PDF:', error);
         alert('May problema sa pag-generate ng PDF.');
+      } finally {
+        // Ibalik ang original styles
+        reportEl.style.overflow = originalStyles.overflow;
+        reportEl.style.height = originalStyles.height;
+        reportEl.style.maxHeight = originalStyles.maxHeight;
       }
     };
   }
