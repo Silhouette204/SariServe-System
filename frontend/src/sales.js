@@ -1,6 +1,7 @@
 import { fetchSalesDashboardData } from './sales-services.js';
 import { renderSalesChart, renderModalSalesChart } from './sales-charts.js';
-import html2pdf from 'html2pdf.js';
+import html2canvas from 'html2canvas-pro';
+import jsPDF from 'jspdf';
 
 let currentChartData = { labels: [], values: [] };
 let currentRecentSales = [];
@@ -102,19 +103,40 @@ export function initSalesModals() {
 
   // BAGO: I-download ang report bilang PDF
   if (downloadBtn) {
-    downloadBtn.onclick = () => {
+    downloadBtn.onclick = async () => {
       const reportEl = document.getElementById('printable-report-area');
       if (!reportEl) return;
-
-      const opt = {
-        margin: 10,
-        filename: `SariServe-Sales-Report-${new Date().toISOString().slice(0, 10)}.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2 },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-      };
-
-      html2pdf().set(opt).from(reportEl).save();
+  
+      try {
+        const canvas = await html2canvas(reportEl, { scale: 2 });
+        const imgData = canvas.toDataURL('image/jpeg', 0.98);
+  
+        const pdf = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        const pageHeight = pdf.internal.pageSize.getHeight();
+  
+        const imgWidth = pageWidth - 20; // 10mm margin bawat side
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+  
+        let heightLeft = imgHeight;
+        let position = 10;
+  
+        pdf.addImage(imgData, 'JPEG', 10, position, imgWidth, imgHeight);
+        heightLeft -= (pageHeight - 20);
+  
+        // Kung mahaba ang report, magdagdag ng susunod na pages
+        while (heightLeft > 0) {
+          position = heightLeft - imgHeight + 10;
+          pdf.addPage();
+          pdf.addImage(imgData, 'JPEG', 10, position, imgWidth, imgHeight);
+          heightLeft -= (pageHeight - 20);
+        }
+  
+        pdf.save(`SariServe-Sales-Report-${new Date().toISOString().slice(0, 10)}.pdf`);
+      } catch (error) {
+        console.error('Error generating PDF:', error);
+        alert('May problema sa pag-generate ng PDF.');
+      }
     };
   }
 }
@@ -201,7 +223,7 @@ function populateTopProducts(products = []) {
     <li>
       <div class="flex flex-row items-center justify-between w-full gap-3 py-2">
         <div class="flex items-center gap-3">
-          <span class="bg-secondary py-2 px-4 rounded-xl text-base font-bold text-primary shrink-0">${index + 1}</span>
+          <span class="bg-secondary py-2 px-4 rounded-xl text-base font-bold text-primary shrink-0">${index + 1}</span>s
           <div>
             <h1 class="text-secondary font-semibold text-base leading-tight">${prod.name}</h1>
             <p class="text-secondary/80 text-sm"><span>${prod.soldCount}</span> sold</p>
