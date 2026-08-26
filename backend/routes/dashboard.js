@@ -3,8 +3,19 @@ import prisma from '../lib/prisma.js';
 
 const router = express.Router();
 
+function toLocalDateKey(date) {
+  const d = new Date(date);
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 router.get('/stats', async (req, res) => {
   try {
+
+    res.set('Cache-Control', 'no-store');
+
     const now = new Date();
 
     // Start ng araw ngayon
@@ -72,14 +83,14 @@ router.get('/stats', async (req, res) => {
     for (let i = 0; i < 7; i++) {
       const date = new Date(weekStart);
       date.setDate(weekStart.getDate() + i);
-
-      const key = date.toISOString().slice(0, 10);
+    
+      const key = toLocalDateKey(date);   // ← dating: date.toISOString().slice(0, 10)
       days.push(date.toLocaleDateString('en-PH', { weekday: 'short' }));
       salesByDay.set(key, 0);
     }
-
+    
     weekSales.forEach((sale) => {
-      const key = new Date(sale.createdAt).toISOString().slice(0, 10);
+      const key = toLocalDateKey(sale.createdAt);   // ← dating: new Date(sale.createdAt).toISOString().slice(0, 10)
       salesByDay.set(key, (salesByDay.get(key) || 0) + peso(sale.totalAmount));
     });
 

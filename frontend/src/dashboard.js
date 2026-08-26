@@ -51,7 +51,10 @@ export function initDashboardModals() {
 // --- 2. API DATA FETCHING ---
 export async function loadDashboardData() {
   try {
-    const response = await fetch('/api/dashboard/stats');
+    const response = await fetch('/api/dashboard/stats', {
+      cache: 'no-store',
+    });
+
     if (!response.ok) throw new Error('Failed to fetch dashboard data');
 
     const data = await response.json();
