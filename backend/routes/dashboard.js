@@ -11,6 +11,13 @@ function toLocalDateKey(date) {
   return `${year}-${month}-${day}`;
 }
 
+function percentChange(current, previous) {
+  if (previous === 0) {
+    return current === 0 ? 0 : 100;
+  }
+  return ((current - previous) / previous) * 100;
+}
+
 router.get('/stats', async (req, res) => {
   try {
 
@@ -32,48 +39,86 @@ router.get('/stats', async (req, res) => {
     const weekStart = new Date(todayStart);
     weekStart.setDate(weekStart.getDate() - 6);
 
-    const [todaySales, prevTodaySales, totalProducts, lowStockItems, weekSales] =
-      await Promise.all([
-        prisma.sale.findMany({
-          where: {
-            createdAt: { gte: todayStart, lt: tomorrowStart },
-          },
-          include: {
-            items: {
-              include: {
-                product: { include: { category: true } },
-              },
-            },
-          },
-        }),
+    const [todaySales, prevTodaySales, totalProducts, lowStockItems, weekSales, totalProductsYesterday, allProducts, todaySaleItems, todayAdjustments] =
 
-        prisma.sale.findMany({
-          where: {
-            createdAt: { gte: yesterdayStart, lt: todayStart },
-          },
-        }),
-
-        prisma.product.count(),
-
-        prisma.product.findMany({
-          where: { stock: { lte: 5 } }, // palitan kung ibang threshold mo
-          orderBy: { stock: 'asc' },
-        }),
-
-        prisma.sale.findMany({
-          where: { createdAt: { gte: weekStart } },
-          include: {
-            items: {
-              include: {
-                product: { include: { category: true } },
-              },
-            },
-          },
-          orderBy: { createdAt: 'asc' },
-        }),
-      ]);
+    await Promise.all([
+      prisma.sale.findMany({
+        where: { createdAt: { gte: todayStart, lt: tomorrowStart } },
+        include: {
+          items: { include: { product: { include: { category: true } } } },
+        },
+      }),
+  
+      prisma.sale.findMany({
+        where: { createdAt: { gte: yesterdayStart, lt: todayStart } },
+      }),
+  
+      prisma.product.count(),
+  
+      prisma.product.findMany({
+        where: { stock: { lte: 5 } },
+        orderBy: { stock: 'asc' },
+      }),
+  
+      prisma.sale.findMany({
+        where: { createdAt: { gte: weekStart } },
+        include: {
+          items: { include: { product: { include: { category: true } } } },
+        },
+        orderBy: { createdAt: 'asc' },
+      }),
+  
+      // BAGO: bilang ng products na existed na bago mag-umaga ngayon
+      prisma.product.count({
+        where: { createdAt: { lt: todayStart } },
+      }),
+  
+      // BAGO: kailangan natin ng kasalukuyang stock ng LAHAT ng products
+      // para ma-reconstruct ang "kahapong stock" nila
+      prisma.product.findMany({
+        select: { id: true, stock: true },
+      }),
+  
+      // BAGO: mga binenta NGAYONG ARAW LANG (para i-reverse)
+      prisma.saleItem.findMany({
+        where: { sale: { createdAt: { gte: todayStart, lt: tomorrowStart } } },
+        select: { productId: true, quantity: true },
+      }),
+  
+      // BAGO: mga adjustment NGAYONG ARAW LANG (para i-reverse)
+      prisma.stockAdjustment.findMany({
+        where: { createdAt: { gte: todayStart, lt: tomorrowStart } },
+        select: { productId: true, amount: true },
+      }),
+    ]);
 
     const peso = (value) => Number(value || 0);
+    
+    const yesterdayStockMap = new Map();
+allProducts.forEach((p) => {
+  yesterdayStockMap.set(p.id, p.stock);
+});
+
+todaySaleItems.forEach((item) => {
+  const current = yesterdayStockMap.get(item.productId) || 0;
+  yesterdayStockMap.set(item.productId, current + item.quantity);
+});
+
+todayAdjustments.forEach((adj) => {
+  const current = yesterdayStockMap.get(adj.productId) || 0;   // adj.productId, hindi item.productId
+  yesterdayStockMap.set(adj.productId, current - adj.amount);
+});
+
+const lowStockCountYesterday = [...yesterdayStockMap.values()].filter(
+  (stock) => stock <= 5
+).length;
+
+const totalProductsChange = percentChange(totalProducts, totalProductsYesterday);
+const lowStockChange = percentChange(lowStockItems.length, lowStockCountYesterday);
+const todaySalesChangeVsYesterday = percentChange(
+  todaySales.reduce((sum, s) => sum + peso(s.totalAmount), 0),
+  prevTodaySales.reduce((sum, s) => sum + peso(s.totalAmount), 0)
+);
 
     // Weekly sales: gamit ang actual sale total
     const days = [];
@@ -147,61 +192,47 @@ router.get('/stats', async (req, res) => {
     });
 
     res.json({
-      todaySales: todaySales.reduce(
-        (sum, sale) => sum + peso(sale.totalAmount),
-        0
-      ),
-      prevTodaySales: prevTodaySales.reduce(
-        (sum, sale) => sum + peso(sale.totalAmount),
-        0
-      ),
+      todaySales: todaySales.reduce((sum, sale) => sum + peso(sale.totalAmount), 0),
+      prevTodaySales: prevTodaySales.reduce((sum, sale) => sum + peso(sale.totalAmount), 0),
+      todaySalesChange: todaySalesChangeVsYesterday,   // BAGO
+    
       totalProducts,
+      totalProductsChange,   // BAGO
+    
       lowStockCount: lowStockItems.length,
-
-      // Magiging 0 muna kung wala pang utang/customer model sa schema
+      lowStockChange,   // BAGO
+    
       totalUtang: 0,
       totalUtangCustomers: 0,
-
-      weeklySales: {
-        days,
-        amounts,
+    
+      weeklySales: { days, amounts },
+      categories: { labels: categoryLabels, series: categorySeries },
+      categoryPercentages: {
+        beverages: percentageOf('Beverages'),
+        food: percentageOf('Food'),
+        nonFood: percentageOf('NonFood'),
+        frozen: percentageOf('Frozen'),
+        snacks: percentageOf('Snacks'),
       },
-
-      categories: {
-        labels: categoryLabels,
-        series: categorySeries,
-      },
-
-  categoryPercentages: {
-    beverages: percentageOf('Beverages'),
-    food: percentageOf('Food'),
-    nonFood: percentageOf('NonFood'),
-    frozen: percentageOf('Frozen'),
-    snacks: percentageOf('Snacks'),
-  },
-
       lowStockItems: {
         names: lowStockItems.map((item) => item.name),
         quantities: lowStockItems.map((item) => item.stock),
       },
-
       lowStockTableDetails: lowStockItems.map((item) => ({
         name: item.name,
         stock: item.stock,
         minThreshold: 5,
       })),
-
       recentTransactions: recentSales.map((sale) => ({
         customerName: 'Walk-in Customer',
         txnCode: `SALE-${sale.id}`,
         amount: peso(sale.totalAmount),
         status: 'Paid',
-        itemsSummary: sale.items
-          .map((item) => `${item.product.name} × ${item.quantity}`)
-          .join(', '),
+        itemsSummary: sale.items.map((item) => `${item.product.name} × ${item.quantity}`).join(', '),
         timeAgo: new Date(sale.createdAt).toLocaleString('en-PH'),
       })),
     });
+
   } catch (error) {
     console.error('Dashboard error:', error);
     res.status(500).json({ error: 'Failed to fetch dashboard stats' });

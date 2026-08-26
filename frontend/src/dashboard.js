@@ -84,6 +84,17 @@ export async function loadDashboardData() {
       setText('pct-snacks', `${data.categoryPercentages.snacks || 0}%`);
     }
 
+    const setPercent = (id, value) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const sign = value >= 0 ? '+' : '';
+      el.textContent = `${sign}${value.toFixed(2)}%`;
+    };
+    
+    setPercent('kpi-dash-today-sale', data.todaySalesChange);
+    setPercent('kpi-dash-total-product', data.totalProductsChange);
+    setPercent('kpi-dash-low-stock', data.lowStockChange);
+
     // 3. Update Charts
     if (data.weeklySales) {
       updateWeeklySalesChart(data.weeklySales.amounts, data.weeklySales.days);
