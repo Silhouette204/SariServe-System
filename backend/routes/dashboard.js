@@ -113,8 +113,11 @@ const lowStockCountYesterday = [...yesterdayStockMap.values()].filter(
   (stock) => stock <= 5
 ).length;
 
-const totalProductsChange = percentChange(totalProducts, totalProductsYesterday);
-const lowStockChange = percentChange(lowStockItems.length, lowStockCountYesterday);
+const PRODUCT_CAP = 150; // target/cap para sa "progress" gauge
+
+const totalProductsChange = Math.min(100, (totalProducts / PRODUCT_CAP) * 100);
+const lowStockChange = Math.min(100, (lowStockItems.length / PRODUCT_CAP) * 100);
+
 const todaySalesChangeVsYesterday = percentChange(
   todaySales.reduce((sum, s) => sum + peso(s.totalAmount), 0),
   prevTodaySales.reduce((sum, s) => sum + peso(s.totalAmount), 0)

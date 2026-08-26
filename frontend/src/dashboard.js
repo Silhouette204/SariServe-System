@@ -91,9 +91,18 @@ export async function loadDashboardData() {
       el.textContent = `${sign}${value.toFixed(2)}%`;
     };
     
-    setPercent('kpi-dash-today-sale', data.todaySalesChange);
-    setPercent('kpi-dash-total-product', data.totalProductsChange);
-    setPercent('kpi-dash-low-stock', data.lowStockChange);
+   // Today's Sales: totoong "% change vs kahapon" — may +/- sign
+setPercent('kpi-dash-today-sale', data.todaySalesChange);
+
+// Total Product / Low Stock: "progress gauge" papunta sa 150 cap — walang sign
+const setProgress = (id, value) => {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = `${value.toFixed(2)}%`;
+};
+
+setProgress('kpi-dash-total-product', data.totalProductsChange);
+setProgress('kpi-dash-low-stock', data.lowStockChange);
 
     // 3. Update Charts
     if (data.weeklySales) {
