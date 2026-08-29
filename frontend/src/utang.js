@@ -103,6 +103,36 @@ export function initUtangModals() {
     };
   }
 
+  const debtForm = document.getElementById('add-debt-form');
+if (debtForm) {
+  debtForm.onsubmit = async (e) => {
+    e.preventDefault();
+
+    const customerId = document.getElementById('debt-customer-id')?.value;
+    const amount = parseFloat(document.getElementById('debt-amount')?.value || 0);
+
+    if (!amount || amount <= 0) return;
+
+    try {
+      const response = await fetch(`/api/utang/${customerId}/debt`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount }),
+      });
+
+      if (response.ok) {
+        await fetchUtangData();
+        toggleModal('add-debt-modal', false);
+      } else {
+        const err = await response.json();
+        alert(err.error || 'Failed to add utang');
+      }
+    } catch (error) {
+      console.error('Error adding debt:', error);
+    }
+  };
+}
+
   // Open Modal Helpers
   window.openRecordPaymentModal = (customerId) => {
     const customer = stateCustomers.find((c) => String(c.id) === String(customerId));
@@ -113,6 +143,17 @@ export function initUtangModals() {
     document.getElementById('payment-current-balance').textContent =
       `₱ ${customer.balance.toLocaleString('en-PH', { minimumFractionDigits: 2 })}`;
     toggleModal('record-payment-modal', true);
+  };
+
+  window.openAddDebtModal = (customerId) => {
+    const customer = stateCustomers.find((c) => String(c.id) === String(customerId));
+    if (!customer) return;
+  
+    document.getElementById('debt-customer-id').value = customer.id;
+    document.getElementById('debt-customer-name').value = customer.name;
+    document.getElementById('debt-current-balance').textContent =
+      `₱ ${customer.balance.toLocaleString('en-PH', { minimumFractionDigits: 2 })}`;
+    toggleModal('add-debt-modal', true);
   };
 
   window.openCustomerDetailsModal = (customerId) => {
@@ -164,6 +205,8 @@ export function initUtangModals() {
   });
   document.getElementById('close-customer-all-payment-btn')?.addEventListener('click', () => toggleModal('view-all-payment-modal', false));
 
+  document.getElementById('close-add-debt-btn')?.addEventListener('click', () => toggleModal('add-debt-modal', false));
+
   attachCardActionListeners();
   attachSearchAndFilterListeners();
 }
@@ -189,38 +232,57 @@ export function renderCustomerCards(customerList) {
   };
 
   container.innerHTML = customerList.map((customer) => {
-    const initials = customer.name ? customer.name.substring(0, 2).toUpperCase() : 'NA';
-
-    return `
-      <div class="border border-secondary shadow-xl bg-boxes rounded-2xl p-5" data-customer-id="${customer.id}">
-        <div class="flex flex-row justify-between items-center border-b border-secondary/20 pb-4">
-          <div class="flex flex-row items-center">
-            <div class="w-10 h-10 flex items-center justify-center text-secondary font-bold bg-green-200 rounded-full shrink-0 text-sm">
-              ${initials}
+      const initials = customer.name ? customer.name.substring(0, 2).toUpperCase() : 'NA';
+    
+      // BAGO: I-determine ang Add Utang button state
+      const canAddDebt = customer.status === 'current' || customer.status === 'paid';
+      const addUtangButton = canAddDebt
+        ? `<button data-action="add-debt" data-id="${customer.id}" class="flex-1 bg-green-600 text-white py-2 rounded-xl text-xs font-semibold hover:bg-green-700 transition">+ Add Utang</button>`
+        : `<button disabled class="flex-1 bg-slate-200 text-slate-400 py-2 rounded-xl text-xs font-semibold cursor-not-allowed" title="Bayaran muna ang utang bago ulit umutang">
+             ${customer.status === 'critical' ? 'Bawal umutang' : 'Bayaran muna'}
+           </button>`;
+    
+      return `
+        <div class="border border-secondary shadow-xl bg-boxes rounded-2xl p-5" data-customer-id="${customer.id}">
+          <div class="flex flex-row justify-between items-center border-b border-secondary/20 pb-4">
+            <div class="flex flex-row items-center">
+              <div class="w-10 h-10 flex items-center justify-center text-secondary font-bold bg-green-200 rounded-full shrink-0 text-sm">
+                ${initials}
+              </div>
+              <div class="ml-3">
+                <h3 class="font-bold text-base text-slate-800">${customer.name}</h3>
+                <p class="text-secondary/80 text-xs">${customer.phone || 'No phone'}</p>
+              </div>
             </div>
-            <div class="ml-3">
-              <h3 class="font-bold text-base text-slate-800">${customer.name}</h3>
-              <p class="text-secondary/80 text-xs">${customer.phone || 'No phone'}</p>
-            </div>
+            <span class="px-2.5 py-0.5 rounded-xl text-xs font-semibold ${statusBadge(customer.status)}">
+              ${customer.status}${customer.status === 'critical' ? ' — Bawal umutang/bumili' : ''}
+            </span>
           </div>
-          <span class="px-2.5 py-0.5 rounded-xl text-xs font-semibold ${statusBadge(customer.status)}">
-            ${customer.status}${customer.status === 'critical' ? ' — Bawal umutang/bumili' : ''}
-          </span>
+    
+          <div class="mt-4 flex flex-row justify-between items-center">
+            <div><p class="text-xs text-slate-400">Total Debt</p><h1 class="text-sm font-bold text-red-600">₱ ${customer.totalDebt.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</h1></div>
+            <div><p class="text-xs text-slate-400">Paid</p><h1 class="text-sm font-bold text-green-600">₱ ${customer.totalPaid.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</h1></div>
+            <div><p class="text-xs text-slate-400">Balance</p><h1 class="text-sm font-bold text-slate-800">₱ ${customer.balance.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</h1></div>
+          </div>
+    
+          <div class="mt-4 flex gap-2">
+            ${addUtangButton}
+            <button data-action="record-payment" data-id="${customer.id}" class="flex-1 bg-secondary text-primary py-2 rounded-xl text-xs font-semibold">Record Payment</button>
+            <button data-action="view-details" data-id="${customer.id}" class="flex-1 border border-secondary text-secondary py-2 rounded-xl text-xs font-semibold">View Details</button>
+          </div>
         </div>
+      `;
+    }).join('');
+}
 
-        <div class="mt-4 flex flex-row justify-between items-center">
-          <div><p class="text-xs text-slate-400">Total Debt</p><h1 class="text-sm font-bold text-red-600">₱ ${customer.totalDebt.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</h1></div>
-          <div><p class="text-xs text-slate-400">Paid</p><h1 class="text-sm font-bold text-green-600">₱ ${customer.totalPaid.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</h1></div>
-          <div><p class="text-xs text-slate-400">Balance</p><h1 class="text-sm font-bold text-slate-800">₱ ${customer.balance.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</h1></div>
-        </div>
-
-        <div class="mt-4 flex gap-2">
-          <button data-action="record-payment" data-id="${customer.id}" class="flex-1 bg-secondary text-primary py-2 rounded-xl text-xs font-semibold">Record Payment</button>
-          <button data-action="view-details" data-id="${customer.id}" class="flex-1 border border-secondary text-secondary py-2 rounded-xl text-xs font-semibold">View Details</button>
-        </div>
-      </div>
-    `;
-  }).join('');
+function statusBadge(status) {
+  const map = {
+    current: 'bg-green-200 text-green-800',
+    overdue: 'bg-orange-200 text-orange-800',
+    critical: 'bg-red-200 text-red-800',
+    paid: 'bg-slate-200 text-slate-600',
+  };
+  return map[status] || 'bg-green-200 text-green-800';
 }
 
 function attachCardActionListeners() {
@@ -234,6 +296,7 @@ function attachCardActionListeners() {
     const action = target.getAttribute('data-action');
     const customerId = target.getAttribute('data-id');
 
+    if (action === 'add-debt') window.openAddDebtModal(customerId);   // ← BAGO
     if (action === 'record-payment') window.openRecordPaymentModal(customerId);
     if (action === 'view-details') window.openCustomerDetailsModal(customerId);
   });

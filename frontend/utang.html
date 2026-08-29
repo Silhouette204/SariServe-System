@@ -223,6 +223,47 @@
       </div>
     </div>
 
+    <!-- MODAL: Add Utang (para sa existing customer) -->
+<div id="add-debt-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden items-center justify-center p-4 transition-all">
+  <div class="bg-white rounded-2xl p-6 max-w-md w-full">
+    <div class="flex flex-col gap-1 mb-4">
+      <div class="flex flex-row gap-3 items-center">
+        <i class="fa-solid fa-circle-plus text-secondary text-2xl"></i>
+        <h1 class="text-xl text-secondary font-semibold">Add Utang</h1>
+      </div>
+      <p class="text-xs text-secondary/80">Idagdag ang bagong utang ng customer</p>
+    </div>
+
+    <form id="add-debt-form" class="flex flex-col gap-4">
+      <div class="grid grid-cols-3 gap-3">
+        <div class="col-span-1">
+          <label for="debt-customer-id" class="text-secondary/70 text-xs font-medium">Customer ID</label>
+          <input type="text" id="debt-customer-id" readonly class="w-full rounded-xl border border-slate-200 bg-slate-100 py-2 px-3 text-xs text-slate-500 font-mono outline-none cursor-not-allowed" />
+        </div>
+        <div class="col-span-2">
+          <label for="debt-customer-name" class="text-secondary/70 text-xs font-medium">Customer Name</label>
+          <input type="text" id="debt-customer-name" readonly class="w-full rounded-xl border border-slate-200 bg-slate-100 py-2 px-3 text-xs text-slate-600 font-semibold outline-none cursor-not-allowed" />
+        </div>
+      </div>
+
+      <div class="bg-slate-50 border border-slate-200 p-3 rounded-xl flex justify-between items-center">
+        <span class="text-xs text-secondary/70 font-medium">Kasalukuyang Balance:</span>
+        <span id="debt-current-balance" class="text-base font-bold text-red-600">₱ 0.00</span>
+      </div>
+
+      <div>
+        <label for="debt-amount" class="text-secondary/70 text-xs font-medium">Halagang Iutang (₱)</label>
+        <input required type="number" step="0.01" min="1" id="debt-amount" class="w-full rounded-xl border border-slate-200 py-2 px-3 text-sm font-bold text-slate-800 outline-none" placeholder="0.00" />
+      </div>
+
+      <div class="flex flex-row justify-between items-center mt-2 gap-3">
+        <button type="submit" class="flex-1 bg-secondary font-semibold text-primary py-2.5 rounded-xl hover:bg-primary transition border border-secondary hover:text-secondary text-sm">Save Utang</button>
+        <button type="button" id="close-add-debt-btn" class="flex-1 text-secondary font-semibold border border-secondary hover:bg-secondary transition hover:text-primary py-2.5 rounded-xl text-sm">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
     <!-- MODAL 3: View Customer Details -->
     <div id="view-details-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden items-center justify-center p-4 transition-all">
       <div class="bg-white rounded-2xl p-6 max-w-md w-full">
