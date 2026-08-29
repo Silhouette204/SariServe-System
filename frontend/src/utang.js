@@ -2,6 +2,23 @@
 
 let stateCustomers = [];
 
+// ===== 1. FETCH DATA MULA SA BACKEND =====
+export async function fetchUtangData() {
+  try {
+    const response = await fetch('/api/utang', { cache: 'no-store' });
+    if (!response.ok) throw new Error('Failed to fetch utang data');
+
+    stateCustomers = await response.json();
+
+    applyFiltersAndRender();
+    await updateDashboardStats();
+    await renderRecentPayments();
+  } catch (error) {
+    console.error('Error loading utang data:', error);
+  }
+}
+
+// ===== 2. MODAL SETUP =====
 export function initUtangModals() {
   const toggleModal = (modalId, show = true) => {
     const modal = document.getElementById(modalId);
@@ -24,7 +41,7 @@ export function initUtangModals() {
     if (errorMsg) errorMsg.classList.add('hidden');
   };
 
-  // 1. ADD CUSTOMER FORM
+  // ADD CUSTOMER FORM
   const addForm = document.getElementById('add-customer-form');
   if (addForm) {
     addForm.onsubmit = async (e) => {
@@ -35,102 +52,94 @@ export function initUtangModals() {
       const email = document.getElementById('customer-email')?.value.trim();
       const initialUtang = parseFloat(document.getElementById('customer-utang-amount')?.value || 0);
 
-      const payload = { 
-        id: `CUST-00${stateCustomers.length + 1}`,
-        _id: `cust_db_${Date.now()}`,
-        name, 
-        phone, 
-        email, 
-        status: 'current',
-        daysOverdue: 0,
-        totalDebt: initialUtang, 
-        totalPaid: 0,
-        payments: [] 
-      };
+      try {
+        const response = await fetch('/api/utang', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, phone, email, initialUtang }),
+        });
 
-      stateCustomers.unshift(payload);
-      applyFiltersAndRender();
-      updateDashboardStats(stateCustomers);
-      toggleModal('add-customer-modal', false);
+        if (response.ok) {
+          await fetchUtangData();
+          toggleModal('add-customer-modal', false);
+        } else {
+          const err = await response.json();
+          alert(err.error || 'Failed to add customer');
+        }
+      } catch (error) {
+        console.error('Error adding customer:', error);
+      }
     };
   }
 
-  // 2. RECORD PAYMENT FORM
+  // RECORD PAYMENT FORM
   const paymentForm = document.getElementById('record-payment-form');
   if (paymentForm) {
     paymentForm.onsubmit = async (e) => {
       e.preventDefault();
-      
+
       const customerId = document.getElementById('payment-customer-id')?.value;
       const amountPaid = parseFloat(document.getElementById('payment-amount')?.value || 0);
 
       if (!amountPaid || amountPaid <= 0) return;
 
-      const customer = stateCustomers.find(c => (c.id === customerId || c._id === customerId));
-
-      if (customer) {
-        const balance = customer.totalDebt - customer.totalPaid;
-        if (amountPaid > balance) {
-          alert("Payment amount cannot exceed remaining balance.");
-          return;
-        }
-
-        customer.totalPaid += amountPaid;
-
-        if (customer.totalPaid >= customer.totalDebt) {
-          customer.status = 'paid';
-          customer.daysOverdue = 0;
-        }
-
-        if (!customer.payments) customer.payments = [];
-        customer.payments.unshift({
-          amount: amountPaid,
-          date: new Date().toISOString()
+      try {
+        const response = await fetch(`/api/utang/${customerId}/payment`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ amount: amountPaid }),
         });
 
-        applyFiltersAndRender();
-        updateDashboardStats(stateCustomers);
-        renderRecentPayments(stateCustomers);
-        toggleModal('record-payment-modal', false);
+        if (response.ok) {
+          await fetchUtangData();
+          toggleModal('record-payment-modal', false);
+        } else {
+          const err = await response.json();
+          alert(err.error || 'Failed to record payment');
+        }
+      } catch (error) {
+        console.error('Error recording payment:', error);
       }
     };
   }
 
   // Open Modal Helpers
   window.openRecordPaymentModal = (customerId) => {
-    const customer = stateCustomers.find(c => (c.id === customerId || c._id === customerId));
+    const customer = stateCustomers.find((c) => String(c.id) === String(customerId));
     if (!customer) return;
 
-    const balance = (customer.totalDebt || 0) - (customer.totalPaid || 0);
-    document.getElementById('payment-customer-id').value = customer.id || customer._id;
+    document.getElementById('payment-customer-id').value = customer.id;
     document.getElementById('payment-customer-name').value = customer.name;
-    document.getElementById('payment-current-balance').textContent = `₱ ${balance.toLocaleString('en-PH', { minimumFractionDigits: 2 })}`;
+    document.getElementById('payment-current-balance').textContent =
+      `₱ ${customer.balance.toLocaleString('en-PH', { minimumFractionDigits: 2 })}`;
     toggleModal('record-payment-modal', true);
   };
 
   window.openCustomerDetailsModal = (customerId) => {
-    const customer = stateCustomers.find(c => (c.id === customerId || c._id === customerId));
+    const customer = stateCustomers.find((c) => String(c.id) === String(customerId));
     if (!customer) return;
 
-    const balance = (customer.totalDebt || 0) - (customer.totalPaid || 0);
     document.getElementById('modal-customer-name').textContent = customer.name;
     document.getElementById('modal-customer-phone').textContent = customer.phone || 'N/A';
-    document.getElementById('modal-customer-id').textContent = customer.id || customer._id;
-    
-    document.getElementById('modal-total-debt').textContent = (customer.totalDebt || 0).toLocaleString('en-PH', { minimumFractionDigits: 2 });
-    document.getElementById('modal-total-paid').textContent = (customer.totalPaid || 0).toLocaleString('en-PH', { minimumFractionDigits: 2 });
-    document.getElementById('modal-remaining-balance').textContent = balance.toLocaleString('en-PH', { minimumFractionDigits: 2 });
+    document.getElementById('modal-customer-id').textContent = `CUST-${String(customer.id).padStart(3, '0')}`;
+
+    document.getElementById('modal-total-debt').textContent =
+      customer.totalDebt.toLocaleString('en-PH', { minimumFractionDigits: 2 });
+    document.getElementById('modal-total-paid').textContent =
+      customer.totalPaid.toLocaleString('en-PH', { minimumFractionDigits: 2 });
+    document.getElementById('modal-remaining-balance').textContent =
+      customer.balance.toLocaleString('en-PH', { minimumFractionDigits: 2 });
 
     const historyContainer = document.getElementById('modal-payment-history-list');
     if (historyContainer) {
       if (!customer.payments || customer.payments.length === 0) {
         historyContainer.innerHTML = `<div class="p-4 text-center text-xs text-slate-400">No payments recorded yet.</div>`;
       } else {
-        historyContainer.innerHTML = customer.payments.map(p => `
+        historyContainer.innerHTML = customer.payments.map((p) => `
           <div class="p-2.5 flex justify-between items-center text-xs">
             <div>
               <p class="font-semibold text-slate-800">Partial Payment</p>
-              <p class="text-[10px] text-slate-400">${new Date(p.date).toLocaleDateString()}</p>
+              <p class="text-[10px] text-slate-400">${new Date(p.date).toLocaleDateString('en-PH')}</p>
             </div>
             <span class="font-bold text-green-600">+ ₱ ${p.amount.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</span>
           </div>
@@ -159,6 +168,7 @@ export function initUtangModals() {
   attachSearchAndFilterListeners();
 }
 
+// ===== 3. RENDER CUSTOMER CARDS =====
 export function renderCustomerCards(customerList) {
   const container = document.getElementById('customer-list-container');
   if (!container) return;
@@ -168,15 +178,21 @@ export function renderCustomerCards(customerList) {
     return;
   }
 
-  container.innerHTML = customerList.map(customer => {
+  const statusBadge = (status) => {
+    const map = {
+      current: 'bg-green-200 text-green-800',
+      overdue: 'bg-orange-200 text-orange-800',
+      critical: 'bg-red-200 text-red-800',
+      paid: 'bg-slate-200 text-slate-600',
+    };
+    return map[status] || 'bg-green-200 text-green-800';
+  };
+
+  container.innerHTML = customerList.map((customer) => {
     const initials = customer.name ? customer.name.substring(0, 2).toUpperCase() : 'NA';
-    const totalDebt = (customer.totalDebt || 0).toLocaleString('en-PH', { minimumFractionDigits: 2 });
-    const totalPaid = (customer.totalPaid || 0).toLocaleString('en-PH', { minimumFractionDigits: 2 });
-    const balance = ((customer.totalDebt || 0) - (customer.totalPaid || 0)).toLocaleString('en-PH', { minimumFractionDigits: 2 });
-    const custId = customer.id || customer._id;
 
     return `
-      <div class="border border-secondary shadow-xl bg-boxes rounded-2xl p-5" data-customer-id="${custId}">
+      <div class="border border-secondary shadow-xl bg-boxes rounded-2xl p-5" data-customer-id="${customer.id}">
         <div class="flex flex-row justify-between items-center border-b border-secondary/20 pb-4">
           <div class="flex flex-row items-center">
             <div class="w-10 h-10 flex items-center justify-center text-secondary font-bold bg-green-200 rounded-full shrink-0 text-sm">
@@ -187,20 +203,20 @@ export function renderCustomerCards(customerList) {
               <p class="text-secondary/80 text-xs">${customer.phone || 'No phone'}</p>
             </div>
           </div>
-          <span class="px-2.5 py-0.5 rounded-xl text-xs font-semibold ${customer.status === 'overdue' ? 'bg-orange-200 text-orange-800' : 'bg-green-200 text-green-800'}">
-            ${customer.status || 'current'}
+          <span class="px-2.5 py-0.5 rounded-xl text-xs font-semibold ${statusBadge(customer.status)}">
+            ${customer.status}${customer.status === 'critical' ? ' — Bawal umutang/bumili' : ''}
           </span>
         </div>
 
         <div class="mt-4 flex flex-row justify-between items-center">
-          <div><p class="text-xs text-slate-400">Total Debt</p><h1 class="text-sm font-bold text-red-600">₱ ${totalDebt}</h1></div>
-          <div><p class="text-xs text-slate-400">Paid</p><h1 class="text-sm font-bold text-green-600">₱ ${totalPaid}</h1></div>
-          <div><p class="text-xs text-slate-400">Balance</p><h1 class="text-sm font-bold text-slate-800">₱ ${balance}</h1></div>
+          <div><p class="text-xs text-slate-400">Total Debt</p><h1 class="text-sm font-bold text-red-600">₱ ${customer.totalDebt.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</h1></div>
+          <div><p class="text-xs text-slate-400">Paid</p><h1 class="text-sm font-bold text-green-600">₱ ${customer.totalPaid.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</h1></div>
+          <div><p class="text-xs text-slate-400">Balance</p><h1 class="text-sm font-bold text-slate-800">₱ ${customer.balance.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</h1></div>
         </div>
 
         <div class="mt-4 flex gap-2">
-          <button data-action="record-payment" data-id="${custId}" class="flex-1 bg-secondary text-primary py-2 rounded-xl text-xs font-semibold">Record Payment</button>
-          <button data-action="view-details" data-id="${custId}" class="flex-1 border border-secondary text-secondary py-2 rounded-xl text-xs font-semibold">View Details</button>
+          <button data-action="record-payment" data-id="${customer.id}" class="flex-1 bg-secondary text-primary py-2 rounded-xl text-xs font-semibold">Record Payment</button>
+          <button data-action="view-details" data-id="${customer.id}" class="flex-1 border border-secondary text-secondary py-2 rounded-xl text-xs font-semibold">View Details</button>
         </div>
       </div>
     `;
@@ -238,12 +254,15 @@ function applyFiltersAndRender() {
   const query = searchInput ? searchInput.value.toLowerCase().trim() : '';
   const selectedCategory = filterDropdown ? filterDropdown.value.toLowerCase() : 'all categories';
 
-  let filtered = stateCustomers.filter(customer => {
-    const matchesSearch = customer.name.toLowerCase().includes(query) || customer.phone?.toLowerCase().includes(query);
-    let matchesCategory = true;
+  let filtered = stateCustomers.filter((customer) => {
+    const matchesSearch =
+      customer.name.toLowerCase().includes(query) ||
+      customer.phone?.toLowerCase().includes(query);
 
+    let matchesCategory = true;
     if (selectedCategory === 'current') matchesCategory = customer.status === 'current';
     if (selectedCategory === 'overdue') matchesCategory = customer.status === 'overdue';
+    if (selectedCategory === 'critical') matchesCategory = customer.status === 'critical';
 
     return matchesSearch && matchesCategory;
   });
@@ -251,85 +270,70 @@ function applyFiltersAndRender() {
   renderCustomerCards(filtered);
 }
 
-function updateDashboardStats(customers) {
-  let totalUtang = 0, totalPaid = 0, overdueCount = 0;
+// ===== 4. DASHBOARD STATS (mula sa /api/utang/stats) =====
+async function updateDashboardStats() {
+  try {
+    const response = await fetch('/api/utang/stats', { cache: 'no-store' });
+    if (!response.ok) return;
 
-  customers.forEach(c => {
-    totalUtang += c.totalDebt || 0;
-    totalPaid += c.totalPaid || 0;
-    if (c.status === 'overdue') overdueCount++;
-  });
+    const stats = await response.json();
 
-  const balance = totalUtang - totalPaid;
+    const setText = (id, val) => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = val;
+    };
 
-  const totalUtangEl = document.getElementById('utang-total-utang');
-  const totalPaidEl = document.getElementById('utang-total-paid');
-  const overdueEl = document.getElementById('utang-overdue-accounts');
-  const totalBalanceEl = document.getElementById('utang-total-balance');
-
-  if (totalUtangEl) totalUtangEl.textContent = `₱ ${totalUtang.toLocaleString('en-PH', { minimumFractionDigits: 2 })}`;
-  if (totalPaidEl) totalPaidEl.textContent = `₱ ${totalPaid.toLocaleString('en-PH', { minimumFractionDigits: 2 })}`;
-  if (overdueEl) overdueEl.textContent = overdueCount;
-  if (totalBalanceEl) totalBalanceEl.textContent = `₱ ${balance.toLocaleString('en-PH', { minimumFractionDigits: 2 })}`;
+    setText('utang-total-utang', `₱ ${stats.totalUtang.toLocaleString('en-PH', { minimumFractionDigits: 2 })}`);
+    setText('utang-total-paid', `₱ ${stats.totalPaid.toLocaleString('en-PH', { minimumFractionDigits: 2 })}`);
+    setText('utang-overdue-accounts', stats.overdueCount);
+    setText('utang-total-balance', `₱ ${stats.balance.toLocaleString('en-PH', { minimumFractionDigits: 2 })}`);
+    setText('prev-utang-customer', stats.totalCustomers);
+  } catch (error) {
+    console.error('Error loading utang stats:', error);
+  }
 }
 
-function renderRecentPayments(customers) {
+// ===== 5. RECENT PAYMENTS (mula sa /api/utang/payments/recent) =====
+async function renderRecentPayments() {
   const container = document.getElementById('utang-transaction');
   if (!container) return;
 
-  const allPayments = [];
-  customers.forEach(c => {
-    (c.payments || []).forEach(p => {s
-      allPayments.push({ customerName: c.name, amount: p.amount, date: new Date(p.date) });
-    });
-  });
+  try {
+    const response = await fetch('/api/utang/payments/recent', { cache: 'no-store' });
+    if (!response.ok) return;
 
-  allPayments.sort((a, b) => b.date - a.date);
+    const payments = await response.json();
 
-  if (allPayments.length === 0) {
-    container.innerHTML = `<p class="text-slate-400 text-xs my-4">No payments recorded yet.</p>`;
-    return;
-  }
-
-  const latest = allPayments[0];
-  container.innerHTML = `
-    <div>
-      <h3 class="font-semibold text-base">${latest.customerName}</h3>
-      <div class="flex justify-between items-center border-b border-secondary/20 pb-2">
-        <p class="text-xs text-secondary/70">${latest.date.toLocaleDateString()}</p>
-        <h3 class="text-green-600 font-bold text-base">₱ ${latest.amount.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</h3>
-      </div>
-    </div>
-  `;
-}
-
-export async function fetchUtangData() {
-  stateCustomers = [
-    {
-      id: 'CUST-001',
-      _id: 'cust_001',
-      name: 'John Doe',
-      phone: '0912-345-6789',
-      status: 'overdue',
-      daysOverdue: 3,
-      totalDebt: 1500,
-      totalPaid: 500,
-      payments: [{ amount: 500, date: '2026-01-15T06:30:00.000Z' }]
-    },
-    {
-      id: 'CUST-002',
-      _id: 'cust_002',
-      name: 'Maria Santos',
-      phone: '0998-765-4321',
-      status: 'current',
-      daysOverdue: 0,
-      totalDebt: 2500,
-      totalPaid: 2500,
-      payments: [{ amount: 2500, date: '2026-01-10T08:00:00.000Z' }]
+    if (payments.length === 0) {
+      container.innerHTML = `<p class="text-slate-400 text-xs my-4">No payments recorded yet.</p>`;
+      return;
     }
-  ];
 
-  applyFiltersAndRender();
-  updateDashboardStats(stateCustomers);
-  renderRecentPayments(stateCustomers);
+    const latest = payments[0];
+    container.innerHTML = `
+      <div>
+        <h3 class="font-semibold text-base">${latest.customerName}</h3>
+        <div class="flex justify-between items-center border-b border-secondary/20 pb-2">
+          <p class="text-xs text-secondary/70">${new Date(latest.date).toLocaleDateString('en-PH')}</p>
+          <h3 class="text-green-600 font-bold text-base">₱ ${latest.amount.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</h3>
+        </div>
+      </div>
+    `;
+
+    // Ipopulate din ang "View All Payments" modal
+    const allContainer = document.getElementById('all-payments-list-container');
+    if (allContainer) {
+      allContainer.innerHTML = payments.map((p) => `
+        <div class="p-3 flex justify-between items-center text-sm">
+          <div>
+            <p class="font-semibold text-slate-800">${p.customerName}</p>
+            <p class="text-xs text-slate-400">${new Date(p.date).toLocaleString('en-PH')}</p>
+          </div>
+          <span class="font-bold text-green-600">+ ₱ ${p.amount.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</span>
+        </div>
+      `).join('');
+    }
+  } catch (error) {
+    console.error('Error loading recent payments:', error);
+  }
 }
