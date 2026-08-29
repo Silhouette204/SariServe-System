@@ -25,9 +25,15 @@
           <p class="text-secondary/70 text-xs">Track customer credits and payments</p>
         </div>
 
-        <div>
+        <div class="flex flex-col gap-3 md:flex-row md:gap-5">
+          
+          <a id="open-paid-history-modal-btn" href="#" class="py-3 px-2 font-bold text-xs text-secondary bg-primary border border-secondary rounded-xl hover:bg-secondary transition hover:text-primary inline-block">
+            <i class="fa-solid fa-peso-sign mr-2 text-base"></i>
+       Utang Paid History
+          </a>
+
           <a id="open-add-customer-modal-btn" href="#" class="py-3 px-2 font-semibold text-xs text-primary bg-secondary rounded-xl hover:bg-primary transition border border-secondary hover:text-secondary inline-block">
-            <i class="fa-solid fa-user-plus mr-2"></i>Add Customer
+            <i class="fa-solid fa-user-plus mr-2 "></i>Add Utang Customer
           </a>
         </div>
       </div>
@@ -323,6 +329,23 @@
         <div class="overflow-y-auto flex-1 my-4 pr-1 border border-slate-100 rounded-xl divide-y divide-slate-100 max-h-[300px]" id="all-payments-list-container"></div>
       </div>
     </div>
+
+<!-- MODAL: Paid History -->
+<div id="paid-history-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden items-center justify-center p-4 transition-all">
+  <div class="bg-white rounded-2xl p-6 max-w-lg w-full max-h-[85vh] flex flex-col shadow-2xl">
+    <div class="flex flex-row justify-between items-start border-b border-slate-100 pb-4">
+      <div>
+        <h1 class="text-xl font-bold text-secondary">Fully Paid Customers</h1>
+        <p class="text-xs text-secondary/70">Nakumpleto na nilang bayaran ang utang</p>
+      </div>
+      <button type="button" id="close-paid-history-modal-btn" class="text-slate-400 hover:text-slate-600 text-lg">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <div class="overflow-y-auto flex-1 my-4 pr-1 border border-slate-100 rounded-xl divide-y divide-slate-100 max-h-[400px]" id="paid-history-list-container"></div>
+  </div>
+</div>
 
     <script type="module" src="/src/main.js"></script>
   </body>

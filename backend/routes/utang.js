@@ -227,20 +227,19 @@ router.get('/stats', async (req, res) => {
     let totalPaid = 0;
     let overdueCount = 0;
 
-    customers.forEach((c) => {
-      const computed = computeCustomerStatus(c, now);
-      totalUtang += computed.totalDebt;
-      totalPaid += computed.totalPaid;
-      if (computed.status === 'overdue' || computed.status === 'critical') overdueCount++;
-    });
+    // BAGO: bilangin lang ang customers na may balance pa (hindi pa fully paid)
+const activeCustomerCount = customers.filter((c) => {
+  const computed = computeCustomerStatus(c, now);
+  return computed.balance > 0;
+}).length;
 
-    res.json({
-      totalUtang,
-      totalPaid,
-      balance: totalUtang - totalPaid,
-      totalCustomers: customers.length,
-      overdueCount,
-    });
+res.json({
+  totalUtang,
+  totalPaid,
+  balance: totalUtang - totalPaid,
+  totalCustomers: activeCustomerCount,   // ← binago
+  overdueCount,
+});
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Failed to fetch utang stats' });

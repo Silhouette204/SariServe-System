@@ -207,6 +207,13 @@ if (debtForm) {
 
   document.getElementById('close-add-debt-btn')?.addEventListener('click', () => toggleModal('add-debt-modal', false));
 
+  document.getElementById('open-paid-history-modal-btn')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    renderPaidHistoryModal();
+    toggleModal('paid-history-modal', true);
+  });
+  document.getElementById('close-paid-history-modal-btn')?.addEventListener('click', () => toggleModal('paid-history-modal', false));
+
   attachCardActionListeners();
   attachSearchAndFilterListeners();
 }
@@ -275,6 +282,43 @@ export function renderCustomerCards(customerList) {
     }).join('');
 }
 
+function renderPaidHistoryModal() {
+  const container = document.getElementById('paid-history-list-container');
+  if (!container) return;
+
+  const paidCustomers = stateCustomers.filter((c) => c.status === 'paid');
+
+  if (paidCustomers.length === 0) {
+    container.innerHTML = `<div class="p-6 text-center text-xs text-slate-400">Wala pang fully paid na customer.</div>`;
+    return;
+  }
+
+  container.innerHTML = paidCustomers.map((customer) => {
+    const lastPayment = customer.payments?.[0];
+    const lastPaymentDate = lastPayment ? new Date(lastPayment.date).toLocaleDateString('en-PH') : 'N/A';
+
+    return `
+      <div class="p-3 flex justify-between items-center cursor-pointer hover:bg-slate-50 transition" data-action="view-details" data-id="${customer.id}">
+        <div>
+          <p class="font-semibold text-slate-800 text-sm">${customer.name}</p>
+          <p class="text-xs text-slate-400">${customer.phone || 'No phone'} • Huling bayad: ${lastPaymentDate}</p>
+        </div>
+        <div class="text-right">
+          <span class="font-bold text-green-600 text-sm">₱ ${customer.totalDebt.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</span>
+          <p class="text-[10px] text-slate-400">Fully Paid</p>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  // Pwedeng i-click para makita ang buong history (gagamit ng existing modal)
+  container.querySelectorAll('[data-action="view-details"]').forEach((el) => {
+    el.addEventListener('click', () => {
+      window.openCustomerDetailsModal(el.getAttribute('data-id'));
+    });
+  });
+}
+
 function statusBadge(status) {
   const map = {
     current: 'bg-green-200 text-green-800',
@@ -318,6 +362,9 @@ function applyFiltersAndRender() {
   const selectedCategory = filterDropdown ? filterDropdown.value.toLowerCase() : 'all categories';
 
   let filtered = stateCustomers.filter((customer) => {
+    // BAGO: itago ang fully paid customers sa listahan
+    if (customer.status === 'paid') return false;
+
     const matchesSearch =
       customer.name.toLowerCase().includes(query) ||
       customer.phone?.toLowerCase().includes(query);
