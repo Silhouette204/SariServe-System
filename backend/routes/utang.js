@@ -102,7 +102,7 @@ router.post('/', async (req, res) => {
         phone,
         email: email || null,
         transactions: {
-          create: [{ amount: Number(initialUtang) }],
+          create: [{ amount: Number(initialUtang), customerName: name }],
         },
       },
       include: { transactions: true, payments: true },
@@ -150,7 +150,7 @@ router.post('/:id/debt', async (req, res) => {
     }
 
     await prisma.utangTransaction.create({
-      data: { customerId: id, amount: Number(amount) },
+      data: { customerId: id, amount: Number(amount), customerName: customer.name },
     });
 
     const updated = await prisma.customer.findUnique({
@@ -189,7 +189,7 @@ router.post('/:id/payment', async (req, res) => {
     }
 
     await prisma.utangPayment.create({
-      data: { customerId: id, amountPaid: Number(amount) },
+      data: { customerId: id, amountPaid: Number(amount), customerName: customer.name },
     });
 
     const updated = await prisma.customer.findUnique({

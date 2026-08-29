@@ -80,6 +80,7 @@ model UtangTransaction {
   id          Int      @id @default(autoincrement())
   customer    Customer @relation(fields: [customerId], references: [id])
   customerId  Int
+  customerName String
   amount      Decimal  @db.Decimal(10, 2)
   createdAt   DateTime @default(now())
 }
@@ -88,6 +89,7 @@ model UtangPayment {
   id          Int      @id @default(autoincrement())
   customer    Customer @relation(fields: [customerId], references: [id])
   customerId  Int
+  customerName String
   amountPaid  Decimal  @db.Decimal(10, 2)
   paidAt      DateTime @default(now())
 }
