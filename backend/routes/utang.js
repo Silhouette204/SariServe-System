@@ -227,7 +227,7 @@ router.get('/stats', async (req, res) => {
     let totalPaid = 0;
     let overdueCount = 0;
 
-    // IBALIK ITONG LOOP — ito ang kulang
+  //calculation of debt total
     customers.forEach((c) => {
       const computed = computeCustomerStatus(c, now);
       totalUtang += computed.totalDebt;
