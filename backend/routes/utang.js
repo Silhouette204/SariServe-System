@@ -227,19 +227,26 @@ router.get('/stats', async (req, res) => {
     let totalPaid = 0;
     let overdueCount = 0;
 
-    // BAGO: bilangin lang ang customers na may balance pa (hindi pa fully paid)
-const activeCustomerCount = customers.filter((c) => {
-  const computed = computeCustomerStatus(c, now);
-  return computed.balance > 0;
-}).length;
+    // IBALIK ITONG LOOP — ito ang kulang
+    customers.forEach((c) => {
+      const computed = computeCustomerStatus(c, now);
+      totalUtang += computed.totalDebt;
+      totalPaid += computed.totalPaid;
+      if (computed.status === 'overdue' || computed.status === 'critical') overdueCount++;
+    });
 
-res.json({
-  totalUtang,
-  totalPaid,
-  balance: totalUtang - totalPaid,
-  totalCustomers: activeCustomerCount,   // ← binago
-  overdueCount,
-});
+    const activeCustomerCount = customers.filter((c) => {
+      const computed = computeCustomerStatus(c, now);
+      return computed.balance > 0;
+    }).length;
+
+    res.json({
+      totalUtang,
+      totalPaid,
+      balance: totalUtang - totalPaid,
+      totalCustomers: activeCustomerCount,
+      overdueCount,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Failed to fetch utang stats' });
@@ -269,5 +276,41 @@ router.get('/payments/recent', async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch recent payments' });
   }
 });
+
+// ===== DELETE /api/utang/:id — burahin ang isang fully paid customer =====
+router.delete('/:id', async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+
+    const customer = await prisma.customer.findUnique({
+      where: { id },
+      include: { transactions: true, payments: true },
+    });
+
+    if (!customer) return res.status(404).json({ error: 'Customer not found' });
+
+    const computed = computeCustomerStatus(customer, new Date());
+
+    // Safety: pwede lang burahin kung fully paid na (walang balance)
+    if (computed.balance > 0) {
+      return res.status(403).json({
+        error: 'Hindi pwedeng burahin ang customer na may natitirang balance.',
+      });
+    }
+
+    // Burahin muna ang mga related records, saka ang customer mismo
+    await prisma.$transaction([
+      prisma.utangPayment.deleteMany({ where: { customerId: id } }),
+      prisma.utangTransaction.deleteMany({ where: { customerId: id } }),
+      prisma.customer.delete({ where: { id } }),
+    ]);
+
+    res.status(204).send();
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to delete customer' });
+  }
+});
+
 
 export default router;

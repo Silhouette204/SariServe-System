@@ -298,23 +298,48 @@ function renderPaidHistoryModal() {
     const lastPaymentDate = lastPayment ? new Date(lastPayment.date).toLocaleDateString('en-PH') : 'N/A';
 
     return `
-      <div class="p-3 flex justify-between items-center cursor-pointer hover:bg-slate-50 transition" data-action="view-details" data-id="${customer.id}">
-        <div>
+      <div class="p-3 flex justify-between items-center hover:bg-slate-50 transition">
+        <div class="cursor-pointer flex-1" data-action="view-details" data-id="${customer.id}">
           <p class="font-semibold text-slate-800 text-sm">${customer.name}</p>
           <p class="text-xs text-slate-400">${customer.phone || 'No phone'} • Huling bayad: ${lastPaymentDate}</p>
         </div>
-        <div class="text-right">
-          <span class="font-bold text-green-600 text-sm">₱ ${customer.totalDebt.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</span>
-          <p class="text-[10px] text-slate-400">Fully Paid</p>
+        <div class="flex items-center gap-3">
+          <div class="text-right">
+            <span class="font-bold text-green-600 text-sm">₱ ${customer.totalDebt.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</span>
+            <p class="text-[10px] text-slate-400">Fully Paid</p>
+          </div>
+          <button data-action="delete-customer" data-id="${customer.id}" class="text-slate-400 hover:text-red-600 transition p-1.5" title="Burahin ang record">
+            <i class="fa-solid fa-trash-can text-sm"></i>
+          </button>
         </div>
       </div>
     `;
   }).join('');
 
-  // Pwedeng i-click para makita ang buong history (gagamit ng existing modal)
   container.querySelectorAll('[data-action="view-details"]').forEach((el) => {
     el.addEventListener('click', () => {
       window.openCustomerDetailsModal(el.getAttribute('data-id'));
+    });
+  });
+
+  container.querySelectorAll('[data-action="delete-customer"]').forEach((el) => {
+    el.addEventListener('click', async () => {
+      const customerId = el.getAttribute('data-id');
+      const confirmed = confirm('Sigurado ka bang gusto mong burahin ang record na ito? Hindi na ito mababawi.');
+      if (!confirmed) return;
+
+      try {
+        const response = await fetch(`/api/utang/${customerId}`, { method: 'DELETE' });
+        if (response.ok) {
+          await fetchUtangData();
+          renderPaidHistoryModal(); // i-refresh ang modal content
+        } else {
+          const err = await response.json();
+          alert(err.error || 'Failed to delete customer');
+        }
+      } catch (error) {
+        console.error('Error deleting customer:', error);
+      }
     });
   });
 }
