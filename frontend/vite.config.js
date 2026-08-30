@@ -30,6 +30,9 @@ export default defineConfig({
         inventory: resolve(__dirname, "inventory.html"),
         sales: resolve(__dirname, "sales.html"),
         utang: resolve(__dirname, "utang.html"),
+        utang: resolve(__dirname, "utang.html"),
+        signIn: resolve(__dirname, "sign-in.html"),
+        signUp: resolve(__dirname, "sign-up.html"),
       }
     }
   }
