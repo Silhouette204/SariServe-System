@@ -1,6 +1,6 @@
 import { fetchSalesDashboardData } from './sales-services.js';
 import { renderSalesChart, renderModalSalesChart } from './sales-charts.js';
-import html2canvas from 'html2canvas';
+import html2canvas from 'html2canvas-pro';
 import jsPDF from 'jspdf';
 
 let currentChartData = { labels: [], values: [] };
