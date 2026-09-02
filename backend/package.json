@@ -20,5 +20,9 @@
   },
   "devDependencies": {
     "prisma": "^7.9.1"
-  }
+  },
+  "scripts": {
+  "start": "node index.js"
+}
+
 }
