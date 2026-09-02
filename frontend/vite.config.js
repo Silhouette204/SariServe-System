@@ -16,8 +16,9 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://localhost:3000',
+        target: 'https://sariserve-system.onrender.com',
         changeOrigin: true,
+        secure: true,
       },
     },
   },
@@ -29,7 +30,6 @@ export default defineConfig({
         dashboard: resolve(__dirname, "dashboard.html"),
         inventory: resolve(__dirname, "inventory.html"),
         sales: resolve(__dirname, "sales.html"),
-        utang: resolve(__dirname, "utang.html"),
         utang: resolve(__dirname, "utang.html"),
         signIn: resolve(__dirname, "sign-in.html"),
         signUp: resolve(__dirname, "sign-up.html"),
