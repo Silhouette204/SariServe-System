@@ -1,4 +1,5 @@
 // src/inventory.js
+const API_URL = import.meta.env.VITE_API_URL || '';
 
 let inventoryItems = [];
 let targetDeleteId = null;
@@ -13,7 +14,7 @@ export async function initInventory() {
 // 2. FETCH DATA FROM BACKEND API
 export async function fetchInventory() {
   try {
-    const response = await fetch('/api/inventory');
+    const response = await fetch(`${API_URL}/api/inventory`);// pag i-connect mo na yung API_URL sa .env file, pag wala, magiging localhost:3000, kaya para gumana ang system sa labas or sa vercel ay kailangan mo yung API_URL.
     if (!response.ok) throw new Error('Failed to fetch inventory');
     
     inventoryItems = await response.json();
@@ -190,7 +191,7 @@ renderInventoryAdjustmentTable(filtered);
   if (categorySelect) categorySelect.addEventListener('change', filterData);
 }
 
-// 7. MODAL CONTROLLERS & API ACTIONS
+// 7. MODAL CONTROLLERS & API ACTIONS ADD, EDIT, DELETE
 function initModals() {
   const toggleModal = (modalId, show = true) => {
     const modal = document.getElementById(modalId);
@@ -225,7 +226,7 @@ function initModals() {
       };
 
       try {
-        const response = await fetch('/api/inventory', {
+        const response = await fetch(`${API_URL}/api/inventory`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(newProduct),
@@ -240,6 +241,7 @@ function initModals() {
           alert(errorData.error || 'Failed to add product');
         }
 
+        // Itong sunod na block ay duplicate na lang at pwede nang tanggalin:
         if (response.ok) {
           await fetchInventory(); // Refresh list from DB
           addForm.reset();
@@ -270,7 +272,7 @@ function initModals() {
       };
 
       try {
-        const response = await fetch(`/api/inventory/${id}`, {
+        const response = await fetch(`${API_URL}/api/inventory/${id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(updatedData)
@@ -297,7 +299,7 @@ function initModals() {
       if (!targetDeleteId) return;
 
       try {
-        const response = await fetch(`/api/inventory/${targetDeleteId}`, {
+        const response = await fetch(`${API_URL}/api/inventory/${targetDeleteId}`, {
           method: 'DELETE'
         });
 
@@ -340,7 +342,7 @@ window.recordSale = async (id, quantity = 1) => {
   }
 
   try {
-    const response = await fetch(`/api/inventory/${id}/sale`, {
+    const response = await fetch(`${API_URL}/api/inventory/${id}/sale`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ quantity })
@@ -371,7 +373,7 @@ window.recordAdjustment = async (id, amount, reason = 'OTHER') => {
   const newStock = Math.max(0, item.stock + amount);
 
   try {
-    const response = await fetch(`/api/inventory/${id}/adjustment`, {
+    const response = await fetch(`${API_URL}/api/inventory/${id}/adjustment`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ amount, reason })
