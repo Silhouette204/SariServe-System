@@ -1,11 +1,13 @@
 // utang.js
 
+const API_URL = import.meta.env.VITE_API_URL || '';
+
 let stateCustomers = [];
 
 // ===== 1. FETCH DATA MULA SA BACKEND =====
 export async function fetchUtangData() {
   try {
-    const response = await fetch('/api/utang', { cache: 'no-store' });
+    const response = await fetch(`${API_URL}/api/utang`, { cache: 'no-store' });
     if (!response.ok) throw new Error('Failed to fetch utang data');
 
     stateCustomers = await response.json();
@@ -18,6 +20,8 @@ export async function fetchUtangData() {
   }
 }
 
+
+//Control record payment and add debt
 // ===== 2. MODAL SETUP =====
 export function initUtangModals() {
   const toggleModal = (modalId, show = true) => {
@@ -53,7 +57,7 @@ export function initUtangModals() {
       const initialUtang = parseFloat(document.getElementById('customer-utang-amount')?.value || 0);
 
       try {
-        const response = await fetch('/api/utang', {
+        const response = await fetch(`${API_URL}/api/utang`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ name, phone, email, initialUtang }),
@@ -84,7 +88,7 @@ export function initUtangModals() {
       if (!amountPaid || amountPaid <= 0) return;
 
       try {
-        const response = await fetch(`/api/utang/${customerId}/payment`, {
+        const response = await fetch(`${API_URL}/api/utang/${customerId}/payment`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ amount: amountPaid }),
@@ -103,6 +107,7 @@ export function initUtangModals() {
     };
   }
 
+  //Add debt form
   const debtForm = document.getElementById('add-debt-form');
 if (debtForm) {
   debtForm.onsubmit = async (e) => {
@@ -114,7 +119,7 @@ if (debtForm) {
     if (!amount || amount <= 0) return;
 
     try {
-      const response = await fetch(`/api/utang/${customerId}/debt`, {
+      const response = await fetch(`${API_URL}/api/utang/${customerId}/debt`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ amount }),
@@ -133,7 +138,7 @@ if (debtForm) {
   };
 }
 
-  // Open Modal Helpers
+  // Open record payment and add debt modal
   window.openRecordPaymentModal = (customerId) => {
     const customer = stateCustomers.find((c) => String(c.id) === String(customerId));
     if (!customer) return;
@@ -329,7 +334,7 @@ function renderPaidHistoryModal() {
       if (!confirmed) return;
 
       try {
-        const response = await fetch(`/api/utang/${customerId}`, { method: 'DELETE' });
+        const response = await fetch(`${API_URL}/api/utang/${customerId}`, { method: 'DELETE' });
         if (response.ok) {
           await fetchUtangData();
           renderPaidHistoryModal(); // i-refresh ang modal content
@@ -408,7 +413,7 @@ function applyFiltersAndRender() {
 // ===== 4. DASHBOARD STATS (mula sa /api/utang/stats) =====
 async function updateDashboardStats() {
   try {
-    const response = await fetch('/api/utang/stats', { cache: 'no-store' });
+    const response = await fetch(`${API_URL}/api/utang/stats`, { cache: 'no-store' });
     if (!response.ok) return;
 
     const stats = await response.json();
@@ -434,7 +439,7 @@ async function renderRecentPayments() {
   if (!container) return;
 
   try {
-    const response = await fetch('/api/utang/payments/recent', { cache: 'no-store' });
+    const response = await fetch(`${API_URL}/api/utang/payments/recent`, { cache: 'no-store' });
     if (!response.ok) return;
 
     const payments = await response.json();
