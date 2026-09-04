@@ -272,7 +272,7 @@ function populateTopProducts(products = []) {
     <li>
       <div class="flex flex-row items-center justify-between w-full gap-3 py-2">
         <div class="flex items-center gap-3">
-          <span class="bg-secondary py-2 px-4 rounded-xl text-base font-bold text-primary shrink-0">${index + 1}</span>s
+          <span class="bg-secondary py-2 px-4 rounded-xl text-base font-bold text-primary shrink-0">${index + 1}</span>
           <div>
             <h1 class="text-secondary font-semibold text-base leading-tight">${prod.name}</h1>
             <p class="text-secondary/80 text-sm"><span>${prod.soldCount}</span> sold</p>
