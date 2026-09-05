@@ -33,6 +33,8 @@ export default defineConfig({
         utang: resolve(__dirname, "utang.html"),
         signIn: resolve(__dirname, "sign-in.html"),
         signUp: resolve(__dirname, "sign-up.html"),
+        forgotPassword: resolve(__dirname, "forgot-password.html"),
+        confirmPassword: resolve(__dirname, "confirm-password.html")
       }
     }
   }
