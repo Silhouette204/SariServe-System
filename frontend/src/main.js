@@ -17,10 +17,18 @@ import { initSalesPage } from './sales.js';
 // Utang (Idinagdag)
 import { initUtangModals, fetchUtangData } from './utang.js';
 
+//login process
+import { signIn } from './sign-in.js';
+import { signUp } from './sign-up.js';
+
 document.addEventListener('DOMContentLoaded', async () => {
   if (document.getElementById('side-menu') !== null) {  
     initNav();
   }
+
+  //for login call
+  signIn();
+  signUp();
 
   renderDashboardNav();
   initDashboardNav();
