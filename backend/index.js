@@ -4,6 +4,7 @@ import dashboardRouter from './routes/dashboard.js';
 import inventoryRouter from './routes/inventory.js';
 import salesRouter from './routes/sales.js';
 import utangRouter from './routes/utang.js';
+import authRouter from './auth.js';
 
 const app = express();
 
@@ -18,6 +19,7 @@ app.use('/api/inventory', inventoryRouter);
 app.use('/api/dashboard', dashboardRouter);
 app.use('/api/sales', salesRouter);
 app.use('/api/utang', utangRouter);
+app.use('/api/local-auth', authRouter);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

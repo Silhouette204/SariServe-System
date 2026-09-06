@@ -11,6 +11,7 @@ datasource db {
   provider = "postgresql"
 }
 
+//for system
 enum AdjustmentReason {
   RESTOCK
   DAMAGED
@@ -92,4 +93,26 @@ model UtangPayment {
   customerName String
   amountPaid  Decimal  @db.Decimal(10, 2)
   paidAt      DateTime @default(now())
+}
+
+
+//user accounts
+//Enum ay simpleng "text label" o "status" lamang
+// Ang ginagawa lang ng enum Role ay siguraduhin na walang ibang text na maiisulat sa role column kundi USER o ADMIN.
+enum NotificationPreference{
+  EMAIL
+  PHONE
+}
+
+//the table itself o pag lalagyan ng mga data, alam mo naman to kasi matagal ka ng gumagamit ng db.
+model User{ 
+ id                        String                   @id @default(uuid()) //ganito magset ng ID or key
+ firstName                 String                   
+ lastName                  String
+ email                     String                   @unique
+ phoneNumber               String                   @unique
+ passwordHash              String
+ notificationPreferences   NotificationPreference   @default(EMAIL) //for confirmation
+ agreedTerms               Boolean                  @default(false) //naka uncheck to be not proceed
+ createdAt                 DateTime                 @default(now()) // syempre kung kelan ginawa yung acc
 }
