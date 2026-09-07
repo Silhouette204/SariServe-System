@@ -1,3 +1,4 @@
+//backend/index.js
 import express from 'express';
 import cors from 'cors';
 import dashboardRouter from './routes/dashboard.js';
@@ -5,11 +6,24 @@ import inventoryRouter from './routes/inventory.js';
 import salesRouter from './routes/sales.js';
 import utangRouter from './routes/utang.js';
 import authRouter from './routes/auth.js';
+import session from 'express-session'; //middleware
 
 const app = express();
 
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:5173', // must be exact origin, not '*'
+  credentials: true,
+}));
+
 app.use(express.json());
+
+// ← idagdag ito BAGO yung routes
+app.use(session({
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false,
+  cookie: { secure: false, httpOnly: true, sameSite: 'lax' },
+}));
 
 app.get('/', (req, res) => {
   res.send('SariServe API is running');
