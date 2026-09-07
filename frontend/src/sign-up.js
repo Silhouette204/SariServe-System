@@ -29,9 +29,14 @@ if (signUpForm && window.location.pathname.includes('sign-up.html')) {
       return;
     }
 
+    if (!phone) {
+      return res.status(400).json({ error: 'Kailangan ng phone number.' });
+    }
+
     try {
-      const response = await fetch('http://localhost:5000/api/local-auth/signup', {
+      const response = await fetch('http://localhost:3000/api/local-auth/signup', {
         method: 'POST',
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ firstName, lastName, email, phone, password, notificationPref }),
       });

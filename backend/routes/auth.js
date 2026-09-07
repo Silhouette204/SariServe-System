@@ -1,24 +1,28 @@
 import express from 'express';
 import { PrismaClient } from '@prisma/client';
+import { PrismaPg } from '@prisma/adapter-pg';
+import pkg from 'pg';
+const { Pool } = pkg;
 
 const router = express.Router();
-const prisma = new PrismaClient();
+
+// I-setup ang PG pool at Prisma adapter para sa Prisma v7+
+const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+const adapter = new PrismaPg(pool);
+const prisma = new PrismaClient({ adapter });
 
 // Local Sign-Up Route
 router.post('/signup', async (req, res) => {
   try {
     const { firstName, lastName, email, phone, password, notificationPref } = req.body;
 
-    // Suriin kung nag-eexist na ang email
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
       return res.status(400).json({ error: 'Gamit na ang email na ito.' });
     }
 
-    // I-map ang notification preference patungo sa Enum kung kinakailangan
     const prefEnum = notificationPref === 'phone' ? 'PHONE' : 'EMAIL';
 
-    // Gumawa ng user sa database (Pansamantalang plain text password muna para sa testing)
     const newUser = await prisma.user.create({
       data: {
         firstName,
@@ -41,9 +45,8 @@ router.post('/signup', async (req, res) => {
 // Local Sign-In Route
 router.post('/signin', async (req, res) => {
   try {
-    const { identifier, password } = req.body; // identifier pwede maging email
+    const { identifier, password } = req.body;
 
-    // Hanapin ang user gamit ang email
     const user = await prisma.user.findUnique({ 
       where: { email: identifier } 
     });
