@@ -4,7 +4,7 @@ import dashboardRouter from './routes/dashboard.js';
 import inventoryRouter from './routes/inventory.js';
 import salesRouter from './routes/sales.js';
 import utangRouter from './routes/utang.js';
-import authRouter from './auth.js';
+import authRouter from './routes/auth.js';
 
 const app = express();
 
