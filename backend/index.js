@@ -11,7 +11,7 @@ import session from 'express-session'; //middleware
 const app = express();
 
 app.use(cors({
-  origin: 'http://localhost:5173', // must be exact origin, not '*'
+  origin: 'http://localhost:5173',
   credentials: true,
 }));
 

@@ -17,6 +17,7 @@ if (signInForm && window.location.pathname.includes('sign-in.html')) {
     try {
       const response = await fetch('http://localhost:3000/api/local-auth/signin', {
         method: 'POST',
+        credentials: 'include', // ← ito yung kulang
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ identifier: usernameOrEmail, password }),
       });

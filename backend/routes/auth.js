@@ -23,7 +23,7 @@ router.post('/signup', async (req, res) => {
         lastName,
         email,
         phoneNumber: phone || null,
-        passwordHash: password, 
+        passwordHash,  // ← ito dapat, walang `: password`
         notificationPreferences: prefEnum,
         agreedTerms: true,
       },

@@ -30,7 +30,8 @@ if (signUpForm && window.location.pathname.includes('sign-up.html')) {
     }
 
     if (!phone) {
-      return res.status(400).json({ error: 'Kailangan ng phone number.' });
+      alert('Kailangan ng phone number.');
+      return;
     }
 
     try {
