@@ -20,6 +20,7 @@ import { initUtangModals, fetchUtangData } from './utang.js';
 //login process
 import { signIn } from './sign-in.js';
 import { signUp } from './sign-up.js';
+import { verifyEmail } from './verify-email.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
   if (document.getElementById('side-menu') !== null) {  
@@ -29,6 +30,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   //for login call
   signIn();
   signUp();
+  verifyEmail();
 
   renderDashboardNav();
   initDashboardNav();
