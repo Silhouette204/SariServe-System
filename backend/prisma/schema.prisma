@@ -114,5 +114,18 @@ model User{
  passwordHash              String
  notificationPreferences   NotificationPreference   @default(EMAIL) //for confirmation
  agreedTerms               Boolean                  @default(false) //naka uncheck to be not proceed
+ 
+ //dagdag tayo once nag-install ka na ng resend
+ isVerified                Boolean                  @default(false)
+ verificationToken         String?              
+ verificationTokenExpiry   DateTime?
+ resetPasswordToken        String?
+ resetPasswordTokenExpiry  DateTime?
+
+//laging dulo
  createdAt                 DateTime                 @default(now()) // syempre kung kelan ginawa yung acc
+
+ 
+ 
+
 }

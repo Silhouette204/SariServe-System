@@ -1,6 +1,8 @@
 import express from 'express';
 import prisma from '../lib/prisma.js';
 import bcrypt from 'bcrypt';
+import crypto from 'crypto'; //hindi na kailangan mag-install ng dagdag na package para gumawa ng random token.
+import { sendVerificationEmail } from '../lib/email.js';
 
 const router = express.Router();
 
@@ -17,6 +19,11 @@ router.post('/signup', async (req, res) => {
     const prefEnum = notificationPref === 'phone' ? 'PHONE' : 'EMAIL';
     const passwordHash = await bcrypt.hash(password, 10); // ← hash na, hindi plain text
 
+
+    //crypto email verification
+    const verificationToken = crypto.randomBytes(32).toString('hex');
+    const verificationTokenExpiry = new Date(Date.now() + 60 * 60 * 1000); //1 hour
+
     const newUser = await prisma.user.create({
       data: {
         firstName,
@@ -26,18 +33,68 @@ router.post('/signup', async (req, res) => {
         passwordHash,  // ← ito dapat, walang `: password`
         notificationPreferences: prefEnum,
         agreedTerms: true,
+
+        //for email verification
+        verificationToken,
+        verificationTokenExpiry,
       },
     });
 
-    req.session.userId = newUser.id; // ← auto sign-in pagkatapos mag-signup
+    //req.session.userId = newUser.id; // ← auto sign-in pagkatapos mag-signup, tatanggalin natin to after mag successfull ang sign up locally without email verification
 
-    const { passwordHash: _, ...safeUser } = newUser; // ← tanggalin ang hash bago i-send
-    res.status(201).json({ message: 'Account created successfully', user: safeUser });
+    const verificationLink = `http://localhost:5173/verify-email.html?token=${verificationToken}`;
+    await sendVerificationEmail(newUser.email, verificationLink);
+
+    const { passwordHash: _, verificationToken: __, ...safeUser } = newUser; // ← tanggalin ang hash bago i-send
+    res.status(201).json(
+      { 
+      message: 'Account created successfully, Please check your email to verify your account', 
+      user: safeUser 
+    });
+    
   } catch (error) {
     console.error('Signup Error:', error);
     res.status(500).json({ error: 'Server error sa paggawa ng account.' });
   }
 });
+
+//verify email account route
+router.get('/verify-email', async (req, res) => {
+  try {
+    const { token } = req.query;
+
+    if (!token) {
+      return res.status(400).json({ error: 'Walang verification token.' });
+    }
+
+    const user = await prisma.user.findFirst({
+      where: { verificationToken: token },
+    });
+
+    if (!user) {
+      return res.status(400).json({ error: 'Invalid o lumang verification link.' });
+    }
+
+    if (user.verificationTokenExpiry < new Date()) {
+      return res.status(400).json({ error: 'Na-expire na ang verification link. Mag-sign up ulit o humingi ng bagong link.' });
+    }
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        isVerified: true,
+        verificationToken: null,        // ← gamitin lang isang beses
+        verificationTokenExpiry: null,
+      },
+    });
+
+    res.status(200).json({ message: 'Na-verify na ang email! Pwede ka nang mag-login.' });
+  } catch (error) {
+    console.error('Verify Email Error:', error);
+    res.status(500).json({ error: 'Server error sa email verification.' });
+  }
+});
+
 
 // Local Sign-In Route
 router.post('/signin', async (req, res) => {
