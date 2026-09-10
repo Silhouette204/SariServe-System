@@ -21,7 +21,7 @@ router.post('/signup', async (req, res) => {
 
 
     //crypto email verification
-    const verificationToken = crypto.randomBytes(32).toString('hex');
+    const verificationToken = Math.floor(100000 + Math.random() * 900000).toString();
     const verificationTokenExpiry = new Date(Date.now() + 60 * 60 * 1000); //1 hour
 
     const newUser = await prisma.user.create({
@@ -43,7 +43,7 @@ router.post('/signup', async (req, res) => {
     //req.session.userId = newUser.id; // ← auto sign-in pagkatapos mag-signup, tatanggalin natin to after mag successfull ang sign up locally without email verification
 
     const verificationLink = `http://localhost:5173/verify-email.html?token=${verificationToken}`;
-    await sendVerificationEmail(newUser.email, verificationLink);
+    await sendVerificationEmail(newUser.email, verificationToken);
 
     const { passwordHash: _, verificationToken: __, ...safeUser } = newUser; // ← tanggalin ang hash bago i-send
     res.status(201).json(
@@ -59,31 +59,33 @@ router.post('/signup', async (req, res) => {
 });
 
 //verify email account route
-router.get('/verify-email', async (req, res) => {
+router.post('/verify-email', async (req, res) => {
   try {
-    const { token } = req.query;
+    const { email, code } = req.body;
 
-    if (!token) {
-      return res.status(400).json({ error: 'Walang verification token.' });
+    if (!email || !code) {
+      return res.status(400).json({ error: 'Kailangan ng email at code.' });
     }
 
-    const user = await prisma.user.findFirst({
-      where: { verificationToken: token },
-    });
+    const user = await prisma.user.findUnique({ where: { email } });
 
     if (!user) {
-      return res.status(400).json({ error: 'Invalid o lumang verification link.' });
+      return res.status(400).json({ error: 'Walang account na nakita sa email na ito.' });
+    }
+
+    if (user.verificationToken !== code) {
+      return res.status(400).json({ error: 'Maling verification code.' });
     }
 
     if (user.verificationTokenExpiry < new Date()) {
-      return res.status(400).json({ error: 'Na-expire na ang verification link. Mag-sign up ulit o humingi ng bagong link.' });
+      return res.status(400).json({ error: 'Na-expire na ang code. Humingi ng bago.' });
     }
 
     await prisma.user.update({
       where: { id: user.id },
       data: {
         isVerified: true,
-        verificationToken: null,        // ← gamitin lang isang beses
+        verificationToken: null,
         verificationTokenExpiry: null,
       },
     });

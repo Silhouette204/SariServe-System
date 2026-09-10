@@ -45,8 +45,8 @@ if (signUpForm && window.location.pathname.includes('sign-up.html')) {
       const data = await response.json();
 
       if (response.ok) {
-        alert('Matagumpay ang paggawa ng account! Paki-check ang email mo para i-verify bago ka makapag-login.');
-        window.location.href = 'sign-in.html'; // ← ito ay OK pa rin iwan, dahil doon lang naman i-blo-block ang login kung hindi pa verified
+        alert('Matagumpay ang paggawa ng account! Paki-check ang email mo para sa verification code.');
+        window.location.href = `verify-email.html?email=${encodeURIComponent(email)}`;
       } else {
         alert(data.error || 'May nangyaring error sa pag-rehistro.');
       }

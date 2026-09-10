@@ -2,17 +2,17 @@ import { Resend } from 'resend';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-export async function sendVerificationEmail(toEmail, verificationLink) {
+export async function sendVerificationEmail(toEmail, code) {
   try {
     const { data, error } = await resend.emails.send({
-      from: 'SariServe <onboarding@resend.dev>', // default test sender ng Resend
+      from: 'SariServe <onboarding@resend.dev>',
       to: toEmail,
-      subject: 'I-verify ang iyong SariServe account',
+      subject: 'Ang iyong SariServe verification code',
       html: `
         <h2>Salamat sa pag-sign up sa SariServe!</h2>
-        <p>I-click ang link sa ibaba para i-verify ang iyong email:</p>
-        <a href="${verificationLink}">Verify Email</a>
-        <p>Mag-e-expire ang link na ito sa loob ng 1 oras.</p>
+        <p>Ito ang iyong 6-digit verification code:</p>
+        <h1 style="letter-spacing: 4px; font-size: 32px;">${code}</h1>
+        <p>Mag-e-expire ang code na ito sa loob ng 1 oras.</p>
       `,
     });
 
