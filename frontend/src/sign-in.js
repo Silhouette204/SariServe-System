@@ -27,7 +27,11 @@ if (signInForm && window.location.pathname.includes('sign-in.html')) {
       if (response.ok) {
         localStorage.setItem('user', JSON.stringify(data.user));
         alert('Login Successful!');
-        window.location.href = '/dashboard.html'; // Palitan ng path papunta sa dashboard mo
+        window.location.href = '/dashboard.html';
+      } else if (response.status === 403) {
+        // hindi pa verified — dalhin sa verify page, may pre-filled email
+        alert(data.error || 'Kailangan mo munang i-verify ang email mo.');
+        window.location.href = `verify-email.html?email=${encodeURIComponent(usernameOrEmail)}`;
       } else {
         alert(data.error || 'Mali ang username o password.');
       }

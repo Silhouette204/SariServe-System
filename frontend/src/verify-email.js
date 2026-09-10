@@ -75,7 +75,7 @@ export function verifyEmail() {
       if (response.ok) {
         messageEl.textContent = data.message;
         messageEl.className = 'text-center text-sm mt-4 mb-4 text-green-600';
-        setTimeout(() => window.location.href = 'sign-in.html', 1500);
+        setTimeout(() => window.location.href = 'dashboard.html', 1500); // ← dating 'sign-in.html'
       } else {
         messageEl.textContent = data.error;
         messageEl.className = 'text-center text-sm mt-4 mb-4 text-red-500';
