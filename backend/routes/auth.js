@@ -2,9 +2,49 @@ import express from 'express';
 import prisma from '../lib/prisma.js';
 import bcrypt from 'bcrypt';
 import crypto from 'crypto'; //hindi na kailangan mag-install ng dagdag na package para gumawa ng random token.
-import { sendVerificationEmail } from '../lib/email.js';
+import { sendVerificationEmail, sendPasswordResetEmail } from '../lib/email.js';
+
 
 const router = express.Router();
+
+//verify email account route
+router.post('/verify-email', async (req, res) => {
+  try {
+    const { email, code } = req.body;
+
+    if (!email || !code) {
+      return res.status(400).json({ error: 'Kailangan ng email at code.' });
+    }
+
+    const user = await prisma.user.findUnique({ where: { email } });
+
+    if (!user) {
+      return res.status(400).json({ error: 'Walang account na nakita sa email na ito.' });
+    }
+
+    if (user.verificationToken !== code) {
+      return res.status(400).json({ error: 'Maling verification code.' });
+    }
+
+    if (user.verificationTokenExpiry < new Date()) {
+      return res.status(400).json({ error: 'Na-expire na ang code. Humingi ng bago.' });
+    }
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        isVerified: true,
+        verificationToken: null,
+        verificationTokenExpiry: null,
+      },
+    });
+
+    res.status(200).json({ message: 'Na-verify na ang email! Pwede ka nang mag-login.' });
+  } catch (error) {
+    console.error('Verify Email Error:', error);
+    res.status(500).json({ error: 'Server error sa email verification.' });
+  }
+});
 
 // Local Sign-Up Route
 router.post('/signup', async (req, res) => {
@@ -59,46 +99,6 @@ router.post('/signup', async (req, res) => {
   }
 });
 
-//verify email account route
-router.post('/verify-email', async (req, res) => {
-  try {
-    const { email, code } = req.body;
-
-    if (!email || !code) {
-      return res.status(400).json({ error: 'Kailangan ng email at code.' });
-    }
-
-    const user = await prisma.user.findUnique({ where: { email } });
-
-    if (!user) {
-      return res.status(400).json({ error: 'Walang account na nakita sa email na ito.' });
-    }
-
-    if (user.verificationToken !== code) {
-      return res.status(400).json({ error: 'Maling verification code.' });
-    }
-
-    if (user.verificationTokenExpiry < new Date()) {
-      return res.status(400).json({ error: 'Na-expire na ang code. Humingi ng bago.' });
-    }
-
-    await prisma.user.update({
-      where: { id: user.id },
-      data: {
-        isVerified: true,
-        verificationToken: null,
-        verificationTokenExpiry: null,
-      },
-    });
-
-    res.status(200).json({ message: 'Na-verify na ang email! Pwede ka nang mag-login.' });
-  } catch (error) {
-    console.error('Verify Email Error:', error);
-    res.status(500).json({ error: 'Server error sa email verification.' });
-  }
-});
-
-
 // Local Sign-In Route
 router.post('/signin', async (req, res) => {
   try {
@@ -142,6 +142,113 @@ router.post('/signin', async (req, res) => {
   } catch (error) {
     console.error('Signin Error:', error);
     res.status(500).json({ error: 'Server error sa pag-login.' });
+  }
+});
+
+// Forgot Password — humingi ng reset code
+router.post('/forgot-password', async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ error: 'Kailangan ng email.' });
+    }
+
+    const user = await prisma.user.findUnique({ where: { email } });
+
+    if (!user) {
+      // Hindi natin sasabihing "walang account" — para hindi malaman ng iba kung aling emails ang registered
+      return res.status(200).json({ message: 'Kung may account na naka-rehistro sa email na ito, ipapadala ang reset code.' });
+    }
+
+    const resetCode = Math.floor(100000 + Math.random() * 900000).toString();
+    const resetCodeExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minuto
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        resetPasswordToken: resetCode,
+        resetPasswordTokenExpiry: resetCodeExpiry,
+      },
+    });
+
+    await sendPasswordResetEmail(user.email, resetCode, 10);
+
+    res.status(200).json({ message: 'Kung may account na naka-rehistro sa email na ito, ipapadala ang reset code.' });
+  } catch (error) {
+    console.error('Forgot Password Error:', error);
+    res.status(500).json({ error: 'Server error sa forgot password.' });
+  }
+});
+
+// Reset Password — kumpirmahin ang code, ipalit ang password
+router.post('/reset-password', async (req, res) => {
+  try {
+    const { email, code, newPassword } = req.body;
+
+    if (!email || !code || !newPassword) {
+      return res.status(400).json({ error: 'Kumpletuhin ang lahat ng fields.' });
+    }
+
+    const user = await prisma.user.findUnique({ where: { email } });
+
+    if (!user) {
+      return res.status(400).json({ error: 'Walang account na nakita sa email na ito.' });
+    }
+
+    if (user.resetPasswordToken !== code) {
+      return res.status(400).json({ error: 'Maling reset code.' });
+    }
+
+    if (user.resetPasswordTokenExpiry < new Date()) {
+      return res.status(400).json({ error: 'Na-expire na ang reset code. Humingi ng bago.' });
+    }
+
+    const newPasswordHash = await bcrypt.hash(newPassword, 10);
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        passwordHash: newPasswordHash,
+        resetPasswordToken: null,
+        resetPasswordTokenExpiry: null,
+      },
+    });
+
+    res.status(200).json({ message: 'Matagumpay na naipalit ang password. Pwede ka nang mag-login.' });
+  } catch (error) {
+    console.error('Reset Password Error:', error);
+    res.status(500).json({ error: 'Server error sa reset password.' });
+  }
+});
+
+// Verify Reset Code — i-check lang ang code, hindi pa palitan ang password
+router.post('/verify-reset-code', async (req, res) => {
+  try {
+    const { email, code } = req.body;
+
+    if (!email || !code) {
+      return res.status(400).json({ error: 'Kailangan ng email at code.' });
+    }
+
+    const user = await prisma.user.findUnique({ where: { email } });
+
+    if (!user) {
+      return res.status(400).json({ error: 'Walang account na nakita sa email na ito.' });
+    }
+
+    if (user.resetPasswordToken !== code) {
+      return res.status(400).json({ error: 'Maling reset code.' });
+    }
+
+    if (user.resetPasswordTokenExpiry < new Date()) {
+      return res.status(400).json({ error: 'Na-expire na ang reset code. Humingi ng bago.' });
+    }
+
+    res.status(200).json({ message: 'Tama ang code! Ilagay mo na ang bagong password.' });
+  } catch (error) {
+    console.error('Verify Reset Code Error:', error);
+    res.status(500).json({ error: 'Server error sa pag-verify ng code.' });
   }
 });
 
