@@ -12,13 +12,15 @@ export function verifyEmail() {
   // kunin ang email mula sa URL query param (ipinasa mula sa sign-up.js)
   const params = new URLSearchParams(window.location.search);
   const email = params.get('email');
+  const purpose = params.get('purpose'); 
 
-  if (email) {
-    subtitleEl.innerHTML = `Ilagay ang code na ipinadala namin sa <strong>${email}</strong>.`;
-  } else {
-    subtitleEl.textContent = 'Walang email na nakita. Bumalik sa sign up.';
-  }
-
+if (email) {
+  subtitleEl.innerHTML = purpose === 'login'
+    ? `Ilagay ang login code na ipinadala sa <strong>${email}</strong>.`
+    : `Ilagay ang code na ipinadala namin sa <strong>${email}</strong>.`;
+} else {
+  subtitleEl.textContent = 'Walang email na nakita. Bumalik sa sign up.';
+}
   // Auto-advance sa susunod na box pag nag-type, at auto-back pag Backspace sa blangkong box
   otpBoxes.forEach((box, index) => {
     box.addEventListener('input', () => {
