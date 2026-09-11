@@ -2,6 +2,7 @@ import { defineConfig, loadEnv } from "vite";
 import tailwindcss from "@tailwindcss/vite";  
 import { resolve } from "path"; 
 import { fileURLToPath } from "url"; 
+import { verify } from "crypto";
 
 const __dirname = fileURLToPath(new URL(".", import.meta.url));
 
@@ -37,7 +38,8 @@ export default defineConfig(({ mode }) => {
           signUp: resolve(__dirname, "sign-up.html"),
           forgotPassword: resolve(__dirname, "forgot-password.html"),
           confirmPassword: resolve(__dirname, "confirm-password.html"),
-          verifyEmail: resolve(__dirname, "verify-email.html")
+          verifyEmail: resolve(__dirname, "verify-email.html"),
+          verifyResetCode: resolve(__dirname, "verify-reset-code.html"),
         }
       }
     }

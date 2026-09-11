@@ -22,6 +22,11 @@ import { signIn } from './sign-in.js';
 import { signUp } from './sign-up.js';
 import { verifyEmail } from './verify-email.js';
 
+//forgot-password
+import { forgotPassword } from './forgot-password.js';
+import { confirmPassword } from './confirm-password.js';
+import { verifyResetCode } from './verify-reset-code.js';
+
 document.addEventListener('DOMContentLoaded', async () => {
   if (document.getElementById('side-menu') !== null) {  
     initNav();
@@ -32,6 +37,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   signUp();
   verifyEmail();
 
+  //for forgot-password call
+  forgotPassword();
+  confirmPassword();
+  verifyResetCode();
+
+  //for dashboard
   renderDashboardNav();
   initDashboardNav();
 
