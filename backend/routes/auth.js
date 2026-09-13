@@ -232,6 +232,8 @@ router.post('/verify-reset-code', async (req, res) => {
     }
 
     const user = await prisma.user.findUnique({ where: { email } });
+    console.log('Na-type na code:', code);
+    console.log('Naka-save na code sa DB:', user?.resetPasswordToken);
 
     if (!user) {
       return res.status(400).json({ error: 'Walang account na nakita sa email na ito.' });
