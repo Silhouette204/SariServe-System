@@ -96,6 +96,7 @@ export async function loadDashboardData() {
     
    // Today's Sales: totoong "% change vs kahapon" — may +/- sign
 setPercent('kpi-dash-today-sale', data.todaySalesChange);
+setPercent('kpi-dash-total-utang', data.totalUtangChange);
 
 // Total Product / Low Stock: "progress gauge" papunta sa 150 cap — walang sign
 const setProgress = (id, value) => {
@@ -150,7 +151,7 @@ setProgress('kpi-dash-low-stock', data.lowStockChange);
               <h1 class="text-end font-semibold">₱${Number(txn.amount).toFixed(2)}</h1>
               <p class="py-1 px-2 bg-green-200 text-secondary rounded-xl text-xs text-center">${txn.status}</p>
             </div>
-          </li>
+          </li>   
         `).join('');
       }
 
