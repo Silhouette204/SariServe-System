@@ -39,7 +39,7 @@ router.get('/stats', async (req, res) => {
     const weekStart = new Date(todayStart);
     weekStart.setDate(weekStart.getDate() - 6);
 
-    const [todaySales, prevTodaySales, totalProducts, lowStockItems, weekSales, totalProductsYesterday, allProducts, todaySaleItems, todayAdjustments] =
+    const [todaySales, prevTodaySales, totalProducts, lowStockItems, weekSales, totalProductsYesterday, allProducts, todaySaleItems, todayAdjustments, utangCustomers] =
 
     await Promise.all([
       prisma.sale.findMany({
@@ -90,6 +90,11 @@ router.get('/stats', async (req, res) => {
         where: { createdAt: { gte: todayStart, lt: tomorrowStart } },
         select: { productId: true, amount: true },
       }),
+
+       // ← MOVED TO LAST, matching where `utangCustomers` sits in the destructuring
+      prisma.customer.findMany({
+        include: {transactions: true, payments: true}, 
+      }),
     ]);
 
     const peso = (value) => Number(value || 0);
@@ -112,6 +117,20 @@ todayAdjustments.forEach((adj) => {
 const lowStockCountYesterday = [...yesterdayStockMap.values()].filter(
   (stock) => stock <= 5
 ).length;
+
+
+// ADD THIS BLOCK ↓
+let totalUtang = 0;
+let totalUtangCustomers = 0;
+
+utangCustomers.forEach((c) => {
+  const totalDebt = c.transactions.reduce((sum, t) => sum + Number(t.amount), 0);
+  const totalPaid = c.payments.reduce((sum, p) => sum + Number(p.amountPaid), 0);
+  const balance = Math.max(0, totalDebt - totalPaid);
+
+  totalUtang += balance;
+  if (balance > 0) totalUtangCustomers++;
+});
 
 const PRODUCT_CAP = 150; // target/cap para sa "progress" gauge
 
@@ -205,8 +224,8 @@ const todaySalesChangeVsYesterday = percentChange(
       lowStockCount: lowStockItems.length,
       lowStockChange,   // BAGO
     
-      totalUtang: 0,
-      totalUtangCustomers: 0,
+      totalUtang,
+      totalUtangCustomers,
     
       weeklySales: { days, amounts },
       categories: { labels: categoryLabels, series: categorySeries },
