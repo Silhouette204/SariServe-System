@@ -122,6 +122,8 @@ const lowStockCountYesterday = [...yesterdayStockMap.values()].filter(
 // ADD THIS BLOCK ↓
 let totalUtang = 0;
 let totalUtangCustomers = 0;
+let totalUtangYesterday = 0;
+
 
 utangCustomers.forEach((c) => {
   const totalDebt = c.transactions.reduce((sum, t) => sum + Number(t.amount), 0);
@@ -130,12 +132,33 @@ utangCustomers.forEach((c) => {
 
   totalUtang += balance;
   if (balance > 0) totalUtangCustomers++;
+
+  const todayDebtAdded = c.transactions
+    .filter((t) => {
+      const d = new Date(t.createdAt);
+      return d >= todayStart && d < tomorrowStart;
+    })
+    .reduce((sum, t) => sum + Number(t.amount), 0);
+
+  const todayPaymentsMade = c.payments
+    .filter((p) => {
+      const d = new Date(p.paidAt);
+      return d >= todayStart && d < tomorrowStart;
+    })
+    .reduce((sum, p) => sum + Number(p.amountPaid), 0);
+
+  const balanceYesterday = Math.max(0, balance - todayDebtAdded + todayPaymentsMade);
+  totalUtangYesterday += balanceYesterday;
 });
+
 
 const PRODUCT_CAP = 150; // target/cap para sa "progress" gauge
 
 const totalProductsChange = Math.min(100, (totalProducts / PRODUCT_CAP) * 100);
 const lowStockChange = Math.min(100, (lowStockItems.length / PRODUCT_CAP) * 100);
+
+//for utang
+const totalUtangChange = percentChange(totalUtang, totalUtangYesterday); 
 
 const todaySalesChangeVsYesterday = percentChange(
   todaySales.reduce((sum, s) => sum + peso(s.totalAmount), 0),
@@ -220,6 +243,7 @@ const todaySalesChangeVsYesterday = percentChange(
     
       totalProducts,
       totalProductsChange,   // BAGO
+      totalUtangChange,
     
       lowStockCount: lowStockItems.length,
       lowStockChange,   // BAGO
