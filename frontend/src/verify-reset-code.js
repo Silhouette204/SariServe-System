@@ -12,6 +12,8 @@ export function verifyResetCode() {
   const params = new URLSearchParams(window.location.search);
   const email = params.get('email');
 
+  const resendLink = document.getElementById('resend-reset-link'); 
+
   if (email) {
     subtitleEl.innerHTML = `Ilagay ang reset code na ipinadala sa <strong>${email}</strong>.`;
   } else {
@@ -85,6 +87,31 @@ export function verifyResetCode() {
       console.error('Verify Reset Code Error:', error);
       messageEl.textContent = 'Hindi makakonekta sa server.';
       messageEl.className = 'text-center text-sm mt-4 mb-4 text-red-500';
+    }
+  });
+
+  resendLink.addEventListener('click', async (e) => {
+    e.preventDefault();
+    if (!email) return;
+  
+    try {
+      const response = await fetch('http://localhost:3000/api/local-auth/resend-code', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, purpose: 'reset' }), // ← 'reset' palagi dito
+      });
+      const data = await response.json();
+      messageEl.textContent = response.ok ? 'Naipadala ulit ang code!' : data.error;
+      messageEl.className = response.ok
+        ? 'text-center text-sm mt-4 mb-4 text-green-600'
+        : 'text-center text-sm mt-4 mb-4 text-red-500';
+  
+      if (response.ok) {
+        otpBoxes.forEach(box => box.value = '');
+        otpBoxes[0].focus();
+      }
+    } catch (error) {
+      console.error('Resend Error:', error);
     }
   });
 }
