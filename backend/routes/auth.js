@@ -254,4 +254,57 @@ router.post('/verify-reset-code', async (req, res) => {
   }
 });
 
+// Resend Code — gumagana para sa signup, login, at reset password
+router.post('/resend-code', async (req, res) => {
+  try {
+    const { email, purpose } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ error: 'Kailangan ng email.' });
+    }
+
+    const user = await prisma.user.findUnique({ where: { email } });
+
+    if (!user) {
+      return res.status(400).json({ error: 'Walang account na nakita sa email na ito.' });
+    }
+
+    const newCode = Math.floor(100000 + Math.random() * 900000).toString();
+
+    if (purpose === 'reset') {
+      // Para sa forgot password — gamitin ang resetPasswordToken fields
+      const expiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minuto
+
+      await prisma.user.update({
+        where: { id: user.id },
+        data: {
+          resetPasswordToken: newCode,
+          resetPasswordTokenExpiry: expiry,
+        },
+      });
+
+      await sendPasswordResetEmail(user.email, newCode, 10);
+    } else {
+      // Para sa signup o login — gamitin ang verificationToken fields
+      const expiryMinutes = purpose === 'login' ? 1 : 3;
+      const expiry = new Date(Date.now() + expiryMinutes * 60 * 1000);
+
+      await prisma.user.update({
+        where: { id: user.id },
+        data: {
+          verificationToken: newCode,
+          verificationTokenExpiry: expiry,
+        },
+      });
+
+      await sendVerificationEmail(user.email, newCode, expiryMinutes);
+    }
+
+    res.status(200).json({ message: 'Naipadala ulit ang code sa email mo.' });
+  } catch (error) {
+    console.error('Resend Code Error:', error);
+    res.status(500).json({ error: 'Server error sa pag-resend ng code.' });
+  }
+});
+
 export default router;
