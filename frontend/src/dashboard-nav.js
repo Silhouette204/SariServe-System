@@ -66,7 +66,7 @@ export function renderDashboardNav() {
     <div class="flex flex-row items-center gap-3 px-3 mb-3">
     <i class="fa-regular fa-circle-user text-2xl "></i>
     <div>
-    <h3 class="font-semibold text-primary"><span>John Doe</span></h3>
+    <h3 class="font-semibold text-primary"><span id="nav-user-fullname">John Doe</span></h3>
     <p class="text-primary/80 text-sm">Store Owner</p>
     </div>
     </div>

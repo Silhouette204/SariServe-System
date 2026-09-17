@@ -69,7 +69,8 @@ if (email) {
       const response = await fetch('http://localhost:3000/api/local-auth/verify-email', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, code }),
+        credentials: 'include',
+        body: JSON.stringify({ email, code, purpose }),
       });
 
       const data = await response.json();

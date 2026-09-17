@@ -6,6 +6,7 @@ export function initNav() {
   const menuBtn = document.getElementById('menu-btn');
   const closeBtn = document.getElementById('close-menu-btn');
   const backDrop = document.getElementById('backdrop');
+  const logoutBtn = document.querySelector('#logout-btn');
 
   if (!sideNav || !menuBtn || !closeBtn || !backDrop) {
     console.warn("SariServe Nav Warning: May kulang na element sa initialization.");
@@ -34,4 +35,19 @@ export function initNav() {
   navLinks.forEach(link => {
     link.onclick = closeAll;
   });
+
+  
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', async (e) => {
+      e.preventDefault();
+      try {
+        const res = await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
+        if (res.ok) {
+          window.location.href = 'index.html';
+        }
+      } catch (err) {
+        console.error('Logout error:', err);
+      }
+    });
+  }
 }

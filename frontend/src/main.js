@@ -27,6 +27,9 @@ import { forgotPassword } from './forgot-password.js';
 import { confirmPassword } from './confirm-password.js';
 import { verifyResetCode } from './verify-reset-code.js';
 
+//load username or client name
+import { loadUserGreeting } from './load-user.js';
+
 document.addEventListener('DOMContentLoaded', async () => {
   if (document.getElementById('side-menu') !== null) {  
     initNav();
@@ -45,6 +48,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   //for dashboard
   renderDashboardNav();
   initDashboardNav();
+
+//for username
+loadUserGreeting();
 
   // Dashboard Page Route
   if (document.getElementById('dashboard')) {
