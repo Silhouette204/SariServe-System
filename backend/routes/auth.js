@@ -10,7 +10,7 @@ const router = express.Router();
 //verify email account route
 router.post('/verify-email', async (req, res) => {
   try {
-    const { email, code } = req.body;
+    const { email, code, purpose } = req.body; // ← dagdag: purpose
 
     if (!email || !code) {
       return res.status(400).json({ error: 'Kailangan ng email at code.' });
@@ -38,6 +38,11 @@ router.post('/verify-email', async (req, res) => {
         verificationTokenExpiry: null,
       },
     });
+
+    if (purpose === 'login') {
+      req.session.userId = user.id; // ← dito ginagawa ang session
+      return res.status(200).json({ message: 'Matagumpay na naka-login!', loggedIn: true });
+    }
 
     res.status(200).json({ message: 'Na-verify na ang email! Pwede ka nang mag-login.' });
   } catch (error) {
@@ -223,7 +228,7 @@ router.post('/reset-password', async (req, res) => {
 });
 
 // Verify Reset Code — i-check lang ang code, hindi pa palitan ang password
-router.post('/verify-reset-code', async (req, res) => {
+router.post('/verify-reset-code', async (req, res) => {  // ← ibalik dito
   try {
     const { email, code } = req.body;
 
@@ -232,14 +237,12 @@ router.post('/verify-reset-code', async (req, res) => {
     }
 
     const user = await prisma.user.findUnique({ where: { email } });
-    console.log('Na-type na code:', code);
-    console.log('Naka-save na code sa DB:', user?.resetPasswordToken);
 
     if (!user) {
       return res.status(400).json({ error: 'Walang account na nakita sa email na ito.' });
     }
 
-    if (user.resetPasswordToken !== code) {
+    if (user.resetPasswordToken !== code) {  // ← ibalik: resetPasswordToken, hindi verificationToken
       return res.status(400).json({ error: 'Maling reset code.' });
     }
 
@@ -305,6 +308,22 @@ router.post('/resend-code', async (req, res) => {
     console.error('Resend Code Error:', error);
     res.status(500).json({ error: 'Server error sa pag-resend ng code.' });
   }
+});
+
+// GET /session getting first and last name
+router.get('/session', async (req, res) => {
+  if (!req.session.userId) {
+    return res.status(401).json({ loggedIn: false });
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { id: req.session.userId },
+    select: { firstName: true, lastName: true },
+  });
+
+  if (!user) return res.status(401).json({ loggedIn: false });
+
+  res.json({ loggedIn: true, firstName: user.firstName, lastName: user.lastName });
 });
 
 export default router;
