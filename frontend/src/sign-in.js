@@ -1,6 +1,8 @@
+import { showToast } from './toast.js';
+
 export function signIn(){
 
-const signInForm = document.querySelector('form'); // o lagyan mo ng id ang <form id="signin-form"> sa HTML
+const signInForm = document.querySelector('form');
 
 if (signInForm && window.location.pathname.includes('sign-in.html')) {
   signInForm.addEventListener('submit', async (e) => {
@@ -10,14 +12,14 @@ if (signInForm && window.location.pathname.includes('sign-in.html')) {
     const password = document.getElementById('sign-in-password').value.trim();
 
     if (!usernameOrEmail || !password) {
-      alert('Please, Fill up all the blanks');
+      showToast('Please fill in all fields.', 'error');
       return;
     }
 
     try {
       const response = await fetch('http://localhost:3000/api/local-auth/signin', {
         method: 'POST',
-        credentials: 'include', // ← ito yung kulang
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ identifier: usernameOrEmail, password }),
       });
@@ -25,15 +27,16 @@ if (signInForm && window.location.pathname.includes('sign-in.html')) {
       const data = await response.json();
 
       if (response.ok && data.requiresOtp) {
-        window.location.href = `verify-email.html?email=${encodeURIComponent(data.email)}&purpose=login`;
-      } else if (!response.ok) {
-        alert(data.error || 'Wrong type of email or password');
+        showToast('Login code sent to your email.', 'success');
+        setTimeout(() => {
+          window.location.href = `verify-email.html?email=${encodeURIComponent(data.email)}&purpose=login`;
+        }, 1000);
       } else {
-        alert(data.error || 'Wrong type of email or password');
+        showToast(data.error || 'Incorrect email or password.', 'error');
       }
     } catch (error) {
       console.error('Error:', error);
-      alert('Cannot connect to server.');
+      showToast('Unable to connect to the server.', 'error');
     }
   });
 }

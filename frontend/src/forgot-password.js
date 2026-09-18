@@ -1,4 +1,5 @@
-// forgot-password.js
+import { showToast } from './toast.js';
+
 export function forgotPassword() {
 
   const forgotForm = document.getElementById('forgot-form');
@@ -11,7 +12,7 @@ export function forgotPassword() {
     const email = document.getElementById('forgot-email').value.trim();
 
     if (!email) {
-      alert('Ilagay ang email mo.');
+      showToast('Please enter your email.', 'error');
       return;
     }
 
@@ -23,12 +24,14 @@ export function forgotPassword() {
       });
 
       const data = await response.json();
-      alert(data.message);
+      showToast('If an account exists for this email, a reset code has been sent.', 'success');
 
-      window.location.href = `verify-reset-code.html?email=${encodeURIComponent(email)}`;
+      setTimeout(() => {
+        window.location.href = `verify-reset-code.html?email=${encodeURIComponent(email)}`;
+      }, 1500);
     } catch (error) {
       console.error('Forgot Password Error:', error);
-      alert('Hindi makakonekta sa server.');
+      showToast('Unable to connect to the server.', 'error');
     }
   });
 }

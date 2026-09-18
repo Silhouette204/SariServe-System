@@ -1,4 +1,6 @@
 // confirm-password.js
+import { showToast } from './toast.js';
+
 export function confirmPassword() {
 
   const confirmForm = document.getElementById('confirm-form');
@@ -6,14 +8,13 @@ export function confirmPassword() {
   if (!confirmForm || !window.location.pathname.includes('confirm-password.html')) return;
 
   const subtitleEl = document.getElementById('confirm-subtitle');
-  const messageEl = document.getElementById('confirm-message');
 
   const params = new URLSearchParams(window.location.search);
   const email = params.get('email');
-  const code = params.get('code'); // ← galing na sa URL, hindi sa input
+  const code = params.get('code');
 
   if (email && subtitleEl) {
-    subtitleEl.innerHTML = `Ilagay ang bagong password para sa <strong>${email}</strong>.`;
+    subtitleEl.innerHTML = `Enter a new password for <strong>${email}</strong>.`;
   }
 
   confirmForm.addEventListener('submit', async (e) => {
@@ -23,14 +24,12 @@ export function confirmPassword() {
     const repeatPassword = document.getElementById('confirm-repeat-password').value.trim();
 
     if (!email || !code) {
-      messageEl.textContent = 'Walang email o code na nakita. Bumalik sa forgot password.';
-      messageEl.className = 'text-center text-sm mt-4 text-red-500';
+      showToast('No email or code found. Please go back to forgot password.', 'error');
       return;
     }
 
     if (newPassword !== repeatPassword) {
-      messageEl.textContent = 'Hindi magkatugma ang password.';
-      messageEl.className = 'text-center text-sm mt-4 text-red-500';
+      showToast('Passwords do not match.', 'error');
       return;
     }
 
@@ -44,17 +43,14 @@ export function confirmPassword() {
       const data = await response.json();
 
       if (response.ok) {
-        messageEl.textContent = data.message;
-        messageEl.className = 'text-center text-sm mt-4 text-green-600';
+        showToast('Password successfully reset. You can now sign in.', 'success');
         setTimeout(() => window.location.href = 'sign-in.html', 1500);
       } else {
-        messageEl.textContent = data.error;
-        messageEl.className = 'text-center text-sm mt-4 text-red-500';
+        showToast(data.error || 'Unable to reset password.', 'error');
       }
     } catch (error) {
       console.error('Confirm Password Error:', error);
-      messageEl.textContent = 'Hindi makakonekta sa server.';
-      messageEl.className = 'text-center text-sm mt-4 text-red-500';
+      showToast('Unable to connect to the server.', 'error');
     }
   });
 }

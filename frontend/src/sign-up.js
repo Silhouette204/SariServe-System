@@ -1,3 +1,5 @@
+import { showToast } from './toast.js';
+
 export function signUp(){
 
   const signUpForm = document.querySelector('form');
@@ -13,24 +15,23 @@ export function signUp(){
       const password = document.getElementById('user-create-password').value.trim();
       const confirmPassword = document.getElementById('user-create-confirm-password').value.trim();
       
-      // Kunin ang napiling notification preference (email o phone)
       const notificationPrefElement = document.querySelector('input[name="notification_pref"]:checked');
       const notificationPref = notificationPrefElement ? notificationPrefElement.value : 'email';
       
       const termsAgreed = document.getElementById('terms').checked;
   
       if (password !== confirmPassword) {
-        alert('Hindi magkatugma ang password at confirm password.');
+        showToast('Passwords do not match.', 'error');
         return;
       }
   
       if (!termsAgreed) {
-        alert('Kailangan mong sumang-ayon sa Terms and Conditions.');
+        showToast('You must agree to the Terms and Conditions.', 'error');
         return;
       }
   
       if (!phone) {
-        alert('Kailangan ng phone number.');
+        showToast('Phone number is required.', 'error');
         return;
       }
   
@@ -45,14 +46,16 @@ export function signUp(){
         const data = await response.json();
   
         if (response.ok) {
-          alert('Matagumpay ang paggawa ng account! Paki-check ang email mo para sa verification code.');
-          window.location.href = `verify-email.html?email=${encodeURIComponent(email)}`;
+          showToast('Account created. Please check your email for the verification code.', 'success');
+          setTimeout(() => {
+            window.location.href = `verify-email.html?email=${encodeURIComponent(email)}`;
+          }, 1500);
         } else {
-          alert(data.error || 'May nangyaring error sa pag-rehistro.');
+          showToast(data.error || 'An error occurred while creating your account.', 'error');
         }
       } catch (error) {
         console.error('Error:', error);
-        alert('Hindi makakonekta sa backend server.');
+        showToast('Unable to connect to the server.', 'error');
       }
     });
   }
