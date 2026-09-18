@@ -7,18 +7,18 @@ export async function sendVerificationEmail(toEmail, code, expiryMinutes = 3) {
     const { data, error } = await resend.emails.send({
       from: 'SariServe <onboarding@resend.dev>',
       to: toEmail,
-      subject: 'Ang iyong SariServe verification code',
+      subject: 'Your SariServe verification code',
       html: `
-        <h2>Salamat sa paggamit ng SariServe!</h2>
-        <p>Ito ang iyong 6-digit verification code:</p>
+        <h2>Thank you for using SariServe!</h2>
+        <p>This is your 6-digit verification code:</p>
         <h1 style="letter-spacing: 4px; font-size: 32px;">${code}</h1>
-        <p>Mag-e-expire ang code na ito sa loob ng ${expiryMinutes} minuto.</p>
+        <p>It will expire under ${expiryMinutes} minutes.</p>
       `,
     });
 
     if (error) {
       console.error('Resend error:', error);
-      throw new Error('Hindi na-send ang verification email.');
+      throw new Error('Verification email, Does not send successfully');
     }
 
     return data;
@@ -33,19 +33,19 @@ export async function sendPasswordResetEmail(toEmail, code, expiryMinutes = 10) 
     const { data, error } = await resend.emails.send({
       from: 'SariServe <onboarding@resend.dev>',
       to: toEmail,
-      subject: 'I-reset ang iyong SariServe password',
+      subject: 'Reset your SariServe account password',
       html: `
-        <h2>Humiling ka ng password reset</h2>
-        <p>Ito ang iyong reset code:</p>
+        <h2>You request to reset your password.</h2>
+        <p>This is your reset code:</p>
         <h1 style="letter-spacing: 4px; font-size: 32px;">${code}</h1>
-        <p>Mag-e-expire ang code na ito sa loob ng ${expiryMinutes} minuto.</p>
-        <p>Kung hindi ikaw ang humiling nito, puwede mo na lang balewalain ang email na ito.</p>
+        <p>It will expire under ${expiryMinutes} minutes.</p>
+        <p>If you're not requesting this process, you can ignore this message in your email.</p>
       `,
     });
 
     if (error) {
       console.error('Resend error:', error);
-      throw new Error('Hindi na-send ang reset email.');
+      throw new Error('Email Reset does not submit succesfully.');
     }
 
     return data;

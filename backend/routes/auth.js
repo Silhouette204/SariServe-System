@@ -13,7 +13,7 @@ router.post('/verify-email', async (req, res) => {
     const { email, code, purpose } = req.body; // ← dagdag: purpose
 
     if (!email || !code) {
-      return res.status(400).json({ error: 'Kailangan ng email at code.' });
+      return res.status(400).json({ error: 'Must have email and code' });
     }
 
     const user = await prisma.user.findUnique({ where: { email } });
@@ -41,13 +41,13 @@ router.post('/verify-email', async (req, res) => {
 
     if (purpose === 'login') {
       req.session.userId = user.id; // ← dito ginagawa ang session
-      return res.status(200).json({ message: 'Matagumpay na naka-login!', loggedIn: true });
+      return res.status(200).json({ message: 'Your account was login successfully!', loggedIn: true });
     }
 
-    res.status(200).json({ message: 'Na-verify na ang email! Pwede ka nang mag-login.' });
+    res.status(200).json({ message: 'Your email was verified, You can now login' });
   } catch (error) {
     console.error('Verify Email Error:', error);
-    res.status(500).json({ error: 'Server error sa email verification.' });
+    res.status(500).json({ error: 'Server error on email verification.' });
   }
 });
 
@@ -58,7 +58,7 @@ router.post('/signup', async (req, res) => {
 
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
-      return res.status(400).json({ error: 'Gamit na ang email na ito.' });
+      return res.status(400).json({ error: 'This email was already in used' });
     }
 
     const prefEnum = notificationPref === 'phone' ? 'PHONE' : 'EMAIL';
@@ -140,7 +140,7 @@ router.post('/signin', async (req, res) => {
 
     // WALANG session dito — kailangan munang i-verify ang OTP
     res.status(200).json({
-      message: 'Ipinadala ang login code sa email mo.',
+      message: 'Log in code was already sent to your email',
       requiresOtp: true,
       email: user.email,
     });
@@ -156,14 +156,14 @@ router.post('/forgot-password', async (req, res) => {
     const { email } = req.body;
 
     if (!email) {
-      return res.status(400).json({ error: 'Kailangan ng email.' });
+      return res.status(400).json({ error: 'Must need email.' });
     }
 
     const user = await prisma.user.findUnique({ where: { email } });
 
     if (!user) {
       // Hindi natin sasabihing "walang account" — para hindi malaman ng iba kung aling emails ang registered
-      return res.status(200).json({ message: 'Kung may account na naka-rehistro sa email na ito, ipapadala ang reset code.' });
+      return res.status(200).json({ message: 'If your account was already registered on your email, it proceed to send the reset code' });
     }
 
     const resetCode = Math.floor(100000 + Math.random() * 900000).toString();
@@ -179,10 +179,10 @@ router.post('/forgot-password', async (req, res) => {
 
     await sendPasswordResetEmail(user.email, resetCode, 10);
 
-    res.status(200).json({ message: 'Kung may account na naka-rehistro sa email na ito, ipapadala ang reset code.' });
+    res.status(200).json({ message: 'If your account was already registered on your email, it proceed to send the reset code' });
   } catch (error) {
     console.error('Forgot Password Error:', error);
-    res.status(500).json({ error: 'Server error sa forgot password.' });
+    res.status(500).json({ error: 'Server error on forgot password.' });
   }
 });
 
@@ -192,21 +192,21 @@ router.post('/reset-password', async (req, res) => {
     const { email, code, newPassword } = req.body;
 
     if (!email || !code || !newPassword) {
-      return res.status(400).json({ error: 'Kumpletuhin ang lahat ng fields.' });
+      return res.status(400).json({ error: 'Must complete all the required fields' });
     }
 
     const user = await prisma.user.findUnique({ where: { email } });
 
     if (!user) {
-      return res.status(400).json({ error: 'Walang account na nakita sa email na ito.' });
+      return res.status(400).json({ error: 'Theres no account on this email' });
     }
 
     if (user.resetPasswordToken !== code) {
-      return res.status(400).json({ error: 'Maling reset code.' });
+      return res.status(400).json({ error: 'Your verification code was wrong.' });
     }
 
     if (user.resetPasswordTokenExpiry < new Date()) {
-      return res.status(400).json({ error: 'Na-expire na ang reset code. Humingi ng bago.' });
+      return res.status(400).json({ error: 'Your reset code was expired, must request new code.' });
     }
 
     const newPasswordHash = await bcrypt.hash(newPassword, 10);
@@ -220,10 +220,10 @@ router.post('/reset-password', async (req, res) => {
       },
     });
 
-    res.status(200).json({ message: 'Matagumpay na naipalit ang password. Pwede ka nang mag-login.' });
+    res.status(200).json({ message: 'Your password was successfully changed. You can proceed to login your account' });
   } catch (error) {
     console.error('Reset Password Error:', error);
-    res.status(500).json({ error: 'Server error sa reset password.' });
+    res.status(500).json({ error: 'Server error on reset password.' });
   }
 });
 
@@ -233,27 +233,27 @@ router.post('/verify-reset-code', async (req, res) => {  // ← ibalik dito
     const { email, code } = req.body;
 
     if (!email || !code) {
-      return res.status(400).json({ error: 'Kailangan ng email at code.' });
+      return res.status(400).json({ error: 'You need email and code' });
     }
 
     const user = await prisma.user.findUnique({ where: { email } });
 
     if (!user) {
-      return res.status(400).json({ error: 'Walang account na nakita sa email na ito.' });
+      return res.status(400).json({ error: 'Theres no account on this email.' });
     }
 
     if (user.resetPasswordToken !== code) {  // ← ibalik: resetPasswordToken, hindi verificationToken
-      return res.status(400).json({ error: 'Maling reset code.' });
+      return res.status(400).json({ error: 'Wrong reset code.' });
     }
 
     if (user.resetPasswordTokenExpiry < new Date()) {
-      return res.status(400).json({ error: 'Na-expire na ang reset code. Humingi ng bago.' });
+      return res.status(400).json({ error: 'Your reset code was expired, must request new code.' });
     }
 
-    res.status(200).json({ message: 'Tama ang code! Ilagay mo na ang bagong password.' });
+    res.status(200).json({ message: 'Code was right! You can input your new password' });
   } catch (error) {
     console.error('Verify Reset Code Error:', error);
-    res.status(500).json({ error: 'Server error sa pag-verify ng code.' });
+    res.status(500).json({ error: 'Server error on verifying code.' });
   }
 });
 
@@ -263,13 +263,13 @@ router.post('/resend-code', async (req, res) => {
     const { email, purpose } = req.body;
 
     if (!email) {
-      return res.status(400).json({ error: 'Kailangan ng email.' });
+      return res.status(400).json({ error: 'Need email.' });
     }
 
     const user = await prisma.user.findUnique({ where: { email } });
 
     if (!user) {
-      return res.status(400).json({ error: 'Walang account na nakita sa email na ito.' });
+      return res.status(400).json({ error: 'There is no account on this provided email' });
     }
 
     const newCode = Math.floor(100000 + Math.random() * 900000).toString();
@@ -303,7 +303,7 @@ router.post('/resend-code', async (req, res) => {
       await sendVerificationEmail(user.email, newCode, expiryMinutes);
     }
 
-    res.status(200).json({ message: 'Naipadala ulit ang code sa email mo.' });
+    res.status(200).json({ message: 'The code waas resend to your email' });
   } catch (error) {
     console.error('Resend Code Error:', error);
     res.status(500).json({ error: 'Server error sa pag-resend ng code.' });
