@@ -1,3 +1,5 @@
+import { showToast } from "./toast";
+
 export function verifyEmail() {
 
   const verifyForm = document.getElementById('verify-form');
@@ -16,10 +18,10 @@ export function verifyEmail() {
 
 if (email) {
   subtitleEl.innerHTML = purpose === 'login'
-    ? `Ilagay ang login code na ipinadala sa <strong>${email}</strong>.`
-    : `Ilagay ang code na ipinadala namin sa <strong>${email}</strong>.`;
+    ? `Put the verification code, send it to <strong>${email}</strong>.`
+    : `Put the verification code, send it to  <strong>${email}</strong>.`;
 } else {
-  subtitleEl.textContent = 'Walang email na nakita. Bumalik sa sign up.';
+  subtitleEl.textContent = 'There is no email received, back to sign-up';
 }
   // Auto-advance sa susunod na box pag nag-type, at auto-back pag Backspace sa blangkong box
   otpBoxes.forEach((box, index) => {
@@ -54,13 +56,13 @@ if (email) {
     const code = [...otpBoxes].map(box => box.value).join('');
 
     if (!email) {
-      messageEl.textContent = 'Walang email na nakita. Bumalik sa sign up.';
+      messageEl.textContent = 'There is no email received, back to forgot-password';
       messageEl.className = 'text-center text-sm mt-4 mb-4 text-red-500';
       return;
     }
 
     if (code.length !== 6) {
-      messageEl.textContent = 'Kumpletuhin ang 6-digit code.';
+      messageEl.textContent = 'Must complete 6-Digit verification code';
       messageEl.className = 'text-center text-sm mt-4 mb-4 text-red-500';
       return;
     }
@@ -76,18 +78,17 @@ if (email) {
       const data = await response.json();
 
       if (response.ok) {
-        messageEl.textContent = data.message;
-        messageEl.className = 'text-center text-sm mt-4 mb-4 text-green-600';
+       showToast(data.message, 'success');
         setTimeout(() => window.location.href = 'dashboard.html', 1500); // ← dating 'sign-in.html'
       } else {
-        messageEl.textContent = data.error;
-        messageEl.className = 'text-center text-sm mt-4 mb-4 text-red-500';
+       showToast(data.error, 'error');
         otpBoxes.forEach(box => box.value = '');
         otpBoxes[0].focus();
       }
+
     } catch (error) {
       console.error('Verify Error:', error);
-      messageEl.textContent = 'Hindi makakonekta sa server.';
+      messageEl.textContent = 'Cannot connect to server.';
       messageEl.className = 'text-center text-sm mt-4 mb-4 text-red-500';
     }
   });
@@ -103,17 +104,20 @@ if (email) {
         body: JSON.stringify({ email, purpose }), // ← idinagdag ang purpose
       });
       const data = await response.json();
-      messageEl.textContent = response.ok ? 'Naipadala ulit ang code!' : data.error;
-      messageEl.className = response.ok
+      messageEl.textContent = response.ok ? 'The code was resubmit succesfully!' : data.error;
+      messageEl.className = response.ok 
         ? 'text-center text-sm mt-4 mb-4 text-green-600'
-        : 'text-center text-sm mt-4 mb-4 text-red-500';
+        : 'text-center text-sm mt-4 mb-4 text-red-500'; 
   
       if (response.ok) {
+        showToast('Code Verification Resubmit Succesfully!', 'success');
         otpBoxes.forEach(box => box.value = ''); // ← linisin ang mga box para sa bagong code
         otpBoxes[0].focus();
+      } else {
+        showToast('Resubmit Unsuccessfully!', data.error, 'error');
       }
     } catch (error) {
-      console.error('Resend Error:', error);
+      showToast(data.error, 'error');
     }
   });
 }

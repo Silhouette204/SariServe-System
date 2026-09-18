@@ -10,7 +10,7 @@ if (signInForm && window.location.pathname.includes('sign-in.html')) {
     const password = document.getElementById('sign-in-password').value.trim();
 
     if (!usernameOrEmail || !password) {
-      alert('Mangyaring punan ang lahat ng espasyo.');
+      alert('Please, Fill up all the blanks');
       return;
     }
 
@@ -27,13 +27,13 @@ if (signInForm && window.location.pathname.includes('sign-in.html')) {
       if (response.ok && data.requiresOtp) {
         window.location.href = `verify-email.html?email=${encodeURIComponent(data.email)}&purpose=login`;
       } else if (!response.ok) {
-        alert(data.error || 'Mali ang username o password.');
+        alert(data.error || 'Wrong type of email or password');
       } else {
-        alert(data.error || 'Mali ang username o password.');
+        alert(data.error || 'Wrong type of email or password');
       }
     } catch (error) {
       console.error('Error:', error);
-      alert('Hindi makakonekta sa server.');
+      alert('Cannot connect to server.');
     }
   });
 }

@@ -15,9 +15,9 @@ export function verifyResetCode() {
   const resendLink = document.getElementById('resend-reset-link'); 
 
   if (email) {
-    subtitleEl.innerHTML = `Ilagay ang reset code na ipinadala sa <strong>${email}</strong>.`;
+    subtitleEl.innerHTML = `Must put the reset code, it will send on <strong>${email}</strong>.`;
   } else {
-    subtitleEl.textContent = 'Walang email na nakita. Bumalik sa forgot password.';
+    subtitleEl.textContent = 'There is no email received, back to forgot password.';
   }
 
   otpBoxes.forEach((box, index) => {
@@ -51,13 +51,13 @@ export function verifyResetCode() {
     const code = [...otpBoxes].map(box => box.value).join('');
 
     if (!email) {
-      messageEl.textContent = 'Walang email na nakita. Bumalik sa forgot password.';
+      messageEl.textContent = 'There is no email received, back to forgot password.';
       messageEl.className = 'text-center text-sm mt-4 mb-4 text-red-500';
       return;
     }
 
     if (code.length !== 6) {
-      messageEl.textContent = 'Kumpletuhin ang 6-digit code.';
+      messageEl.textContent = 'Must complete all the 6 digit verification code';
       messageEl.className = 'text-center text-sm mt-4 mb-4 text-red-500';
       return;
     }
@@ -85,7 +85,7 @@ export function verifyResetCode() {
       }
     } catch (error) {
       console.error('Verify Reset Code Error:', error);
-      messageEl.textContent = 'Hindi makakonekta sa server.';
+      messageEl.textContent = 'Cannot connect to server';
       messageEl.className = 'text-center text-sm mt-4 mb-4 text-red-500';
     }
   });
@@ -101,7 +101,7 @@ export function verifyResetCode() {
         body: JSON.stringify({ email, purpose: 'reset' }), // ← 'reset' palagi dito
       });
       const data = await response.json();
-      messageEl.textContent = response.ok ? 'Naipadala ulit ang code!' : data.error;
+      messageEl.textContent = response.ok ? 'Code was resubmit succesfully!' : data.error;
       messageEl.className = response.ok
         ? 'text-center text-sm mt-4 mb-4 text-green-600'
         : 'text-center text-sm mt-4 mb-4 text-red-500';
