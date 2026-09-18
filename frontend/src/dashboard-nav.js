@@ -72,7 +72,7 @@ export function renderDashboardNav() {
     </div>
 
       <a href="index.html" class=" px-3 flex items-center py-3 rounded-xl hover:bg-gray-700/50 font-medium transition"><i class="fa-solid fa-arrow-right-from-bracket text-primary font-semibold mr-5"></i>
-        LogOut
+        Logout
       </a>
     </div>
     </div>

@@ -2,6 +2,7 @@ import './style.css';
 
 import { initNav } from './nav.js';
 import { initAccordion } from './accordion.js';
+import { initPasswordToggles } from './password-toggle.js';
 
 // Dashboard
 import { dashboardInitCharts } from './dashboard-charts.js';
@@ -34,6 +35,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (document.getElementById('side-menu') !== null) {  
     initNav();
   }
+
+//password-toggle
+initPasswordToggles();
 
   //for login call
   signIn();
