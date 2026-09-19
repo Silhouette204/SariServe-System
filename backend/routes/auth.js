@@ -19,15 +19,15 @@ router.post('/verify-email', async (req, res) => {
     const user = await prisma.user.findUnique({ where: { email } });
 
     if (!user) {
-      return res.status(400).json({ error: 'Walang account na nakita sa email na ito.' });
+      return res.status(400).json({ error: 'No account found with this email.' });
     }
 
     if (user.verificationToken !== code) {
-      return res.status(400).json({ error: 'Maling verification code.' });
+      return res.status(400).json({ error: 'Incorrect verification code.' });
     }
 
     if (user.verificationTokenExpiry < new Date()) {
-      return res.status(400).json({ error: 'Na-expire na ang code. Humingi ng bago.' });
+      return res.status(400).json({ error: 'This code has expired. Please request a new one.' });
     }
 
     await prisma.user.update({
@@ -100,7 +100,7 @@ router.post('/signup', async (req, res) => {
     
   } catch (error) {
     console.error('Signup Error:', error);
-    res.status(500).json({ error: 'Server error sa paggawa ng account.' });
+    res.status(500).json({ error: 'Server error while creating account.' });
   }
 });
 
@@ -114,14 +114,14 @@ router.post('/signin', async (req, res) => {
     console.log('Nahanap na user:', user ? user.email : 'WALANG NAHANAP'); // ← idagdag muna
 
     if (!user) {
-      return res.status(401).json({ error: 'Mali ang email o password.' });
+      return res.status(401).json({ error: 'Incorrect email or password.' });
     }
 
     const validPassword = await bcrypt.compare(password, user.passwordHash);
     console.log('Tama ba ang password:', validPassword);
 
     if (!validPassword) {
-      return res.status(401).json({ error: 'Mali ang email o password.' });
+      return res.status(401).json({ error: 'Incorrect email or password.' });
     }
 
     // gumawa ng bagong OTP kahit tama na ang password — kailangan pa rin ng verification
@@ -146,7 +146,7 @@ router.post('/signin', async (req, res) => {
     });
   } catch (error) {
     console.error('Signin Error:', error);
-    res.status(500).json({ error: 'Server error sa pag-login.' });
+    res.status(500).json({ error: 'Server error during login.' });
   }
 });
 
@@ -303,10 +303,10 @@ router.post('/resend-code', async (req, res) => {
       await sendVerificationEmail(user.email, newCode, expiryMinutes);
     }
 
-    res.status(200).json({ message: 'The code waas resend to your email' });
+    res.status(200).json({ message: 'The code was resend to your email' });
   } catch (error) {
     console.error('Resend Code Error:', error);
-    res.status(500).json({ error: 'Server error sa pag-resend ng code.' });
+    res.status(500).json({ error: 'Server error while resending code.' });
   }
 });
 
