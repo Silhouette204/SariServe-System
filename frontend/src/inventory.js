@@ -4,9 +4,34 @@ const API_URL = import.meta.env.VITE_API_URL || '';
 let inventoryItems = [];
 let targetDeleteId = null;
 
+// ---------- SHARED HELPERS ----------
+function toggleModal(modalId, show = true) {
+  const modal = document.getElementById(modalId);
+  if (!modal) return;
+  modal.classList.toggle('hidden', !show);
+  modal.classList.toggle('flex', show);
+}
+
+function showToast(message, kind = 'success') {
+  const toast = document.createElement('div');
+  toast.className = `fixed bottom-6 right-6 z-[60] px-5 py-3 rounded-xl text-sm font-semibold text-white shadow-lg transition-opacity duration-300 ${
+    kind === 'error' ? 'bg-red-600' : 'bg-emerald-600'
+  }`;
+  toast.textContent = message;
+  document.body.appendChild(toast);
+
+  setTimeout(() => {
+    toast.classList.add('opacity-0');
+    setTimeout(() => toast.remove(), 300);
+  }, 2500);
+}
+
+const findItem = (id) => inventoryItems.find((i) => String(i._id || i.id) === String(id));
+
 // 1. MAIN INITIALIZER FUNCTION
 export async function initInventory() {
   initModals();
+  initStockModals();
   await fetchInventory();
   setupSearchAndFilters();
 }
@@ -16,10 +41,9 @@ export async function fetchInventory() {
   try {
     const response = await fetch(`${API_URL}/api/inventory`);// pag i-connect mo na yung API_URL sa .env file, pag wala, magiging localhost:3000, kaya para gumana ang system sa labas or sa vercel ay kailangan mo yung API_URL.
     if (!response.ok) throw new Error('Failed to fetch inventory');
-    
+
     inventoryItems = await response.json();
-    renderInventorySalesTable(inventoryItems);
-    renderInventoryAdjustmentTable(inventoryItems);
+    applyFilters();
     updateKPIs(inventoryItems);
   } catch (error) {
     console.error('Error loading inventory:', error);
@@ -43,6 +67,21 @@ function getStockStatus(stock) {
     label: 'In Stock',
     class: 'bg-green-50 text-green-700 ring-green-600/20'
   };
+}
+
+// Renders both tables using the current search text + category.
+// Called after every fetch / sale / adjustment so the filter never resets.
+function applyFilters() {
+  const query = document.querySelector('#inventory-dashboard input[type="text"]')?.value.trim().toLowerCase() || '';
+  const category = document.querySelector('#timeframe')?.value || 'All Categories';
+
+  const filtered = inventoryItems.filter(item =>
+    (item.name || '').toLowerCase().includes(query) &&
+    (category === 'All Categories' || item.category === category)
+  );
+
+  renderInventorySalesTable(filtered);
+  renderInventoryAdjustmentTable(filtered);
 }
 
 // 4. RENDER TABLE ROWS
@@ -69,15 +108,14 @@ export function renderInventorySalesTable(items) {
       <tr class="hover:bg-slate-50/50 transition">
         <td class="px-6 py-4 font-medium text-slate-900">${item.name}</td>
         <td class="px-6 py-4">${item.category}</td>
-       <td class="px-6 py-4">
-  <!-- Sales lang: bawas stock, walang "+" -->
-  <div class="flex items-center gap-2">
-    <button onclick="window.recordSale('${itemId}')" class="flex h-7 w-7 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 font-bold text-slate-600 hover:bg-slate-100 active:scale-95 transition select-none cursor-pointer">
-      −
-    </button>
-    <span class="w-12 text-center font-semibold text-slate-800">${item.stock}</span>
-  </div>
-</td>
+        <td class="px-6 py-4">
+          <div class="flex items-center gap-3">
+            <span class="w-12 text-center font-semibold text-slate-800">${item.stock}</span>
+            <button onclick="window.openSaleModal('${itemId}')" class="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-100 active:scale-95 transition cursor-pointer">
+              <i class="fa-solid fa-cart-shopping"></i> Sell
+            </button>
+          </div>
+        </td>
         <td class="px-6 py-4 font-medium">₱${Number(item.price).toFixed(2)}</td>
         <td class="px-6 py-4">
           <span class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset ${status.class}">
@@ -117,17 +155,13 @@ export function renderInventoryAdjustmentTable(items) {
         <td class="px-6 py-4 font-medium text-slate-900">${item.name}</td>
         <td class="px-6 py-4">${item.category}</td>
         <td class="px-6 py-4">
-  <!-- Adjustment: pareho "+" at "-", walang Sale record -->
-  <div class="flex items-center gap-2">
-    <button onclick="window.recordAdjustment('${itemId}', -1)" class="flex h-7 w-7 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 font-bold text-slate-600 hover:bg-slate-100 active:scale-95 transition select-none cursor-pointer">
-      −
-    </button>
-    <span class="w-12 text-center font-semibold text-slate-800">${item.stock}</span>
-    <button onclick="window.recordAdjustment('${itemId}', 1)" class="flex h-7 w-7 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 font-bold text-slate-600 hover:bg-slate-100 active:scale-95 transition select-none cursor-pointer">
-      +
-    </button>
-  </div>
-</td>
+          <div class="flex items-center gap-3">
+            <span class="w-12 text-center font-semibold text-slate-800">${item.stock}</span>
+            <button onclick="window.openAdjustModal('${itemId}')" class="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-100 active:scale-95 transition cursor-pointer">
+              <i class="fa-solid fa-sliders"></i> Adjust
+            </button>
+          </div>
+        </td>
         <td class="px-6 py-4 font-medium">₱${Number(item.price).toFixed(2)}</td>
         <td class="px-6 py-4">
           <span class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset ${status.class}">
@@ -161,50 +195,15 @@ export function updateKPIs(items) {
 }
 
 // 6. SEARCH & CATEGORY FILTERING
+// NOTE: Ang KPIs ay nananatiling nakabatay sa kabuuang imbentaryo (inventoryItems)
+// para hindi magbago ang store summary kapag nagha-hanap lang.
 function setupSearchAndFilters() {
-  const searchInput = document.querySelector('#inventory-dashboard input[type="text"]');
-  const categorySelect = document.querySelector('#timeframe'); // Gamitin ang exact ID ng select dropdown mo
-
-  const filterData = () => {
-    const query = searchInput?.value.trim().toLowerCase() || '';
-    const selectedCategory = categorySelect?.value || 'All Categories';
-
-    const filtered = inventoryItems.filter(item => {
-      // Safe access gamit ang optional chaining at fallback
-      const productName = (item.name || '').toLowerCase();
-      const productCategory = item.category || '';
-
-      const matchesSearch = productName.includes(query);
-      const matchesCategory = selectedCategory === 'All Categories' || productCategory === selectedCategory;
-
-      return matchesSearch && matchesCategory;
-    });
-
-    renderInventorySalesTable(filtered);
-renderInventoryAdjustmentTable(filtered);
-    
-    // NOTE: Ang KPIs (Total, In Stock, Low Stock, Out of Stock) ay nananatiling nakabatay 
-    // sa kabuuang imbentaryo (inventoryItems) para hindi magbago ang store summary kapag nagha-hanap lang.
-  };
-
-  if (searchInput) searchInput.addEventListener('input', filterData);
-  if (categorySelect) categorySelect.addEventListener('change', filterData);
+  document.querySelector('#inventory-dashboard input[type="text"]')?.addEventListener('input', applyFilters);
+  document.querySelector('#timeframe')?.addEventListener('change', applyFilters);
 }
 
 // 7. MODAL CONTROLLERS & API ACTIONS ADD, EDIT, DELETE
 function initModals() {
-  const toggleModal = (modalId, show = true) => {
-    const modal = document.getElementById(modalId);
-    if (!modal) return;
-    if (show) {
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
-    } else {
-      modal.classList.add('hidden');
-      modal.classList.remove('flex');
-    }
-  };
-
   // ADD MODAL
   const openAddBtn = document.getElementById('open-add-product-btn');
   const closeAddBtn = document.getElementById('close-add-modal-btn');
@@ -231,24 +230,19 @@ function initModals() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(newProduct),
         });
-        
+
         if (response.ok) {
           await fetchInventory();
           addForm.reset();
           toggleModal('add-product-modal', false);
+          showToast('Product was successfully added.');
         } else {
-          const errorData = await response.json();
-          alert(errorData.error || 'Failed to add product');
-        }
-
-        // Itong sunod na block ay duplicate na lang at pwede nang tanggalin:
-        if (response.ok) {
-          await fetchInventory(); // Refresh list from DB
-          addForm.reset();
-          toggleModal('add-product-modal', false);
+          const errorData = await response.json().catch(() => ({}));
+          showToast(errorData.error || 'Failed to add product', 'error');
         }
       } catch (error) {
         console.error('Error adding product:', error);
+        showToast('Connection problem. Please try again.', 'error');
       }
     };
   }
@@ -281,9 +275,14 @@ function initModals() {
         if (response.ok) {
           await fetchInventory(); // Refresh list
           toggleModal('edit-product-modal', false);
+          showToast('Product updated successfully.');
+        } else {
+          const data = await response.json().catch(() => ({}));
+          showToast(data.error || 'Failed to update product', 'error');
         }
       } catch (error) {
         console.error('Error updating product:', error);
+        showToast('Connection problem. Please try again.', 'error');
       }
     };
   }
@@ -305,13 +304,14 @@ function initModals() {
 
         if (response.ok) {
           await fetchInventory();
+          showToast('Product deleted.');
         } else {
-          const data = await response.json();
-          alert(data.error || 'Failed to delete product');
+          const data = await response.json().catch(() => ({}));
+          showToast(data.error || 'Failed to delete product', 'error');
         }
-
       } catch (error) {
         console.error('Error deleting product:', error);
+        showToast('Connection problem. Please try again.', 'error');
       } finally {
         toggleModal('delete-product-modal', false);
       }
@@ -329,16 +329,12 @@ function initModals() {
 // 8. GLOBAL WINDOW ACTIONS
 // Para sa SALES table — bawas stock + gumagawa ng Sale record
 window.recordSale = async (id, quantity = 1) => {
-
-  const item = inventoryItems.find(
-    (i) => String(i._id || i.id) === String(id)
-  );
-
-  if (!item) return;
+  const item = findItem(id);
+  if (!item) return false;
 
   if (item.stock < quantity) {
-    alert('Hindi sapat ang stock!');
-    return;
+    showToast('Not enough stock.', 'error');
+    return false;
   }
 
   try {
@@ -348,29 +344,28 @@ window.recordSale = async (id, quantity = 1) => {
       body: JSON.stringify({ quantity })
     });
 
-    if (response.ok) {
-      const updated = await response.json();
-      item.stock = updated.stock;
-
-      renderInventorySalesTable(inventoryItems);
-      renderInventoryAdjustmentTable(inventoryItems);
-      updateKPIs(inventoryItems);
+    if (!response.ok) {
+      const data = await response.json().catch(() => ({}));
+      showToast(data.error || 'Failed to record sale', 'error');
+      return false;
     }
+
+    const updated = await response.json();
+    item.stock = updated.stock;
+    applyFilters();
+    updateKPIs(inventoryItems);
+    return true;
   } catch (error) {
     console.error('Error recording sale:', error);
+    showToast('Connection problem. Please try again.', 'error');
+    return false;
   }
 };
 
 // Para sa ADJUSTMENT table — bawas/dagdag stock lang, walang Sale record
 window.recordAdjustment = async (id, amount, reason = 'OTHER') => {
-
-  const item = inventoryItems.find(
-    (i) => String(i._id || i.id) === String(id)
-  );
-  
-  if (!item) return;
-
-  const newStock = Math.max(0, item.stock + amount);
+  const item = findItem(id);
+  if (!item) return false;
 
   try {
     const response = await fetch(`${API_URL}/api/inventory/${id}/adjustment`, {
@@ -379,48 +374,135 @@ window.recordAdjustment = async (id, amount, reason = 'OTHER') => {
       body: JSON.stringify({ amount, reason })
     });
 
-    if (response.ok) {
-      const updated = await response.json();
-    
-      item.stock = updated.stock;
-      renderInventorySalesTable(inventoryItems);
-      renderInventoryAdjustmentTable(inventoryItems);
-      updateKPIs(inventoryItems);
-    } else {
-      const data = await response.json();
-      alert(data.error || 'Failed to adjust stock');
+    if (!response.ok) {
+      const data = await response.json().catch(() => ({}));
+      showToast(data.error || 'Failed to adjust stock', 'error');
+      return false;
     }
-    
+
+    const updated = await response.json();
+    item.stock = updated.stock;
+    applyFilters();
+    updateKPIs(inventoryItems);
+    return true;
   } catch (error) {
     console.error('Error recording adjustment:', error);
+    showToast('Connection problem. Please try again.', 'error');
+    return false;
   }
 };
 
 window.triggerEditProduct = (id) => {
-  
-  const item = inventoryItems.find(
-    (i) => String(i._id || i.id) === String(id)
-  );
-  
-  if (item) {
-    document.getElementById('edit-product-id').value = id;
-    document.getElementById('edit-product-name').value = item.name;
-    document.getElementById('edit-product-category').value = item.category;
-    document.getElementById('edit-product-price').value = item.price;
+  const item = findItem(id);
+  if (!item) return;
 
-    const modal = document.getElementById('edit-product-modal');
-    if (modal) {
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
-    }
-  }
+  document.getElementById('edit-product-id').value = id;
+  document.getElementById('edit-product-name').value = item.name;
+  document.getElementById('edit-product-category').value = item.category;
+  document.getElementById('edit-product-price').value = item.price;
+
+  toggleModal('edit-product-modal', true);
 };
 
 window.triggerDeleteProduct = (id) => {
   targetDeleteId = id;
-  const modal = document.getElementById('delete-product-modal');
-  if (modal) {
-    modal.classList.remove('hidden');
-    modal.classList.add('flex');
+  toggleModal('delete-product-modal', true);
+};
+
+// 9. STOCK MODALS (SELL + ADJUST)
+function initStockModals() {
+  // Close / cancel buttons + backdrop
+  ['sale', 'adjust'].forEach((name) => {
+    const modalId = `${name}-modal`;
+    document.getElementById(`close-${name}-modal-btn`)?.addEventListener('click', () => toggleModal(modalId, false));
+    document.getElementById(`cancel-${name}-modal-btn`)?.addEventListener('click', () => toggleModal(modalId, false));
+    document.getElementById(modalId)?.addEventListener('click', (e) => {
+      if (e.target.id === modalId) toggleModal(modalId, false);
+    });
+  });
+
+  // SALE: confirm
+  document.getElementById('sale-form')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = e.submitter;
+    if (btn) btn.disabled = true; // iwas double submit (double Sale record)
+
+    try {
+      const id = document.getElementById('sale-product-id').value;
+      const quantity = parseInt(document.getElementById('sale-quantity').value, 10);
+      const item = findItem(id);
+
+      const ok = await window.recordSale(id, quantity);
+      if (ok) {
+        toggleModal('sale-modal', false);
+        showToast(`Sale recorded: ${quantity} × ${item.name}`);
+      }
+    } finally {
+      if (btn) btn.disabled = false;
+    }
+  });
+
+  // ADJUSTMENT: confirm
+  document.getElementById('adjust-form')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = e.submitter;
+    if (btn) btn.disabled = true;
+
+    try {
+      const id = document.getElementById('adjust-product-id').value;
+      const direction = document.getElementById('adjust-direction').value;
+      const quantity = parseInt(document.getElementById('adjust-quantity').value, 10);
+      const reason = document.getElementById('adjust-reason').value;
+      const item = findItem(id);
+
+      if (direction === 'remove' && quantity > item.stock) {
+        showToast('Cannot remove more than the current stock.', 'error');
+        return; // dumadaan pa rin sa finally
+      }
+
+      const amount = direction === 'remove' ? -quantity : quantity;
+      const ok = await window.recordAdjustment(id, amount, reason);
+      if (ok) {
+        toggleModal('adjust-modal', false);
+        showToast(`Stock updated for ${item.name}.`);
+      }
+    } finally {
+      if (btn) btn.disabled = false;
+    }
+  });
+}
+
+// Openers (tinatawag ng inline onclick sa rows)
+window.openSaleModal = (id) => {
+  const item = findItem(id);
+  if (!item) return;
+
+  if (item.stock === 0) {
+    showToast('This item is out of stock.', 'error');
+    return;
   }
+
+  document.getElementById('sale-product-id').value = id;
+  document.getElementById('sale-product-name').textContent = item.name;
+  document.getElementById('sale-current-stock').textContent = item.stock;
+
+  const qty = document.getElementById('sale-quantity');
+  qty.value = 1;
+  qty.max = item.stock; // native validation: hindi puwedeng lumampas sa stock
+
+  toggleModal('sale-modal', true);
+};
+
+window.openAdjustModal = (id) => {
+  const item = findItem(id);
+  if (!item) return;
+
+  document.getElementById('adjust-product-id').value = id;
+  document.getElementById('adjust-product-name').textContent = item.name;
+  document.getElementById('adjust-current-stock').textContent = item.stock;
+  document.getElementById('adjust-direction').value = 'add';
+  document.getElementById('adjust-quantity').value = 1;
+  document.getElementById('adjust-reason').value = 'OTHER';
+
+  toggleModal('adjust-modal', true);
 };

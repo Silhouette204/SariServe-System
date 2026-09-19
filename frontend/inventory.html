@@ -325,6 +325,82 @@
   </div>
 </div>
 
+<!-- ==================== 4. RECORD SALE MODAL ==================== -->
+<div id="sale-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden items-center justify-center p-4 transition-all duration-200">
+  <div class="bg-white w-full max-w-sm rounded-2xl shadow-2xl border border-slate-100 overflow-hidden flex flex-col">
+    <div class="flex items-center justify-between p-5 border-b border-slate-100 bg-slate-50/50">
+      <div>
+        <h3 class="text-lg font-bold text-slate-800">Record Sale</h3>
+        <p class="text-xs text-slate-400"><span id="sale-product-name"></span> · Stock: <span id="sale-current-stock"></span></p>
+      </div>
+      <button id="close-sale-modal-btn" type="button" class="text-slate-400 hover:text-slate-600 p-2 rounded-xl hover:bg-slate-100 transition cursor-pointer">
+        <i class="fa-solid fa-xmark text-lg"></i>
+      </button>
+    </div>
+
+    <form id="sale-form" class="p-5 space-y-4">
+      <input type="hidden" id="sale-product-id">
+      <div>
+        <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Quantity Sold</label>
+        <input type="number" id="sale-quantity" min="1" value="1" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 text-sm font-medium">
+      </div>
+    </form>
+
+    <div class="p-5 border-t border-slate-100 flex justify-end gap-3 bg-slate-50">
+      <button id="cancel-sale-modal-btn" type="button" class="px-5 py-2.5 rounded-xl border border-slate-200 font-semibold text-slate-600 hover:bg-slate-100 text-sm transition cursor-pointer">Cancel</button>
+      <button type="submit" form="sale-form" class="px-5 py-2.5 rounded-xl bg-secondary font-semibold text-white hover:bg-white hover:border border-secondary hover:text-secondary text-sm transition shadow-sm cursor-pointer">Confirm Sale</button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== 5. ADJUST STOCK MODAL ==================== -->
+<div id="adjust-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden items-center justify-center p-4 transition-all duration-200">
+  <div class="bg-white w-full max-w-sm rounded-2xl shadow-2xl border border-slate-100 overflow-hidden flex flex-col">
+    <div class="flex items-center justify-between p-5 border-b border-slate-100 bg-slate-50/50">
+      <div>
+        <h3 class="text-lg font-bold text-slate-800">Adjust Stock</h3>
+        <p class="text-xs text-slate-400"><span id="adjust-product-name"></span> · Stock: <span id="adjust-current-stock"></span></p>
+      </div>
+      <button id="close-adjust-modal-btn" type="button" class="text-slate-400 hover:text-slate-600 p-2 rounded-xl hover:bg-slate-100 transition cursor-pointer">
+        <i class="fa-solid fa-xmark text-lg"></i>
+      </button>
+    </div>
+
+    <form id="adjust-form" class="p-5 space-y-4">
+      <input type="hidden" id="adjust-product-id">
+
+      <div>
+        <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Action</label>
+        <select id="adjust-direction" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-medium bg-white">
+          <option value="add">Add stock (+)</option>
+          <option value="remove">Remove stock (−)</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Quantity</label>
+        <input type="number" id="adjust-quantity" min="1" value="1" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 text-sm font-medium">
+      </div>
+
+      <div>
+        <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">Reason</label>
+        <select id="adjust-reason" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-medium bg-white">
+          <option value="OTHER">Other</option>
+          <option value="RESTOCK">Restock</option>
+          <option value="DAMAGED">Damaged</option>
+          <option value="EXPIRED">Expired</option>
+          <option value="CORRECTION">Correction</option>
+        </select>
+      </div>
+    </form>
+
+    <div class="p-5 border-t border-slate-100 flex justify-end gap-3 bg-slate-50">
+      <button id="cancel-adjust-modal-btn" type="button" class="px-5 py-2.5 rounded-xl border border-slate-200 font-semibold text-slate-600 hover:bg-slate-100 text-sm transition cursor-pointer">Cancel</button>
+      <button type="submit" form="adjust-form" class="px-5 py-2.5 rounded-xl bg-secondary font-semibold text-white hover:bg-white hover:border border-secondary hover:text-secondary text-sm transition shadow-sm cursor-pointer">Confirm</button>
+    </div>
+  </div>
+</div>
+
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>
