@@ -3,6 +3,94 @@ const API_URL = import.meta.env.VITE_API_URL || '';
 
 let inventoryItems = [];
 let targetDeleteId = null;
+// ---------- ROW ACTIONS (3-dots dropdown) ----------
+let rowMenuEl = null;
+let rowMenuAnchor = null; // ang button na nagbukas ng menu
+
+// Actions cell na gamit ng dalawang table
+function rowActionsCell(itemId) {
+  return `
+    <td class="px-6 py-4 text-right">
+      <button type="button"
+        onclick="window.toggleRowMenu(this, '${itemId}')"
+        aria-label="Row actions" aria-haspopup="menu"
+        class="row-menu-btn inline-flex h-8 w-8 items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-800 active:scale-95 transition cursor-pointer">
+        <i class="fa-solid fa-ellipsis-vertical"></i>
+      </button>
+    </td>
+  `;
+}
+
+function closeRowMenu() {
+  rowMenuEl?.classList.add('hidden');
+  rowMenuAnchor = null;
+}
+
+function initRowMenu() {
+  rowMenuEl = document.createElement('div');
+  rowMenuEl.id = 'row-action-menu';
+  rowMenuEl.setAttribute('role', 'menu');
+  rowMenuEl.className = 'hidden fixed z-40 w-36 rounded-xl border border-slate-200 bg-white py-1 shadow-lg';
+  rowMenuEl.innerHTML = `
+    <button type="button" data-action="edit" class="flex w-full items-center gap-2 px-4 py-2 text-left text-sm font-medium text-slate-700 hover:bg-slate-50 cursor-pointer">
+      <i class="fa-solid fa-pen-to-square w-4 text-amber-600"></i> Edit
+    </button>
+    <button type="button" data-action="delete" class="flex w-full items-center gap-2 px-4 py-2 text-left text-sm font-medium text-red-600 hover:bg-red-50 cursor-pointer">
+      <i class="fa-solid fa-trash-can w-4"></i> Delete
+    </button>
+  `;
+  document.body.appendChild(rowMenuEl);
+
+  // Pumili ng Edit o Delete
+  rowMenuEl.addEventListener('click', (e) => {
+    const option = e.target.closest('[data-action]');
+    if (!option) return;
+
+    const id = rowMenuEl.dataset.id;
+    closeRowMenu();
+    if (option.dataset.action === 'edit') window.triggerEditProduct(id);
+    if (option.dataset.action === 'delete') window.triggerDeleteProduct(id);
+  });
+
+  // Isara kapag may pinindot sa labas, Escape, scroll, o resize
+  document.addEventListener('click', (e) => {
+    if (e.target.closest('#row-action-menu, .row-menu-btn')) return;
+    closeRowMenu();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeRowMenu();
+  });
+  window.addEventListener('scroll', closeRowMenu, true);
+  window.addEventListener('resize', closeRowMenu);
+}
+
+window.toggleRowMenu = (btn, id) => {
+  if (!rowMenuEl) return;
+
+  // Pinindot ulit ang parehong button, isara
+  if (rowMenuAnchor === btn) {
+    closeRowMenu();
+    return;
+  }
+
+  rowMenuAnchor = btn;
+  rowMenuEl.dataset.id = id;
+  rowMenuEl.classList.remove('hidden');
+
+  const btnRect = btn.getBoundingClientRect();
+  const menuRect = rowMenuEl.getBoundingClientRect();
+  const gap = 4;
+
+  // Sa ilalim ng button; kung hindi kasya, sa itaas
+  let top = btnRect.bottom + gap;
+  if (top + menuRect.height > window.innerHeight - 8) {
+    top = btnRect.top - menuRect.height - gap;
+  }
+
+  rowMenuEl.style.top = `${top}px`;
+  rowMenuEl.style.left = `${Math.max(8, btnRect.right - menuRect.width)}px`;
+};
+
 
 // ---------- SHARED HELPERS ----------
 function toggleModal(modalId, show = true) {
@@ -32,6 +120,7 @@ const findItem = (id) => inventoryItems.find((i) => String(i._id || i.id) === St
 export async function initInventory() {
   initModals();
   initStockModals();
+  initRowMenu();
   await fetchInventory();
   setupSearchAndFilters();
 }
@@ -82,6 +171,7 @@ function applyFilters() {
 
   renderInventorySalesTable(filtered);
   renderInventoryAdjustmentTable(filtered);
+  closeRowMenu();
 }
 
 // 4. RENDER TABLE ROWS
@@ -108,24 +198,19 @@ export function renderInventorySalesTable(items) {
       <tr class="hover:bg-slate-50/50 transition">
         <td class="px-6 py-4 font-medium text-slate-900">${item.name}</td>
         <td class="px-6 py-4">${item.category}</td>
-        <td class="px-6 py-4">
-          <div class="flex items-center gap-3">
-            <span class="w-12 text-center font-semibold text-slate-800">${item.stock}</span>
-            <button onclick="window.openSaleModal('${itemId}')" class="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-100 active:scale-95 transition cursor-pointer">
-              <i class="fa-solid fa-cart-shopping"></i> Sell
-            </button>
-          </div>
-        </td>
+        <td class="px-6 py-4 font-semibold text-slate-800">${item.stock}</td>
+<td class="px-6 py-4">
+  <button onclick="window.openSaleModal('${itemId}')" class="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-100 active:scale-95 transition cursor-pointer">
+    <i class="fa-solid fa-cart-shopping"></i> Sell
+  </button>
+</td>
         <td class="px-6 py-4 font-medium">₱${Number(item.price).toFixed(2)}</td>
         <td class="px-6 py-4">
           <span class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset ${status.class}">
             ${status.label}
           </span>
         </td>
-        <td class="px-6 py-4 text-right">
-          <button onclick="window.triggerEditProduct('${itemId}')" class="text-sm font-semibold text-secondary hover:underline mr-3 cursor-pointer">Edit</button>
-          <button onclick="window.triggerDeleteProduct('${itemId}')" class="text-sm font-semibold text-red-600 hover:underline cursor-pointer">Delete</button>
-        </td>
+        ${rowActionsCell(itemId)}
       </tr>
     `;
   }).join('');
@@ -154,24 +239,19 @@ export function renderInventoryAdjustmentTable(items) {
       <tr class="hover:bg-slate-50/50 transition">
         <td class="px-6 py-4 font-medium text-slate-900">${item.name}</td>
         <td class="px-6 py-4">${item.category}</td>
-        <td class="px-6 py-4">
-          <div class="flex items-center gap-3">
-            <span class="w-12 text-center font-semibold text-slate-800">${item.stock}</span>
-            <button onclick="window.openAdjustModal('${itemId}')" class="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-100 active:scale-95 transition cursor-pointer">
-              <i class="fa-solid fa-sliders"></i> Adjust
-            </button>
-          </div>
-        </td>
+        <td class="px-6 py-4 font-semibold text-slate-800">${item.stock}</td>
+<td class="px-6 py-4">
+  <button onclick="window.openAdjustModal('${itemId}')" class="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-100 active:scale-95 transition cursor-pointer">
+    <i class="fa-solid fa-sliders"></i> Adjust
+  </button>
+</td>
         <td class="px-6 py-4 font-medium">₱${Number(item.price).toFixed(2)}</td>
         <td class="px-6 py-4">
           <span class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset ${status.class}">
             ${status.label}
           </span>
         </td>
-        <td class="px-6 py-4 text-right">
-          <button onclick="window.triggerEditProduct('${itemId}')" class="text-sm font-semibold text-secondary hover:underline mr-3 cursor-pointer">Edit</button>
-          <button onclick="window.triggerDeleteProduct('${itemId}')" class="text-sm font-semibold text-red-600 hover:underline cursor-pointer">Delete</button>
-        </td>
+        ${rowActionsCell(itemId)}
       </tr>
     `;
   }).join('');
