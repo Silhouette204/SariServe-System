@@ -4,6 +4,7 @@ import { fetchSalesDashboardData } from './sales-services.js';
 import { renderSalesChart, renderModalSalesChart } from './sales-charts.js';
 import html2canvas from 'html2canvas-pro';
 import jsPDF from 'jspdf';
+import { showToast } from './toast.js';
 
 let currentChartData = { labels: [], values: [] };
 let currentRecentSales = [];
@@ -177,9 +178,11 @@ export function initSalesModals() {
         pdf.addImage(imgData, 'JPEG', x, y, finalWidth, finalHeight);
   
         pdf.save(`SariServe-Sales-Report-${new Date().toISOString().slice(0, 10)}.pdf`);
+        showToast('Report downloaded successfully! You can find it in your download folder.', 'success');
+
       } catch (error) {
         console.error('Error generating PDF:', error);
-        alert('May problema sa pag-generate ng PDF.');
+        showToast('Failed to generate the PDF. Please try again later', 'error');
       } finally {
         // Ibalik ang original styles
         reportEl.style.overflow = originalStyles.overflow;

@@ -1,3 +1,5 @@
+import { showToast } from './toast.js';
+
 // src/inventory.js
 const API_URL = import.meta.env.VITE_API_URL || '';
 
@@ -98,20 +100,6 @@ function toggleModal(modalId, show = true) {
   if (!modal) return;
   modal.classList.toggle('hidden', !show);
   modal.classList.toggle('flex', show);
-}
-
-function showToast(message, kind = 'success') {
-  const toast = document.createElement('div');
-  toast.className = `fixed bottom-6 right-6 z-[60] px-5 py-3 rounded-xl text-sm font-semibold text-white shadow-lg transition-opacity duration-300 ${
-    kind === 'error' ? 'bg-red-600' : 'bg-emerald-600'
-  }`;
-  toast.textContent = message;
-  document.body.appendChild(toast);
-
-  setTimeout(() => {
-    toast.classList.add('opacity-0');
-    setTimeout(() => toast.remove(), 300);
-  }, 2500);
 }
 
 const findItem = (id) => inventoryItems.find((i) => String(i._id || i.id) === String(id));
@@ -284,6 +272,7 @@ function setupSearchAndFilters() {
 
 // 7. MODAL CONTROLLERS & API ACTIONS ADD, EDIT, DELETE
 function initModals() {
+
   // ADD MODAL
   const openAddBtn = document.getElementById('open-add-product-btn');
   const closeAddBtn = document.getElementById('close-add-modal-btn');
@@ -315,7 +304,7 @@ function initModals() {
           await fetchInventory();
           addForm.reset();
           toggleModal('add-product-modal', false);
-          showToast('Product was successfully added.');
+          showToast('Product was successfully added.', 'success');
         } else {
           const errorData = await response.json().catch(() => ({}));
           showToast(errorData.error || 'Failed to add product', 'error');
@@ -355,7 +344,7 @@ function initModals() {
         if (response.ok) {
           await fetchInventory(); // Refresh list
           toggleModal('edit-product-modal', false);
-          showToast('Product updated successfully.');
+          showToast('Product updated successfully.', 'success');
         } else {
           const data = await response.json().catch(() => ({}));
           showToast(data.error || 'Failed to update product', 'error');
@@ -384,7 +373,7 @@ function initModals() {
 
         if (response.ok) {
           await fetchInventory();
-          showToast('Product deleted.');
+          showToast('Product deleted.', 'success');
         } else {
           const data = await response.json().catch(() => ({}));
           showToast(data.error || 'Failed to delete product', 'error');
@@ -407,6 +396,7 @@ function initModals() {
 }
 
 // 8. GLOBAL WINDOW ACTIONS
+
 // Para sa SALES table — bawas stock + gumagawa ng Sale record
 window.recordSale = async (id, quantity = 1) => {
   const item = findItem(id);
@@ -515,7 +505,7 @@ function initStockModals() {
       const ok = await window.recordSale(id, quantity);
       if (ok) {
         toggleModal('sale-modal', false);
-        showToast(`Sale recorded: ${quantity} × ${item.name}`);
+        showToast(`Sale recorded: ${item.name} x ${quantity}`, 'success');
       }
     } finally {
       if (btn) btn.disabled = false;
@@ -544,7 +534,7 @@ function initStockModals() {
       const ok = await window.recordAdjustment(id, amount, reason);
       if (ok) {
         toggleModal('adjust-modal', false);
-        showToast(`Stock updated for ${item.name}.`);
+        showToast(`Stock updated for ${item.name}.`, 'success');
       }
     } finally {
       if (btn) btn.disabled = false;
