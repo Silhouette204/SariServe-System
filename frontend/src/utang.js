@@ -70,7 +70,7 @@ export function initUtangModals() {
         if (response.ok) {
           await fetchUtangData();
           toggleModal('add-customer-modal', false);
-          showToast(`Customer added: ${name}`, 'sucess');
+          showToast(`Customer added: ${name}`, 'success');
         } else {
           const err = await response.json();
           showToast(err.error || 'Failed to add customer', 'error');
@@ -93,6 +93,7 @@ export function initUtangModals() {
 
       if (!amountPaid || amountPaid <= 0) {
         showToast('Please Enter a valid pyment amount.', 'error');
+        return;
       }
 
       const btn = e.submitter;
@@ -108,7 +109,7 @@ export function initUtangModals() {
         if (response.ok) {
           await fetchUtangData();
           toggleModal('record-payment-modal', false);
-          showToast(`Payment of ${peso(amountPaid)} pesos recorded for ${customerName}.`, 'success');
+          showToast(`Payment of ${peso(amountPaid)} recorded for ${customerName}.`, 'success');
         } else {
           const err = await response.json();
           showToast(err.error || 'Failed to record payment', 'error');
@@ -134,7 +135,11 @@ if (debtForm) {
 
     if (!amount || amount <= 0) {
       showToast('Please enter a valid debt amount.', 'error');
+      return;
     }
+
+    const btn = e.submitter;
+  if (btn) btn.disabled = true;
 
     try {
       const response = await fetch(`${API_URL}/api/utang/${customerId}/debt`, {
@@ -154,6 +159,8 @@ if (debtForm) {
     } catch (error) {
       console.error('Error adding debt:', error);
       showToast('Connection problem. Please try again later.', 'error');
+    }finally{
+      if (btn) btn.disabled = false;
     }
   };
 }
