@@ -1,8 +1,12 @@
 // utang.js
 
+import { showToast } from "./toast";
+
 const API_URL = import.meta.env.VITE_API_URL || '';
 
 let stateCustomers = [];
+
+const peso = (n) => `₱ ${Number(n).toLocaleString('en-PH', { minimumFractionDigits: 2 })}`;
 
 // ===== 1. FETCH DATA MULA SA BACKEND =====
 export async function fetchUtangData() {
@@ -66,12 +70,13 @@ export function initUtangModals() {
         if (response.ok) {
           await fetchUtangData();
           toggleModal('add-customer-modal', false);
+          showToast(`Customer added: ${name}`, 'sucess');
         } else {
           const err = await response.json();
-          alert(err.error || 'Failed to add customer');
+          showToast(err.error || 'Failed to add customer', 'error');
         }
       } catch (error) {
-        console.error('Error adding customer:', error);
+        showToast('Connection problem. Please try again.', 'error');
       }
     };
   }
@@ -81,11 +86,17 @@ export function initUtangModals() {
   if (paymentForm) {
     paymentForm.onsubmit = async (e) => {
       e.preventDefault();
-
+      
       const customerId = document.getElementById('payment-customer-id')?.value;
+      const customerName = document.getElementById('payment-customer-name')?.value;
       const amountPaid = parseFloat(document.getElementById('payment-amount')?.value || 0);
 
-      if (!amountPaid || amountPaid <= 0) return;
+      if (!amountPaid || amountPaid <= 0) {
+        showToast('Please Enter a valid pyment amount.', 'error');
+      }
+
+      const btn = e.submitter;
+      if(btn) btn.disabled = true;
 
       try {
         const response = await fetch(`${API_URL}/api/utang/${customerId}/payment`, {
@@ -97,12 +108,16 @@ export function initUtangModals() {
         if (response.ok) {
           await fetchUtangData();
           toggleModal('record-payment-modal', false);
+          showToast(`Payment of ${peso(amountPaid)} pesos recorded for ${customerName}.`, 'success');
         } else {
           const err = await response.json();
-          alert(err.error || 'Failed to record payment');
+          showToast(err.error || 'Failed to record payment', 'error');
         }
       } catch (error) {
         console.error('Error recording payment:', error);
+        showToast('Connection problem. Please try again.', 'error');
+      }finally{
+        if (btn) btn.disabled = false; 
       }
     };
   }
@@ -115,8 +130,11 @@ if (debtForm) {
 
     const customerId = document.getElementById('debt-customer-id')?.value;
     const amount = parseFloat(document.getElementById('debt-amount')?.value || 0);
+    const customerName = document.getElementById('debt-customer-name')?.value;
 
-    if (!amount || amount <= 0) return;
+    if (!amount || amount <= 0) {
+      showToast('Please enter a valid debt amount.', 'error');
+    }
 
     try {
       const response = await fetch(`${API_URL}/api/utang/${customerId}/debt`, {
@@ -128,12 +146,14 @@ if (debtForm) {
       if (response.ok) {
         await fetchUtangData();
         toggleModal('add-debt-modal', false);
+        showToast(`Debt of ${peso(amount)} added for ${customerName}.`, 'success');
       } else {
         const err = await response.json();
-        alert(err.error || 'Failed to add utang');
+        showToast(err.error || 'Failed to add utang', 'error');
       }
     } catch (error) {
       console.error('Error adding debt:', error);
+      showToast('Connection problem. Please try again later.', 'error');
     }
   };
 }
@@ -331,19 +351,26 @@ function renderPaidHistoryModal() {
     el.addEventListener('click', async () => {
       const customerId = el.getAttribute('data-id');
       const confirmed = confirm('Sigurado ka bang gusto mong burahin ang record na ito? Hindi na ito mababawi.');
+
       if (!confirmed) return;
+
+      const customer = stateCustomers.find((c) => String(c.id) === String(customerId));
 
       try {
         const response = await fetch(`${API_URL}/api/utang/${customerId}`, { method: 'DELETE' });
         if (response.ok) {
+          
           await fetchUtangData();
           renderPaidHistoryModal(); // i-refresh ang modal content
+          showToast(`Record deleted: ${customer?.name || 'customer'}`, 'success');
+
         } else {
           const err = await response.json();
-          alert(err.error || 'Failed to delete customer');
+          showToast(err.error || 'Failed to delete customer', 'error');
         }
       } catch (error) {
         console.error('Error deleting customer:', error);
+        showToast('Connection problem. Please try again', 'error');
       }
     });
   });
