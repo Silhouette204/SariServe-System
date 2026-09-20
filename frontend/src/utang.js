@@ -76,10 +76,11 @@ export function initUtangModals() {
           toggleModal('add-customer-modal', false);
           showToast(`Customer added: ${name}`, 'success');
         } else {
-          const err = await response.json();
+          const err = await response.json().catch(() => ({}));
           showToast(err.error || 'Failed to add customer', 'error');
         }
       } catch (error) {
+        console.error('Error adding customer:', error);
         showToast('Connection problem. Please try again.', 'error');
       }finally{
         if(btn) btn.disabled = false;
@@ -118,7 +119,7 @@ export function initUtangModals() {
           toggleModal('record-payment-modal', false);
           showToast(`Payment of ${peso(amountPaid)} recorded for ${customerName}.`, 'success');
         } else {
-          const err = await response.json();
+          const err = await response.json().catch(() => ({}));
           showToast(err.error || 'Failed to record payment', 'error');
         }
       } catch (error) {
@@ -160,12 +161,12 @@ if (debtForm) {
         toggleModal('add-debt-modal', false);
         showToast(`Debt of ${peso(amount)} added for ${customerName}.`, 'success');
       } else {
-        const err = await response.json();
+        const err = await response.json().catch(() => ({}));
         showToast(err.error || 'Failed to add utang', 'error');
       }
     } catch (error) {
       console.error('Error adding debt:', error);
-      showToast('Connection problem. Please try again later.', 'error');
+      showToast('Connection problem. Please try again.', 'error');
     }finally{
       if (btn) btn.disabled = false;
     }
@@ -379,7 +380,7 @@ function renderPaidHistoryModal() {
           showToast(`Record deleted: ${customer?.name || 'customer'}`, 'success');
 
         } else {
-          const err = await response.json();
+          const err = await response.json().catch(() => ({}));
           showToast(err.error || 'Failed to delete customer', 'error');
         }
       } catch (error) {
@@ -388,16 +389,6 @@ function renderPaidHistoryModal() {
       }
     });
   });
-}
-
-function statusBadge(status) {
-  const map = {
-    current: 'bg-green-200 text-green-800',
-    overdue: 'bg-orange-200 text-orange-800',
-    critical: 'bg-red-200 text-red-800',
-    paid: 'bg-slate-200 text-slate-600',
-  };
-  return map[status] || 'bg-green-200 text-green-800';
 }
 
 function attachCardActionListeners() {
