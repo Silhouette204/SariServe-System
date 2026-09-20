@@ -60,6 +60,10 @@ export function initUtangModals() {
       const email = document.getElementById('customer-email')?.value.trim();
       const initialUtang = parseFloat(document.getElementById('customer-utang-amount')?.value || 0);
 
+     const btn = e.submitter;
+     if (btn) btn.disabled = true;
+       
+
       try {
         const response = await fetch(`${API_URL}/api/utang`, {
           method: 'POST',
@@ -77,7 +81,10 @@ export function initUtangModals() {
         }
       } catch (error) {
         showToast('Connection problem. Please try again.', 'error');
+      }finally{
+        if(btn) btn.disabled = false;
       }
+
     };
   }
 
@@ -92,7 +99,7 @@ export function initUtangModals() {
       const amountPaid = parseFloat(document.getElementById('payment-amount')?.value || 0);
 
       if (!amountPaid || amountPaid <= 0) {
-        showToast('Please Enter a valid pyment amount.', 'error');
+        showToast('Please enter a valid payment amount.', 'error');
         return;
       }
 
