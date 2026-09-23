@@ -10,8 +10,21 @@ import session from 'express-session'; //middleware
 
 const app = express();
 
+app.set('trust proxy', 1);
+
+const allowedOrigins = [
+  'http://localhost:5173',
+  process.env.FRONTEND_PROD_URL,
+]
+
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: function(origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)){
+      callback(null, true);
+    }else{
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
 }));
 
@@ -22,7 +35,11 @@ app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
-  cookie: { secure: false, httpOnly: true, sameSite: 'lax' },
+  cookie: { 
+    secure: process.env.NODE_ENV === 'production', 
+    httpOnly: true, 
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', 
+  },
 }));
 
 app.get('/', (req, res) => {
