@@ -1,4 +1,5 @@
 import { showToast } from './toast.js';
+import { API_BASE } from './config.js';
 
 export function signIn(){
 
@@ -17,7 +18,7 @@ if (signInForm && window.location.pathname.includes('sign-in.html')) {
     }
 
     try {
-      const response = await fetch('http://localhost:3000/api/local-auth/signin', {
+      const response = await fetch(`${API_BASE}/api/local-auth/signin`, {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },

@@ -1,6 +1,8 @@
+import {API_BASE} from './config.js';
+
 export async function loadUserGreeting() {
   try {
-    const res = await fetch('/api/local-auth/session', { credentials: 'include' });
+    const res = await fetch(`${API_BASE}/api/local-auth/session`, { credentials: 'include' });
     if (!res.ok) return; // not logged in, ok lang mag-leave ng default text
 
     const { firstName, lastName } = await res.json();

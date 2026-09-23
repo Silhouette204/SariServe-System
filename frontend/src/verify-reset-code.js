@@ -1,6 +1,9 @@
 // verify-reset-code.js
-export function verifyResetCode() {
 
+import { API_BASE } from './config.js';
+
+export function verifyResetCode() {
+  
   const resetCodeForm = document.getElementById('reset-code-form');
 
   if (!resetCodeForm || !window.location.pathname.includes('verify-reset-code.html')) return;
@@ -63,7 +66,7 @@ export function verifyResetCode() {
     }
 
     try {
-      const response = await fetch('http://localhost:3000/api/local-auth/verify-reset-code', {
+      const response = await fetch(`${API_BASE}/api/local-auth/verify-reset-code`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, code }),
@@ -95,7 +98,7 @@ export function verifyResetCode() {
     if (!email) return;
   
     try {
-      const response = await fetch('http://localhost:3000/api/local-auth/resend-code', {
+      const response = await fetch(`${API_BASE}/api/local-auth/resend-code`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, purpose: 'reset' }), // ← 'reset' palagi dito

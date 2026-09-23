@@ -1,4 +1,5 @@
 import { showToast } from './toast.js';
+import { API_BASE } from './config.js';
 
 export function forgotPassword() {
 
@@ -17,8 +18,9 @@ export function forgotPassword() {
     }
 
     try {
-      const response = await fetch('http://localhost:3000/api/local-auth/forgot-password', {
+      const response = await fetch(`${API_BASE}/api/local-auth/forgot-password`, {
         method: 'POST',
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
       });

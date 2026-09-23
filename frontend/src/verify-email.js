@@ -1,4 +1,5 @@
 import { showToast } from "./toast";
+import {API_BASE} from "./config.js"
 
 export function verifyEmail() {
 
@@ -68,7 +69,7 @@ if (email) {
     }
 
     try {
-      const response = await fetch('http://localhost:3000/api/local-auth/verify-email', {
+      const response = await fetch(`${API_BASE}/api/local-auth/verify-email`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -98,7 +99,7 @@ if (email) {
     if (!email) return;
   
     try {
-      const response = await fetch('http://localhost:3000/api/local-auth/resend-code', {
+      const response = await fetch(`${API_BASE}/api/local-auth/resend-code`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, purpose }), // ← idinagdag ang purpose
