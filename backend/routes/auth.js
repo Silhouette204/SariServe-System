@@ -2,7 +2,7 @@ import express from 'express';
 import prisma from '../lib/prisma.js';
 import bcrypt from 'bcrypt';
 
-import { sendOtp } from '../lib/notify.js';
+import { sendOtp, describeOtpTarget  } from '../lib/notify.js';
 
 
 const router = express.Router();
@@ -97,10 +97,11 @@ router.post('/signup', async (req, res) => {
     const { passwordHash: _, verificationToken: __, ...safeUser } = newUser; // ← tanggalin ang hash bago i-send
     res.status(201).json(
       { 
-      message: 'Account created successfully, Please check your email to verify your account', 
-      user: safeUser 
+      message: 'Account created successfully, We sent you a verification code.', 
+      user: safeUser,
+      ...describeOtpTarget(newUser), 
     });
-    
+
   } catch (error) {
     console.error('Signup Error:', error);
     res.status(500).json({ error: 'Server error while creating account.' });
@@ -143,12 +144,13 @@ router.post('/signin', async (req, res) => {
 
     await sendOtp(user, loginCode, 1);
 
-    // WALANG session dito — kailangan munang i-verify ang OTP
     res.status(200).json({
-      message: 'Log in code was already sent to your email',
+      message: 'We sent you a login code.',
       requiresOtp: true,
       email: user.email,
+      ...describeOtpTarget(user),
     });
+    
   } catch (error) {
     console.error('Signin Error:', error);
     res.status(500).json({ error: 'Server error during login.' });
