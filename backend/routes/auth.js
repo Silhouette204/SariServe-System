@@ -39,12 +39,9 @@ router.post('/verify-email', async (req, res) => {
       },
     });
 
-    if (purpose === 'login') {
-      req.session.userId = user.id; // ← dito ginagawa ang session
-      return res.status(200).json({ message: 'Your account was login successfully!', loggedIn: true });
-    }
-
+    req.session.userId = user.id;
     res.status(200).json({ message: 'Your email was verified, You can now login' });
+    
   } catch (error) {
     console.error('Verify Email Error:', error);
     res.status(500).json({ error: 'Server error on email verification.' });
