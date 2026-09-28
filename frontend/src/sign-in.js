@@ -28,9 +28,9 @@ if (signInForm && window.location.pathname.includes('sign-in.html')) {
       const data = await response.json();
 
       if (response.ok && data.requiresOtp) {
-        showToast('Login code sent to your email.', 'success');
+        showToast(data.message, 'success');
         setTimeout(() => {
-          window.location.href = `verify-email.html?email=${encodeURIComponent(data.email)}&purpose=login`;
+          window.location.href = `verify-email.html?email=${encodeURIComponent(data.email)}&purpose=login&channel=${data.channel}&sentTo=${encodeURIComponent(data.sentTo)}`;
         }, 1000);
       } else {
         showToast(data.error || 'Incorrect email or password.', 'error');

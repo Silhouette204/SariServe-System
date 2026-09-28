@@ -49,7 +49,7 @@ export function signUp(){
         if (response.ok) {
           showToast('Account created. Please check your email for the verification code.', 'success');
           setTimeout(() => {
-            window.location.href = `verify-email.html?email=${encodeURIComponent(email)}`;
+           window.location.href = `verify-email.html?email=${encodeURIComponent(email)}&channel=${data.channel}&sentTo=${encodeURIComponent(data.sentTo)}`;
           }, 1500);
         } else {
           showToast(data.error || 'An error occurred while creating your account.', 'error');
