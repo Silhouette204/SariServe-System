@@ -26,73 +26,79 @@
       <div>
         <div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3">
           
-          <!-- KPI Card 1: Today's Sales -->
-          <div class="border border-secondary bg-boxes shadow-xl rounded-xl px-4 py-5">
-            <div class="flex flex-row justify-between items-center">
-              <i class="fa-solid fa-peso-sign bg-secondary text-primary px-4 py-3 text-2xl rounded-xl"></i>
-              <div>
-              
-                <span id="kpi-dash-today-sale" class="font-semibold text-secondary">0.00%</span>
-              </div>
-            </div>
-            <div class="flex flex-col gap-2 mt-3">
-              <h3 class="text-base">Today's Sales</h3>
-              <h1 class="text-3xl font-semibold"><span id="dash-today-sale">₱ 0.00</span></h1>
-              <p class="text-sm text-secondary/70">vs <span id="prev-dash-today-sale">₱ 0.00</span> yesterday</p>
-            </div>
+    <!-- KPI Card 1: Today's Sales -->
+    <div class="border border-secondary bg-boxes shadow-xl rounded-xl px-4 py-5">
+      <div class="flex flex-row justify-between items-center">
+        <i class="fa-solid fa-peso-sign bg-secondary text-primary px-4 py-3 text-2xl rounded-xl"></i>
+        <div class="flex flex-row gap-2 ">
+          <div class="hidden md:flex">
+            <i id="icon-dash-today-sale" class="fa-solid fa-arrow-trend-up text-secondary text-2xl"></i>
           </div>
-
-          <!-- KPI Card 2: Total Product -->
-          <div class="border border-secondary rounded-xl px-4 py-5 bg-boxes shadow-xl">
-            <div class="flex flex-row justify-between items-center">
-              <i class="fa-solid fa-cart-shopping bg-secondary text-primary px-3 py-3 text-2xl rounded-xl"></i>
-              <div>
-                <i class="fa-solid fa-arrow-trend-up text-secondary text-2xl"></i>
-                <span id="kpi-dash-total-product" class="font-semibold text-secondary">0.00%</span>
-              </div>
-            </div>
-            <div class="flex flex-col gap-2 mt-3">
-              <h3 class="text-base">Total Product</h3>
-              <h1 class="text-3xl font-semibold"><span id="dash-total-product">0</span></h1>
-              <p class="text-sm text-secondary/70">In Inventory <span class="text-xs">(over 150 products)</span></p>
-            </div>
-          </div>
-
-          <!-- KPI Card 3: Low Stock Items -->
-          <div class="border border-secondary rounded-xl px-3 py-4 bg-boxes shadow-xl">
-            <div class="flex flex-row justify-between items-center">
-              <i class="fa-solid fa-triangle-exclamation bg-secondary text-primary px-4 py-3 text-2xl rounded-xl"></i>
-              <div>
-                <i class="fa-solid fa-arrow-trend-up text-secondary text-2xl"></i>
-                <span id="kpi-dash-low-stock" class="font-semibold text-secondary">0.00%</span>
-              </div>
-            </div>
-            <div class="flex flex-col gap-2 mt-3">
-              <h3 class="text-base">Low Stock Items</h3>
-              <!-- INAYOS: dash-low-stack -> dash-low-stock -->
-              <h1 class="text-3xl font-semibold"><span id="dash-low-stock">0</span></h1>
-              <p class="text-sm text-secondary/70">Need restock soon <span class="text-xs">(as per 150 items)</span></p>
-            </div>
-          </div>
-
-          <!-- KPI Card 4: Total Utang -->
-          <div class="border border-secondary rounded-xl px-4 py-5 bg-boxes shadow-xl">
-            <div class="flex flex-row justify-between items-center">
-              <i class="fa-solid fa-list bg-secondary text-primary px-3 py-3 text-2xl rounded-xl"></i>
-              <div>
-                <i class="fa-solid fa-arrow-trend-up text-secondary text-2xl"></i>
-                <span id="kpi-dash-total-utang" class="font-semibold text-secondary">0.00%</span>
-              </div>
-            </div>
-            <div class="flex flex-col gap-2 mt-3">
-              <h3 class="text-base">Total Utang</h3>
-              <h1 class="text-3xl font-semibold"><span id="dash-total-utang">₱ 0.00</span></h1>
-              <p class="text-sm text-secondary/70">From <span id="prev-dash-total-utang">0</span> customers</p>
-            </div>
-          </div>
-
+          <span id="kpi-dash-today-sale" class="font-semibold text-secondary">0.00%</span>
         </div>
       </div>
+      <div class="flex flex-col gap-2 mt-3">
+        <h3 class="text-base">Today's Sales</h3>
+        <h1 class="text-3xl font-semibold"><span id="dash-today-sale">₱ 0.00</span></h1>
+        <p class="text-sm text-secondary/70">vs <span id="prev-dash-today-sale">₱ 0.00</span> yesterday</p>
+      </div>
+    </div>
+
+    <!-- KPI Card 2: Total Product -->
+   <div class="border border-secondary rounded-xl px-4 py-5 bg-boxes shadow-xl">
+    <div class="flex flex-row justify-between items-center">
+      <i class="fa-solid fa-cart-shopping bg-secondary text-primary px-3 py-3 text-2xl rounded-xl"></i>
+      <div class="flex flex-row gap-2 items-center">
+        <div class="hidden md:flex">
+          <i id="icon-dash-total-product" class="fa-solid fa-arrow-trend-up text-xl"></i>
+        </div>
+        <span id="kpi-dash-total-product" class="font-semibold text-secondary">0.00%</span>
+      </div>
+    </div>
+    <div class="flex flex-col gap-2 mt-3">
+      <h3 class="text-base">Total Product</h3>
+      <h1 class="text-3xl font-semibold"><span id="dash-total-product">0</span></h1>
+      <p class="text-sm text-secondary/70">In Inventory <span class="text-xs">(over 150 products)</span></p>
+    </div>
+  </div>
+
+  <!-- KPI Card 3: Low Stock Items -->
+  <div class="border border-secondary rounded-xl px-3 py-4 bg-boxes shadow-xl">
+    <div class="flex flex-row justify-between items-center">
+      <i class="fa-solid fa-triangle-exclamation bg-secondary text-primary px-4 py-3 text-2xl rounded-xl"></i>
+      <div class="flex flex-row gap-2 items-center">
+        <div class="hidden md:flex">
+          <i id="icon-dash-low-stock" class="fa-solid fa-arrow-trend-up text-xl"></i>
+        </div>
+        <span id="kpi-dash-low-stock" class="font-semibold text-secondary">0.00%</span>
+      </div>
+    </div>
+    <div class="flex flex-col gap-2 mt-3">
+      <h3 class="text-base">Low Stock Items</h3>
+      <h1 class="text-3xl font-semibold"><span id="dash-low-stock">0</span></h1>
+      <p class="text-sm text-secondary/70">Need restock soon <span class="text-xs">(as per 150 items)</span></p>
+    </div>
+  </div>
+
+    <!-- KPI Card 4: Total Utang -->
+    <div class="border border-secondary rounded-xl px-4 py-5 bg-boxes shadow-xl">
+      <div class="flex flex-row justify-between items-center">
+        <i class="fa-solid fa-list bg-secondary text-primary px-3 py-3 text-2xl rounded-xl"></i>
+        <div class="flex flex-row gap-2 ">
+          <div class="hidden md:flex">
+            <i id="icon-dash-total-utang" class="fa-solid fa-arrow-trend-up text-2xl"></i>
+          </div>
+          <span id="kpi-dash-total-utang" class="font-semibold text-secondary">0.00%</span>
+        </div>
+      </div>
+      <div class="flex flex-col gap-2 mt-3">
+        <h3 class="text-base">Total Utang</h3>
+        <h1 class="text-3xl font-semibold"><span id="dash-total-utang">₱ 0.00</span></h1>
+        <p class="text-sm text-secondary/70">From <span id="prev-dash-total-utang">0</span> customers</p>
+      </div>
+    </div>
+  </div>
+</div>
     </section>
 
     <!-- SECTION: Sales Reports & Charts -->

@@ -8,6 +8,48 @@ import {
   updateLowStockChart 
 } from './dashboard-charts.js';
 
+// --- Helper para sa Positive / Negative KPI Values & Icons ---
+const setSignedPercentWithIcon = (containerId, iconId, value, invertColor = false) => {
+  const el = document.getElementById(containerId);
+  const iconEl = document.getElementById(iconId);
+  if (!el) return;
+  
+  const num = Number(value || 0);
+  const isPositive = num >= 0;
+  const sign = isPositive ? '+' : '';
+  
+  el.textContent = `${sign}${num.toFixed(2)}%`;
+
+  // Kulay logic:
+  // Karaniwan: Positive = Emerald (Green), Negative = Red
+  // Kung invertColor = true (tulad sa Low Stock o Total Utang), 
+  // ang positive ay magiging Red at ang negative ay magiging Green.
+  let isGood = isPositive;
+  if (invertColor) {
+    isGood = !isPositive; 
+  }
+
+  const colorClass = isGood ? 'text-emerald-600' : 'text-red-600';
+  const removeColorClass = isGood ? 'text-red-600' : 'text-emerald-600';
+
+  el.classList.remove(removeColorClass);
+  el.classList.add(colorClass);
+
+  if (iconEl) {
+    iconEl.classList.remove('text-red-600', 'text-emerald-600', 'text-secondary');
+    iconEl.classList.add(colorClass);
+
+    // Palitan ang arrow icon depende kung pataas o pababa
+    if (isPositive) {
+      iconEl.classList.remove('fa-arrow-trend-down');
+      iconEl.classList.add('fa-arrow-trend-up');
+    } else {
+      iconEl.classList.remove('fa-arrow-trend-up');
+      iconEl.classList.add('fa-arrow-trend-down');
+    }
+  }
+};
+
 // --- 1. MODAL HANDLERS ---
 export function initDashboardModals() {
   const toggleModal = (modalId, isOpen) => {
@@ -87,26 +129,15 @@ export async function loadDashboardData() {
       setText('pct-snacks', `${data.categoryPercentages.snacks || 0}%`);
     }
 
-    const setPercent = (id, value) => {
-      const el = document.getElementById(id);
-      if (!el) return;
-      const sign = value >= 0 ? '+' : '';
-      el.textContent = `${sign}${value.toFixed(2)}%`;
-    };
+    // --- Gamitin ang Helper para sa Apat na KPI Cards (May kasamang kulay at arrow icon) ---
+    setSignedPercentWithIcon('kpi-dash-today-sale', 'icon-dash-today-sale', data.todaySalesChange);
+    setSignedPercentWithIcon('kpi-dash-total-product', 'icon-dash-total-product', data.totalProductsChange);
     
-   // Today's Sales: totoong "% change vs kahapon" — may +/- sign
-setPercent('kpi-dash-today-sale', data.todaySalesChange);
-setPercent('kpi-dash-total-utang', data.totalUtangChange);
-
-// Total Product / Low Stock: "progress gauge" papunta sa 150 cap — walang sign
-const setProgress = (id, value) => {
-  const el = document.getElementById(id);
-  if (!el) return;
-  el.textContent = `${value.toFixed(2)}%`;
-};
-
-setProgress('kpi-dash-total-product', data.totalProductsChange);
-setProgress('kpi-dash-low-stock', data.lowStockChange);
+    // Low Stock (Naka-invert: Kapag tumaas ang low stock, masama kaya magiging kulay pula)
+    setSignedPercentWithIcon('kpi-dash-low-stock', 'icon-dash-low-stock', data.lowStockChange, true);
+    
+    // Total Utang (Naka-invert: Kapag tumaas ang utang, masama kaya magiging kulay pula)
+    setSignedPercentWithIcon('kpi-dash-total-utang', 'icon-dash-total-utang', data.totalUtangChange, true);
 
     // 3. Update Charts
     if (data.weeklySales) {
