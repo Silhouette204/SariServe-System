@@ -1,8 +1,8 @@
 // utang.js
 
 import { showToast } from "./toast";
+import { API_BASE } from "./config";
 
-const API_URL = import.meta.env.VITE_API_URL || '';
 
 let stateCustomers = [];
 
@@ -11,7 +11,7 @@ const peso = (n) => `₱ ${Number(n).toLocaleString('en-PH', { minimumFractionDi
 // ===== 1. FETCH DATA MULA SA BACKEND =====
 export async function fetchUtangData() {
   try {
-    const response = await fetch(`${API_URL}/api/utang`, { cache: 'no-store' });
+    const response = await fetch(`${API_BASE}/api/utang`, { cache: 'no-store' });
     if (!response.ok) throw new Error('Failed to fetch utang data');
 
     stateCustomers = await response.json();
@@ -65,7 +65,7 @@ export function initUtangModals() {
        
 
       try {
-        const response = await fetch(`${API_URL}/api/utang`, {
+        const response = await fetch(`${API_BASE}/api/utang`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ name, phone, email, initialUtang }),
@@ -108,7 +108,7 @@ export function initUtangModals() {
       if(btn) btn.disabled = true;
 
       try {
-        const response = await fetch(`${API_URL}/api/utang/${customerId}/payment`, {
+        const response = await fetch(`${API_BASE}/api/utang/${customerId}/payment`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ amount: amountPaid }),
@@ -150,7 +150,7 @@ if (debtForm) {
   if (btn) btn.disabled = true;
 
     try {
-      const response = await fetch(`${API_URL}/api/utang/${customerId}/debt`, {
+      const response = await fetch(`${API_BASE}/api/utang/${customerId}/debt`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ amount }),
@@ -372,7 +372,7 @@ function renderPaidHistoryModal() {
       const customer = stateCustomers.find((c) => String(c.id) === String(customerId));
 
       try {
-        const response = await fetch(`${API_URL}/api/utang/${customerId}`, { method: 'DELETE' });
+        const response = await fetch(`${API_BASE}/api/utang/${customerId}`, { method: 'DELETE' });
         if (response.ok) {
           
           await fetchUtangData();
@@ -445,7 +445,7 @@ function applyFiltersAndRender() {
 // ===== 4. DASHBOARD STATS (mula sa /api/utang/stats) =====
 async function updateDashboardStats() {
   try {
-    const response = await fetch(`${API_URL}/api/utang/stats`, { cache: 'no-store' });
+    const response = await fetch(`${API_BASE}/api/utang/stats`, { cache: 'no-store' });
     if (!response.ok) return;
 
     const stats = await response.json();
@@ -471,7 +471,7 @@ async function renderRecentPayments() {
   if (!container) return;
 
   try {
-    const response = await fetch(`${API_URL}/api/utang/payments/recent`, { cache: 'no-store' });
+    const response = await fetch(`${API_BASE}/api/utang/payments/recent`, { cache: 'no-store' });
     if (!response.ok) return;
 
     const payments = await response.json();

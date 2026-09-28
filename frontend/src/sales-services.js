@@ -1,10 +1,10 @@
 // src/sales-service.js
 
-const API_URL = import.meta.env.VITE_API_URL || '';
+import { API_BASE } from "./config";
 
 export async function fetchSalesDashboardData(timeframe = 'this-week') {
   try {
-    const response = await fetch(`${API_URL}/api/sales/dashboard?timeframe=${timeframe}`, {
+    const response = await fetch(`${API_BASE}/api/sales/dashboard?timeframe=${timeframe}`, {
       cache: 'no-store',
     });
     if (!response.ok) throw new Error('Failed to fetch sales data');

@@ -1,5 +1,3 @@
-const API_URL = import.meta.env.VITE_API_URL || '';
-
 import { fetchSalesDashboardData } from './sales-services.js';
 import { renderSalesChart, renderModalSalesChart } from './sales-charts.js';
 import html2canvas from 'html2canvas-pro';

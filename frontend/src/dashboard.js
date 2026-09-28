@@ -1,6 +1,6 @@
 // src/dashboard.js
 
-const API_URL = import.meta.env.VITE_API_URL || '';
+import { API_BASE } from './config.js';
 
 import { 
   updateWeeklySalesChart, 
@@ -54,7 +54,7 @@ export function initDashboardModals() {
 // --- 2. API DATA FETCHING ---
 export async function loadDashboardData() {
   try {
-    const response = await fetch(`${API_URL}/api/dashboard/stats`, {
+    const response = await fetch(`${API_BASE}/api/dashboard/stats`, {
       cache: 'no-store',
     });
 

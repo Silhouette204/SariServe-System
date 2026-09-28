@@ -1,7 +1,5 @@
 import { showToast } from './toast.js';
-
-// src/inventory.js
-const API_URL = import.meta.env.VITE_API_URL || '';
+import { API_BASE } from './config.js';
 
 let inventoryItems = [];
 let targetDeleteId = null;
@@ -116,7 +114,7 @@ export async function initInventory() {
 // 2. FETCH DATA FROM BACKEND API
 export async function fetchInventory() {
   try {
-    const response = await fetch(`${API_URL}/api/inventory`);// pag i-connect mo na yung API_URL sa .env file, pag wala, magiging localhost:3000, kaya para gumana ang system sa labas or sa vercel ay kailangan mo yung API_URL.
+    const response = await fetch(`${API_BASE}/api/inventory`);// pag i-connect mo na yung API_URL sa .env file, pag wala, magiging localhost:3000, kaya para gumana ang system sa labas or sa vercel ay kailangan mo yung API_URL.
     if (!response.ok) throw new Error('Failed to fetch inventory');
 
     inventoryItems = await response.json();
@@ -294,7 +292,7 @@ function initModals() {
       };
 
       try {
-        const response = await fetch(`${API_URL}/api/inventory`, {
+        const response = await fetch(`${API_BASE}/api/inventory`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(newProduct),
@@ -335,7 +333,7 @@ function initModals() {
       };
 
       try {
-        const response = await fetch(`${API_URL}/api/inventory/${id}`, {
+        const response = await fetch(`${API_BASE}/api/inventory/${id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(updatedData)
@@ -367,7 +365,7 @@ function initModals() {
       if (!targetDeleteId) return;
 
       try {
-        const response = await fetch(`${API_URL}/api/inventory/${targetDeleteId}`, {
+        const response = await fetch(`${API_BASE}/api/inventory/${targetDeleteId}`, {
           method: 'DELETE'
         });
 
@@ -408,7 +406,7 @@ window.recordSale = async (id, quantity = 1) => {
   }
 
   try {
-    const response = await fetch(`${API_URL}/api/inventory/${id}/sale`, {
+    const response = await fetch(`${API_BASE}/api/inventory/${id}/sale`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ quantity })
@@ -438,7 +436,7 @@ window.recordAdjustment = async (id, amount, reason = 'OTHER') => {
   if (!item) return false;
 
   try {
-    const response = await fetch(`${API_URL}/api/inventory/${id}/adjustment`, {
+    const response = await fetch(`${API_BASE}/api/inventory/${id}/adjustment`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ amount, reason })
