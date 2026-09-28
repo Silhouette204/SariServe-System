@@ -1,8 +1,8 @@
 import express from 'express';
 import prisma from '../lib/prisma.js';
 import bcrypt from 'bcrypt';
-import crypto from 'crypto'; //hindi na kailangan mag-install ng dagdag na package para gumawa ng random token.
-import { sendVerificationEmail, sendPasswordResetEmail } from '../lib/email.js';
+
+import { sendOtp } from '../lib/notify.js';
 
 
 const router = express.Router();
@@ -62,8 +62,11 @@ router.post('/signup', async (req, res) => {
     }
 
     const prefEnum = notificationPref === 'phone' ? 'PHONE' : 'EMAIL';
-    const passwordHash = await bcrypt.hash(password, 10); // ← hash na, hindi plain text
+    if (prefEnum === 'PHONE' && !phone) {
+      return res.status(400).json({ error: 'Phone number is required for SMS notifications.' });
+    }
 
+    const passwordHash = await bcrypt.hash(password, 10); // ← hash na, hindi plain text
 
     //crypto email verification
     const verificationToken = Math.floor(100000 + Math.random() * 900000).toString();
@@ -89,7 +92,7 @@ router.post('/signup', async (req, res) => {
 
     const verificationLink = `http://localhost:5173/verify-email.html?token=${verificationToken}`;
 
-    await sendVerificationEmail(newUser.email, verificationToken, 3); //3 minutes OTP validation
+    await sendOtp(newUser, verificationToken, 3); //3 minutes OTP validation
 
     const { passwordHash: _, verificationToken: __, ...safeUser } = newUser; // ← tanggalin ang hash bago i-send
     res.status(201).json(
@@ -102,6 +105,8 @@ router.post('/signup', async (req, res) => {
     console.error('Signup Error:', error);
     res.status(500).json({ error: 'Server error while creating account.' });
   }
+  
+ 
 });
 
 // Local Sign-In Route
@@ -136,7 +141,7 @@ router.post('/signin', async (req, res) => {
       },
     });
 
-    await sendVerificationEmail(user.email, loginCode, 1);
+    await sendOtp(user, loginCode, 1);
 
     // WALANG session dito — kailangan munang i-verify ang OTP
     res.status(200).json({
@@ -177,7 +182,7 @@ router.post('/forgot-password', async (req, res) => {
       },
     });
 
-    await sendPasswordResetEmail(user.email, resetCode, 10);
+    await sendOtp(user, resetCode, 10, 'reset');
 
     res.status(200).json({ message: 'If your account was already registered on your email, it proceed to send the reset code' });
   } catch (error) {
@@ -286,7 +291,7 @@ router.post('/resend-code', async (req, res) => {
         },
       });
 
-      await sendPasswordResetEmail(user.email, newCode, 10);
+      await sendOtp(user, newCode, 10, 'reset');
     } else {
       // Para sa signup o login — gamitin ang verificationToken fields
       const expiryMinutes = purpose === 'login' ? 1 : 3;
@@ -300,7 +305,7 @@ router.post('/resend-code', async (req, res) => {
         },
       });
 
-      await sendVerificationEmail(user.email, newCode, expiryMinutes);
+      await sendOtp(user, newCode, expiryMinutes);
     }
 
     res.status(200).json({ message: 'The code was resend to your email' });

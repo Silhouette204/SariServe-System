@@ -31,11 +31,11 @@ export function signUp(){
         return;
       }
   
-      if (!phone) {
-        showToast('Phone number is required.', 'error');
+      if (notificationPref === 'phone' && !phone) {
+        showToast('Phone number is required for SMS notifications.', 'error');
         return;
       }
-  
+      
       try {
         const response = await fetch(`${API_BASE}/api/local-auth/signup`, {
           method: 'POST',
