@@ -103,6 +103,9 @@ router.post('/signup', async (req, res) => {
     });
 
   } catch (error) {
+    if (error.code === 'P2002') {
+      return res.status(400).json({ error: 'This email was already in used' });
+    }
     console.error('Signup Error:', error);
     res.status(500).json({ error: 'Server error while creating account.' });
   }
