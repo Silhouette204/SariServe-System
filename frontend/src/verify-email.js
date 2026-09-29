@@ -20,13 +20,11 @@ export function verifyEmail() {
   const channel = params.get('channel');
   const sentTo = params.get('sentTo');
 
-  strong.textContent = (sentTo && sentTo !== 'undefined') ? sentTo : email;
-
   if (email) {
     const where = channel === 'phone' ? 'your phone number' : 'your email';
     subtitleEl.textContent = `We sent a 6-digit code to ${where} `;
     const strong = document.createElement('strong');
-    strong.textContent = sentTo || email;
+    strong.textContent = (sentTo && sentTo !== 'undefined') ? sentTo : email;
     subtitleEl.appendChild(strong);
   } else {
     subtitleEl.textContent = 'There is no email received, back to sign-up';
@@ -123,7 +121,7 @@ export function verifyEmail() {
         otpBoxes.forEach(box => box.value = ''); // ← linisin ang mga box para sa bagong code
         otpBoxes[0].focus();
       } else {
-        showToast(data.error || 'Resend failed.', 'error');
+       showToast(data.error || 'Resend failed.', 'error');
       }
     } catch (error) {
       showToast('Cannot connect to server.', 'error');
