@@ -21,6 +21,11 @@ export function signUp(){
       
       const termsAgreed = document.getElementById('terms').checked;
   
+      const submitBtn = signUpForm.querySelector('button[type="submit"]');
+
+      if (submitBtn.disabled) return; // safety net
+      submitBtn.disabled = true;
+
       if (password !== confirmPassword) {
         showToast('Passwords do not match.', 'error');
         return;
@@ -57,6 +62,8 @@ export function signUp(){
       } catch (error) {
         console.error('Error:', error);
         showToast('Unable to connect to the server.', 'error');
+      } finally {
+        submitBtn.disabled = false;
       }
     });
   }
