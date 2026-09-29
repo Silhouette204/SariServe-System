@@ -17,6 +17,8 @@ export default defineConfig(({ mode }) => {
     ],
 
     server: {
+      allowedHosts: ['galley-treat-delegate.ngrok-free.dev'], //add server para sa ngrok
+
       proxy: {
         '/api': {
           target: env.VITE_API_TARGET || 'http://localhost:3000',
