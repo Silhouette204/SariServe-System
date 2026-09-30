@@ -85,8 +85,10 @@ export function verifyEmail() {
       const data = await response.json();
 
       if (response.ok) {
-       showToast(data.message, 'success');
-        setTimeout(() => window.location.href = 'dashboard.html', 1500); // ← dating 'sign-in.html'
+        showToast(data.message, 'success');
+        const next = data.loggedIn ? 'dashboard.html' : 'sign-in.html';
+        setTimeout(() => window.location.href = next, 1500);
+      // ← dating 'sign-in.html'
       } else {
        showToast(data.error, 'error');
         otpBoxes.forEach(box => box.value = '');
@@ -108,7 +110,8 @@ export function verifyEmail() {
       const response = await fetch(`${API_BASE}/api/local-auth/resend-code`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, purpose }), // ← idinagdag ang purpose
+        credentials: 'include',
+        body: JSON.stringify({ email, purpose }),
       });
       const data = await response.json();
       messageEl.textContent = response.ok ? 'The code was resubmit succesfully!' : data.error;
