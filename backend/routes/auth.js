@@ -39,13 +39,16 @@ router.post('/verify-email', async (req, res) => {
       },
     });
 
-    if (purpose === 'login') {
-      req.session.userId = user.id;
-      return req.session.save((err) => {
-        if (err) return res.status(500).json({ error: 'Could not start session.' });
-        res.status(200).json({ message: 'Your account was login successfully!', loggedIn: true });
+    req.session.userId = user.id;
+    return req.session.save((err) => {
+      if (err) return res.status(500).json({ error: 'Could not start session.' });
+      res.status(200).json({
+        message: purpose === 'login'
+          ? 'Your account was login successfully!'
+          : 'Your account was verified. Welcome to SariServe!',
+        loggedIn: true,
       });
-    }
+    });
 
     res.status(200).json({ message: 'Your email was verified, You can now login' });
   } catch (error) {
@@ -338,6 +341,14 @@ router.get('/session', async (req, res) => {
   if (!user) return res.status(401).json({ loggedIn: false });
 
   res.json({ loggedIn: true, firstName: user.firstName, lastName: user.lastName });
+});
+
+router.post('/logout', (req, res) => {
+  req.session.destroy((err) => {
+    if (err) return res.status(500).json({ error: 'Could not log out.' });
+    res.clearCookie('connect.sid');
+    res.status(200).json({ message: 'Logged out.' });
+  });
 });
 
 export default router;
