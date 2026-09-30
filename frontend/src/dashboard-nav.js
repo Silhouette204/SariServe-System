@@ -1,3 +1,5 @@
+import { API_BASE } from './config.js';
+
 export function renderDashboardNav() {
   const dashboardNav = document.querySelector("#dashboard-nav");
 
@@ -71,7 +73,7 @@ export function renderDashboardNav() {
     </div>
     </div>
 
-      <a href="index.html" class=" px-3 flex items-center py-3 rounded-xl hover:bg-gray-700/50 font-medium transition"><i class="fa-solid fa-arrow-right-from-bracket text-primary font-semibold mr-5"></i>
+      <a href="index.html" id="logout-btn" class="px-3 flex items-center py-3 rounded-xl hover:bg-gray-700/50 font-medium transition"><i class="fa-solid fa-arrow-right-from-bracket text-primary font-semibold mr-5"></i>
         Logout
       </a>
     </div>
@@ -115,5 +117,21 @@ export function initDashboardNav() {
   navLinks.forEach(link => {
     link.onclick = closeAll;
   });
+
+  const logoutBtn = document.getElementById('logout-btn');
+  if (logoutBtn) {
+    logoutBtn.onclick = async (e) => {
+      e.preventDefault();
+      try {
+        await fetch(`${API_BASE}/api/local-auth/logout`, {
+          method: 'POST',
+          credentials: 'include',
+        });
+      } finally {
+        window.location.href = 'index.html';
+      }
+    };
+  }
+
 
 }
