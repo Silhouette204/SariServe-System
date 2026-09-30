@@ -18,16 +18,12 @@ router.post('/verify-email', async (req, res) => {
 
     const user = await prisma.user.findUnique({ where: { email } });
 
-    if (!user) {
-      return res.status(400).json({ error: 'No account found with this email.' });
-    }
-
-    if (user.verificationToken !== code) {
-      return res.status(400).json({ error: 'Incorrect verification code.' });
-    }
-
-    if (user.verificationTokenExpiry < new Date()) {
-      return res.status(400).json({ error: 'This code has expired. Please request a new one.' });
+    if (
+      !user ||
+      user.verificationToken !== code ||
+      user.verificationTokenExpiry < new Date()
+    ) {
+      return res.status(400).json({ error: 'Invalid or expired verification code.' });
     }
 
     await prisma.user.update({
@@ -50,7 +46,6 @@ router.post('/verify-email', async (req, res) => {
       });
     });
 
-    res.status(200).json({ message: 'Your email was verified, You can now login' });
   } catch (error) {
     console.error('Verify Email Error:', error);
     res.status(500).json({ error: 'Server error on email verification.' });
@@ -179,8 +174,12 @@ router.post('/forgot-password', async (req, res) => {
     const user = await prisma.user.findUnique({ where: { email } });
 
     if (!user) {
-      // Hindi natin sasabihing "walang account" — para hindi malaman ng iba kung aling emails ang registered
-      return res.status(200).json({ message: 'If your account was already registered on your email, it proceed to send the reset code' });
+      // Hindi natin sasabihing "walang account"
+      return res.status(200).json({
+        message: 'If your account was already registered on your email, it proceed to send the reset code',
+        channel: 'email',
+        sentTo: email,
+      });
     }
 
     const resetCode = Math.floor(100000 + Math.random() * 900000).toString();
@@ -196,7 +195,10 @@ router.post('/forgot-password', async (req, res) => {
 
     await sendOtp(user, resetCode, 10, 'reset');
 
-    res.status(200).json({ message: 'If your account was already registered on your email, it proceed to send the reset code' });
+    res.status(200).json({
+      message: 'If your account was already registered on your email, it proceed to send the reset code',
+      ...describeOtpTarget(user), // channel + masked phone o email
+    });
   } catch (error) {
     console.error('Forgot Password Error:', error);
     res.status(500).json({ error: 'Server error on forgot password.' });
@@ -214,16 +216,12 @@ router.post('/reset-password', async (req, res) => {
 
     const user = await prisma.user.findUnique({ where: { email } });
 
-    if (!user) {
-      return res.status(400).json({ error: 'Theres no account on this email' });
-    }
-
-    if (user.resetPasswordToken !== code) {
-      return res.status(400).json({ error: 'Your verification code was wrong.' });
-    }
-
-    if (user.resetPasswordTokenExpiry < new Date()) {
-      return res.status(400).json({ error: 'Your reset code was expired, must request new code.' });
+    if (
+      !user ||
+      user.resetPasswordToken !== code ||
+      user.resetPasswordTokenExpiry < new Date()
+    ) {
+      return res.status(400).json({ error: 'Invalid or expired reset code.' });
     }
 
     const newPasswordHash = await bcrypt.hash(newPassword, 10);
@@ -255,16 +253,12 @@ router.post('/verify-reset-code', async (req, res) => {  // ← ibalik dito
 
     const user = await prisma.user.findUnique({ where: { email } });
 
-    if (!user) {
-      return res.status(400).json({ error: 'Theres no account on this email.' });
-    }
-
-    if (user.resetPasswordToken !== code) {  // ← ibalik: resetPasswordToken, hindi verificationToken
-      return res.status(400).json({ error: 'Wrong reset code.' });
-    }
-
-    if (user.resetPasswordTokenExpiry < new Date()) {
-      return res.status(400).json({ error: 'Your reset code was expired, must request new code.' });
+   if (
+      !user ||
+      user.resetPasswordToken !== code ||
+      user.resetPasswordTokenExpiry < new Date()
+    ) {
+      return res.status(400).json({ error: 'Invalid or expired reset code.' });
     }
 
     res.status(200).json({ message: 'Code was right! You can input your new password' });
@@ -286,7 +280,8 @@ router.post('/resend-code', async (req, res) => {
     const user = await prisma.user.findUnique({ where: { email } });
 
     if (!user) {
-      return res.status(400).json({ error: 'There is no account on this provided email' });
+      // parehong sagot para hindi malaman kung may account
+      return res.status(200).json({ message: 'A new code was sent.' });
     }
 
     const newCode = Math.floor(100000 + Math.random() * 900000).toString();
@@ -320,7 +315,7 @@ router.post('/resend-code', async (req, res) => {
       await sendOtp(user, newCode, expiryMinutes);
     }
 
-    res.status(200).json({ message: 'The code was resend to your email' });
+    res.status(200).json({ message: 'A new code was sent.' });
   } catch (error) {
     console.error('Resend Code Error:', error);
     res.status(500).json({ error: 'Server error while resending code.' });
