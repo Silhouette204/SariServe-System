@@ -40,8 +40,11 @@ router.post('/verify-email', async (req, res) => {
     });
 
     if (purpose === 'login') {
-      req.session.userId = user.id; // ← dito ginagawa ang session
-      return res.status(200).json({ message: 'Your account was login successfully!', loggedIn: true });
+      req.session.userId = user.id;
+      return req.session.save((err) => {
+        if (err) return res.status(500).json({ error: 'Could not start session.' });
+        res.status(200).json({ message: 'Your account was login successfully!', loggedIn: true });
+      });
     }
 
     res.status(200).json({ message: 'Your email was verified, You can now login' });

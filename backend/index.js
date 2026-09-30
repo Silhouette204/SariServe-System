@@ -14,15 +14,16 @@ app.set('trust proxy', 1);
 
 const allowedOrigins = [
   'http://localhost:5173',
+  'https://galley-treat-delegate.ngrok-free.dev',
   process.env.FRONTEND_PROD_URL,
-  
 ]
 
 app.use(cors({
-  origin: function(origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)){
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
-    }else{
+    } else {
+      console.log('Blocked by CORS:', origin); // ← idagdag muna ito
       callback(new Error('Not allowed by CORS'));
     }
   },
