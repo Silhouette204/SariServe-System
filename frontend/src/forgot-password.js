@@ -26,10 +26,18 @@ export function forgotPassword() {
       });
 
       const data = await response.json();
+
+      if (!response.ok) {
+        showToast(data.error || 'Something went wrong.', 'error');
+        return;
+      }
       showToast('If an account exists for this email, a reset code has been sent.', 'success');
 
+      const channel = data.channel || 'email';
+      const sentTo = data.sentTo || email;
+
       setTimeout(() => {
-        window.location.href = `verify-reset-code.html?email=${encodeURIComponent(email)}`;
+        window.location.href = `verify-reset-code.html?email=${encodeURIComponent(email)}&channel=${channel}&sentTo=${encodeURIComponent(sentTo)}`;
       }, 1500);
     } catch (error) {
       console.error('Forgot Password Error:', error);

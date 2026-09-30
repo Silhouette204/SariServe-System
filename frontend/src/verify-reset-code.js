@@ -16,9 +16,16 @@ export function verifyResetCode() {
   const email = params.get('email');
 
   const resendLink = document.getElementById('resend-reset-link'); 
+  
+  const channel = params.get('channel');
+  const sentTo = params.get('sentTo');
 
   if (email) {
-    subtitleEl.innerHTML = `Must put the reset code, it will send on <strong>${email}</strong>.`;
+    const where = channel === 'phone' ? 'your phone number' : 'your email';
+    subtitleEl.textContent = `Enter the reset code we sent to ${where} `;
+    const strong = document.createElement('strong');
+    strong.textContent = (sentTo && sentTo !== 'undefined') ? sentTo : email;
+    subtitleEl.appendChild(strong);
   } else {
     subtitleEl.textContent = 'There is no email received, back to forgot password.';
   }
