@@ -15,6 +15,14 @@ const codeAttemptLimiter  = rateLimit({
   message: { error: 'Too many attempts. Please try again in 15 minutes.' },
 });
 
+const emailVerificationLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minuto
+  limit: 5,                 // 5 na subok lang kada IP
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many attempts. Please try again in 15 minutes.' },
+});
+
 const router = express.Router();
 
 //verify email account route
@@ -125,7 +133,7 @@ router.post('/signup', async (req, res) => {
 });
 
 // Local Sign-In Route
-router.post('/signin', async (req, res) => {
+router.post('/signin', emailVerificationLimiter, async (req, res) => {
   try {
     const { identifier, password } = req.body;
     console.log('Sinubukang mag-login gamit ang:', identifier); // ← idagdag muna
@@ -173,7 +181,7 @@ router.post('/signin', async (req, res) => {
 });
 
 // Forgot Password — humingi ng reset code
-router.post('/forgot-password', async (req, res) => {
+router.post('/forgot-password', emailVerificationLimiter, async (req, res) => {
   try {
     const { email } = req.body;
 
@@ -279,7 +287,7 @@ router.post('/verify-reset-code', codeAttemptLimiter, async (req, res) => {  // 
 });
 
 // Resend Code — gumagana para sa signup, login, at reset password
-router.post('/resend-code', async (req, res) => {
+router.post('/resend-code', emailVerificationLimiter, async (req, res) => {
   try {
     const { email, purpose } = req.body;
 
