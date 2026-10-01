@@ -4,11 +4,21 @@ import bcrypt from 'bcrypt';
 
 import { sendOtp, describeOtpTarget  } from '../lib/notify.js';
 
+import rateLimit from 'express-rate-limit';
+
+//for code attempt limiter for email verification, login, forgot password, and reset password
+const codeAttemptLimiter  = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minuto
+  limit: 5,                 // 5 na subok lang kada IP
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many attempts. Please try again in 15 minutes.' },
+});
 
 const router = express.Router();
 
 //verify email account route
-router.post('/verify-email', async (req, res) => {
+router.post('/verify-email', codeAttemptLimiter, async (req, res) => {
   try {
     const { email, code, purpose } = req.body; // ← dagdag: purpose
 
@@ -206,7 +216,7 @@ router.post('/forgot-password', async (req, res) => {
 });
 
 // Reset Password — kumpirmahin ang code, ipalit ang password
-router.post('/reset-password', async (req, res) => {
+router.post('/reset-password', codeAttemptLimiter, async (req, res) => {
   try {
     const { email, code, newPassword } = req.body;
 
@@ -243,7 +253,7 @@ router.post('/reset-password', async (req, res) => {
 });
 
 // Verify Reset Code — i-check lang ang code, hindi pa palitan ang password
-router.post('/verify-reset-code', async (req, res) => {  // ← ibalik dito
+router.post('/verify-reset-code', codeAttemptLimiter, async (req, res) => {  // ← ibalik dito
   try {
     const { email, code } = req.body;
 
