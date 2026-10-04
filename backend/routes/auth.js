@@ -15,12 +15,21 @@ const codeAttemptLimiter  = rateLimit({
   message: { error: 'Too many attempts. Please try again in 15 minutes.' },
 });
 
-const emailVerificationLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minuto
-  limit: 5,                 // 5 na subok lang kada IP
+const sendCodeLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 5,
   standardHeaders: true,
   legacyHeaders: false,
-  message: { error: 'Too many attempts. Please try again in 15 minutes.' },
+  message: { error: 'Too many requests. Please wait before asking for another code.' },
+});
+
+// para sa paghula ng password sa sign-in
+const signinLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many login attempts. Please try again in 15 minutes.' },
 });
 
 const RESEND_COOLDOWN_SECONDS = 30;
@@ -149,7 +158,7 @@ router.post('/signup', async (req, res) => {
 });
 
 // Local Sign-In Route
-router.post('/signin', emailVerificationLimiter, async (req, res) => {
+router.post('/signin', signinLimiter, async (req, res) => {
   try {
     const { identifier, password } = req.body;
     console.log('Sinubukang mag-login gamit ang:', identifier); // ← idagdag muna
@@ -198,7 +207,7 @@ router.post('/signin', emailVerificationLimiter, async (req, res) => {
 });
 
 // Forgot Password — humingi ng reset code
-router.post('/forgot-password', emailVerificationLimiter, async (req, res) => {
+router.post('/forgot-password', sendCodeLimiter, async (req, res) => {
   try {
     const { email } = req.body;
 
@@ -305,7 +314,7 @@ router.post('/verify-reset-code', codeAttemptLimiter, async (req, res) => {  // 
 });
 
 // Resend Code — gumagana para sa signup, login, at reset password
-router.post('/resend-code', emailVerificationLimiter, async (req, res) => {
+router.post('/resend-code', sendCodeLimiter, async (req, res) => {
   try {
     const { email, purpose } = req.body;
 
