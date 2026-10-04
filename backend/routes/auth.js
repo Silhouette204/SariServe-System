@@ -23,6 +23,21 @@ const emailVerificationLimiter = rateLimit({
   message: { error: 'Too many attempts. Please try again in 15 minutes.' },
 });
 
+const RESEND_COOLDOWN_SECONDS = 30;
+const lastSentAt = new Map(); // key: "userId:kind" -> oras ng huling padala
+
+function getCooldownLeft(userId, kind) {
+  const last = lastSentAt.get(`${userId}:${kind}`);
+  if (!last) return 0;
+  const left = Math.ceil((last + RESEND_COOLDOWN_SECONDS * 1000 - Date.now()) / 1000);
+  return left > 0 ? left : 0;
+}
+
+function markSent(userId, kind) {
+  lastSentAt.set(`${userId}:${kind}`, Date.now());
+}
+
+
 const router = express.Router();
 
 //verify email account route
@@ -112,6 +127,7 @@ router.post('/signup', async (req, res) => {
     const verificationLink = `http://localhost:5173/verify-email.html?token=${verificationToken}`;
 
     await sendOtp(newUser, verificationToken, 3); //3 minutes OTP validation
+    markSent(newUser.id, 'verify');
 
     const { passwordHash: _, verificationToken: __, ...safeUser } = newUser; // ← tanggalin ang hash bago i-send
     res.status(201).json(
@@ -165,6 +181,7 @@ router.post('/signin', emailVerificationLimiter, async (req, res) => {
     });
 
     await sendOtp(user, loginCode, 1);
+    markSent(user.id, 'verify');
 
    res.status(200).json({
   message: 'We sent you a login code.',
@@ -212,6 +229,7 @@ router.post('/forgot-password', emailVerificationLimiter, async (req, res) => {
     });
 
     await sendOtp(user, resetCode, 10, 'reset');
+    markSent(user.id, 'reset');
 
     res.status(200).json({
       message: 'If your account was already registered on your email, it proceed to send the reset code',
@@ -302,6 +320,15 @@ router.post('/resend-code', emailVerificationLimiter, async (req, res) => {
       return res.status(200).json({ message: 'A new code was sent.' });
     }
 
+    const kind = purpose === 'reset' ? 'reset' : 'verify';
+    const wait = getCooldownLeft(user.id, kind);
+    if (wait > 0) {
+      return res.status(429).json({
+        error: `Please wait ${wait}s before requesting a new code.`,
+        retryAfter: wait,
+      });
+    }
+
     const newCode = Math.floor(100000 + Math.random() * 900000).toString();
 
     if (purpose === 'reset') {
@@ -331,7 +358,10 @@ router.post('/resend-code', emailVerificationLimiter, async (req, res) => {
       });
 
       await sendOtp(user, newCode, expiryMinutes);
+    
     }
+
+        markSent(user.id, kind);
 
     res.status(200).json({ message: 'A new code was sent.' });
   } catch (error) {
