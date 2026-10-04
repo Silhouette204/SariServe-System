@@ -1,5 +1,6 @@
 import { showToast } from "./toast";
 import {API_BASE} from "./config.js"
+import { createResendCooldown } from './resend-cooldown.js';
 
 export function verifyEmail() {
 
@@ -19,6 +20,7 @@ export function verifyEmail() {
 
   const channel = params.get('channel');
   const sentTo = params.get('sentTo');
+  const cooldown = createResendCooldown(resendLink);
 
   if (email) {
     const where = channel === 'phone' ? 'your phone number' : 'your email';
@@ -26,6 +28,7 @@ export function verifyEmail() {
     const strong = document.createElement('strong');
     strong.textContent = (sentTo && sentTo !== 'undefined') ? sentTo : email;
     subtitleEl.appendChild(strong);
+    cooldown.start(30);
   } else {
     subtitleEl.textContent = 'There is no email received, back to sign-up';
   }
@@ -104,7 +107,7 @@ export function verifyEmail() {
 
   resendLink.addEventListener('click', async (e) => {
     e.preventDefault();
-    if (!email) return;
+    if (!email || cooldown.isCooling()) return;
   
     try {
       const response = await fetch(`${API_BASE}/api/local-auth/resend-code`, {
@@ -114,6 +117,13 @@ export function verifyEmail() {
         body: JSON.stringify({ email, purpose }),
       });
       const data = await response.json();
+
+      if (response.status === 429) {            // ← dito
+        cooldown.start(data.retryAfter || 30);  // sundin ang sinabi ng server
+      } else if (response.ok) {
+        cooldown.start(30);
+      }
+
       messageEl.textContent = response.ok ? 'The code was resubmit succesfully!' : data.error;
       messageEl.className = response.ok 
         ? 'text-center text-sm mt-4 mb-4 text-green-600'
