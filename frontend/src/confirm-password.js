@@ -1,6 +1,7 @@
 // confirm-password.js
 import { showToast } from './toast.js';
 import { API_BASE } from './config.js';
+import { attachPasswordStrength, isPasswordValid } from './password-strength.js';
 
 export function confirmPassword() {
 
@@ -14,8 +15,12 @@ export function confirmPassword() {
   const email = params.get('email');
   const code = params.get('code');
 
-  if (email && subtitleEl) {
-    subtitleEl.innerHTML = `Enter a new password for <strong>${email}</strong>.`;
+   if (email && subtitleEl) {
+    subtitleEl.textContent = 'Enter a new password for ';
+    const strong = document.createElement('strong');
+    strong.textContent = email;
+    subtitleEl.appendChild(strong);
+    subtitleEl.append('.');
   }
 
   confirmForm.addEventListener('submit', async (e) => {
@@ -26,6 +31,11 @@ export function confirmPassword() {
 
     if (!email || !code) {
       showToast('No email or code found. Please go back to forgot password.', 'error');
+      return;
+    }
+
+    if (!isPasswordValid(newPassword)) {
+      showToast('Password does not meet the requirements.', 'error');
       return;
     }
 
@@ -54,4 +64,7 @@ export function confirmPassword() {
       showToast('Unable to connect to the server.', 'error');
     }
   });
+
+  const passwordInput = document.getElementById('confirm-new-password');
+  if (passwordInput) attachPasswordStrength(passwordInput);
 }

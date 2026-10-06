@@ -1,11 +1,16 @@
 import { showToast } from './toast.js';
 import { API_BASE }  from './config.js';
+import { attachPasswordStrength, isPasswordValid } from './password-strength.js';
 
 export function signUp(){
 
   const signUpForm = document.querySelector('form');
   
   if (signUpForm && window.location.pathname.includes('sign-up.html')) {
+    
+    const passwordInput = document.getElementById('user-create-password');
+    attachPasswordStrength(passwordInput);
+
     signUpForm.addEventListener('submit', async (e) => {
       e.preventDefault();
   
@@ -23,8 +28,12 @@ export function signUp(){
   
       const submitBtn = signUpForm.querySelector('button[type="submit"]');
 
-      if (submitBtn.disabled) return; // safety net
-      submitBtn.disabled = true;
+      if (!isPasswordValid(password)) {
+        showToast('Password does not meet the requirements.', 'error');
+        return;
+      }
+
+      if (submitBtn.disabled) return; 
 
       if (password !== confirmPassword) {
         showToast('Passwords do not match.', 'error');
@@ -41,6 +50,8 @@ export function signUp(){
         return;
       }
       
+      submitBtn.disabled = true; // safety net
+
       try {
         const response = await fetch(`${API_BASE}/api/local-auth/signup`, {
           method: 'POST',
@@ -67,5 +78,5 @@ export function signUp(){
       }
     });
   }
-  
+
   }
