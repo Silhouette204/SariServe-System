@@ -6,6 +6,16 @@ import { sendOtp, describeOtpTarget  } from '../lib/notify.js';
 
 import rateLimit from 'express-rate-limit';
 
+function isStrongPassword(pw) {
+  return (
+    typeof pw === 'string' &&
+    pw.length >= 8 &&
+    /[A-Z]/.test(pw) &&
+    /[0-9]/.test(pw) &&
+    /[^A-Za-z0-9]/.test(pw)
+  );
+}
+
 //for code attempt limiter for email verification, login, forgot password, and reset password
 const codeAttemptLimiter  = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minuto
@@ -102,6 +112,10 @@ router.post('/signup', async (req, res) => {
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
       return res.status(400).json({ error: 'This email was already in used' });
+    }
+
+    if (!isStrongPassword(password)) {
+      return res.status(400).json({ error: 'Password does not meet the requirements.' });
     }
 
     const prefEnum = notificationPref === 'phone' ? 'PHONE' : 'EMAIL';
@@ -257,6 +271,10 @@ router.post('/reset-password', codeAttemptLimiter, async (req, res) => {
 
     if (!email || !code || !newPassword) {
       return res.status(400).json({ error: 'Must complete all the required fields' });
+    }
+
+    if (!isStrongPassword(newPassword)) {
+      return res.status(400).json({ error: 'Password does not meet the requirements.' });
     }
 
     const user = await prisma.user.findUnique({ where: { email } });
