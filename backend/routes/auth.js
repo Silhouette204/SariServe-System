@@ -180,9 +180,9 @@ router.post('/signin', signinLimiter, async (req, res) => {
     const user = await prisma.user.findUnique({ where: { email: identifier } });
     console.log('Nahanap na user:', user ? user.email : 'WALANG NAHANAP'); // ← idagdag muna
 
-    if (!user) {
+    if (!user || !user.passwordHash) {
       return res.status(401).json({ error: 'Incorrect email or password.' });
-    }
+    }   
 
     const validPassword = await bcrypt.compare(password, user.passwordHash);
     console.log('Tama ba ang password:', validPassword);
