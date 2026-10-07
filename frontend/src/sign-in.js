@@ -6,6 +6,25 @@ export function signIn(){
 const signInForm = document.querySelector('form');
 
 if (signInForm && window.location.pathname.includes('sign-in.html')) {
+
+  const googleBtn = document.getElementById('google-signin-btn'); 
+
+  if (googleBtn) {
+    googleBtn.addEventListener('click', () => {
+      window.location.href = `${API_BASE}/api/auth/google`;
+    });
+  }
+
+  const errorParam = new URLSearchParams(window.location.search).get('error');
+if (errorParam) {
+  showToast(
+    errorParam === 'google_cancelled'
+      ? 'Google sign-in was cancelled.'
+      : 'Google sign-in failed. Please try again.',
+    'error'
+  );
+}
+
   signInForm.addEventListener('submit', async (e) => {
     e.preventDefault();
 
