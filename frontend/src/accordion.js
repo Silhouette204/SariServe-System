@@ -38,14 +38,14 @@ export function initAccordion() {
   const accordionContainer = document.querySelector('#accordion-container');
   if (!accordionContainer) return; // safety net, though main.js already checks
 
-  accordionContainer.innerHTML = accordionData.map((item, index) => `
-    <div class="accordion-items border-b border-gray-300">
-      <button class="accordion-question w-full flex justify-between items-center py-5 cursor-pointer">
-        <span class="text-start text-lg font-medium text-dark">${item.question}</span>
+  accordionContainer.innerHTML = accordionData.map((item) => `
+    <div class="accordion-items border-b border-gray-300 mr-5">
+      <button class="accordion-question w-full flex justify-between items-center py-5 " cursor-pointer">
+        <span class="text-start text-base font-medium text-secondary mr-5">${item.question}</span>
         <i class="dropdown fa-solid fa-chevron-down transition-transform duration-300 mr-7"></i>
       </button>
       <div class="accordion-content max-h-0 overflow-hidden transition-all duration-300 ease-in-out">
-        <div class="pb-5 text-dark/70">
+        <div class="pb-5 text-secondary/70">
           <h3 class="mr-5">${item.answer}</h3>
         </div>
       </div>
