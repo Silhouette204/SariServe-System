@@ -39,6 +39,8 @@ router.get('/callback', async (req, res) => {
   const expectedState = req.session.googleState;
   delete req.session.googleState;
 
+  console.log('Callback hit:', { hasCode: !!code, error, state, expectedState });
+
   if (!code || !state || !expectedState || state !== expectedState) {
     return res.redirect(`${FRONTEND}/sign-in.html?error=google_failed`);
   }
