@@ -5,6 +5,9 @@ import { initAccordion } from './accordion.js';
 import { initPasswordToggles } from './password-toggle.js';
 import { initFeature } from './features.js';
 
+import { initSmoothScroll } from './smooth-scroll.js';
+initSmoothScroll();
+
 // Dashboard
 import { dashboardInitCharts } from './dashboard-charts.js';
 import { initDashboardModals, loadDashboardData } from './dashboard.js';
