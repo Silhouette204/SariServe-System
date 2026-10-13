@@ -11,7 +11,9 @@ if (signInForm && window.location.pathname.includes('sign-in.html')) {
 
   if (googleBtn) {
     googleBtn.addEventListener('click', () => {
-      window.location.href = `${API_BASE}/api/auth/google`;
+      // sa dev, API_BASE ay '' kaya same-origin tayo: ipaalam sa backend kung aling origin
+      const qs = API_BASE ? '' : `?origin=${encodeURIComponent(window.location.origin)}`;
+      window.location.href = `${API_BASE}/api/auth/google${qs}`;
     });
   }
 
