@@ -8,19 +8,37 @@ const FRONTEND = process.env.NODE_ENV === 'production'
   ? process.env.FRONTEND_PROD_URL
   : '';
 
+  const DEV_ORIGINS = [
+    'http://localhost:5173',
+    'https://galley-treat-delegate.ngrok-free.dev',
+  ];
+  
+  function getRedirectUri(req) {
+    const origin = req.query.origin;
+    if (process.env.NODE_ENV !== 'production' && DEV_ORIGINS.includes(origin)) {
+      return `${origin}/api/auth/google/callback`;
+    }
+    return process.env.GOOGLE_REDIRECT_URI;   // fallback, at ito ang gamit ng Render
+  }
+
 // Hakbang A: papunta sa Google
 router.get('/', (req, res) => {
   const state = crypto.randomBytes(32).toString('hex');
+  const redirectUri = getRedirectUri(req);
+
   req.session.googleState = state;
+  req.session.googleRedirectUri = redirectUri;
 
   const params = new URLSearchParams({
     client_id: process.env.GOOGLE_CLIENT_ID,
-    redirect_uri: process.env.GOOGLE_REDIRECT_URI,
+    redirect_uri: redirectUri,          // ← dati: process.env.GOOGLE_REDIRECT_URI
     response_type: 'code',
     scope: 'openid email profile',
     state,
     prompt: 'select_account',
   });
+
+  console.log('Google redirect_uri:', redirectUri);
 
   req.session.save((err) => {
     if (err) return res.status(500).send('Could not start Google sign-in.');
@@ -37,11 +55,13 @@ router.get('/callback', async (req, res) => {
   }
 
   const expectedState = req.session.googleState;
+  const redirectUri = req.session.googleRedirectUri;
   delete req.session.googleState;
+  delete req.session.googleRedirectUri;
 
   console.log('Callback hit:', { hasCode: !!code, error, state, expectedState });
 
-  if (!code || !state || !expectedState || state !== expectedState) {
+  if (!code || !state || !expectedState || !redirectUri || state !== expectedState) {
     return res.redirect(`${FRONTEND}/sign-in.html?error=google_failed`);
   }
 
@@ -53,7 +73,7 @@ router.get('/callback', async (req, res) => {
         code,
         client_id: process.env.GOOGLE_CLIENT_ID,
         client_secret: process.env.GOOGLE_CLIENT_SECRET,
-        redirect_uri: process.env.GOOGLE_REDIRECT_URI,
+        redirect_uri: redirectUri,     // ← dati: process.env.GOOGLE_REDIRECT_URI
         grant_type: 'authorization_code',
       }),
     });
