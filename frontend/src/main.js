@@ -1,12 +1,20 @@
 import './style.css';
 
+import { initSmoothScroll } from './smooth-scroll.js';
+//for smooth scrolling
+initSmoothScroll();
+
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+//scroll animation
+gsap.registerPlugin(ScrollTrigger);
+
+import { initAnimations } from './animations.js';
+
 import { initNav } from './nav.js';
 import { initAccordion } from './accordion.js';
 import { initPasswordToggles } from './password-toggle.js';
 import { initFeature } from './features.js';
-
-import { initSmoothScroll } from './smooth-scroll.js';
-initSmoothScroll();
 
 // Dashboard
 import { dashboardInitCharts } from './dashboard-charts.js';
@@ -95,4 +103,5 @@ loadUserGreeting();
     initFeature();
   }
   
+  initAnimations(); 
 });
