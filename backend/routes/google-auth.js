@@ -14,7 +14,7 @@ const FRONTEND = process.env.NODE_ENV === 'production'
   ];
   
   function getRedirectUri(req) {
-    const origin = req.query.origin;
+    const origin = (req.query.origin || '').replace(/\/+$/, '');
     if (process.env.NODE_ENV !== 'production' && DEV_ORIGINS.includes(origin)) {
       return `${origin}/api/auth/google/callback`;
     }
