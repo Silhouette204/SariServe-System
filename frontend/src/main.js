@@ -4,6 +4,7 @@ import { initSmoothScroll } from './smooth-scroll.js';
 //for smooth scrolling
 initSmoothScroll();
 
+import Lenis from 'lenis';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 //scroll animation
@@ -44,6 +45,9 @@ import { verifyResetCode } from './verify-reset-code.js';
 import { loadUserGreeting } from './load-user.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
+
+  initAnimations(); 
+
   if (document.getElementById('side-menu') !== null) {  
     initNav();
   }
@@ -102,6 +106,6 @@ loadUserGreeting();
   if (featureContainer){
     initFeature();
   }
-  
-  initAnimations(); 
+
+  ScrollTrigger.refresh();
 });
