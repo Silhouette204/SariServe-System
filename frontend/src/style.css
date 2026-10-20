@@ -22,5 +22,5 @@
 
 #main-image{
   @apply w-full h-screen bg-cover bg-center;
-  background-image: url('/public/main-img.png');
+  background-image: url('/main-img.png');
 }

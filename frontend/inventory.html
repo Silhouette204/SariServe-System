@@ -32,7 +32,7 @@
           + Add Product
         </button>
 
-        <button id="open-add-product-btn" class="bg-secondary text-primary p-2 rounded-lg text-sm font-semibold hover:bg-primary hover:border border-secondary transition hover:text-secondary cursor-pointer">
+        <button id="open-low-stock-modal-btn" class="bg-secondary text-primary p-2 rounded-lg text-sm font-semibold hover:bg-primary hover:border border-secondary transition hover:text-secondary cursor-pointer">
           <i class="fa-solid fa-file-arrow-down text-sm"></i> Export Low Items
         </button>
       </div>
@@ -404,6 +404,82 @@
       <button id="cancel-adjust-modal-btn" type="button" class="px-5 py-2.5 rounded-xl border border-slate-200 font-semibold text-slate-600 hover:bg-slate-100 text-sm transition cursor-pointer">Cancel</button>
       <button type="submit" form="adjust-form" class="px-5 py-2.5 rounded-xl bg-secondary font-semibold text-white hover:bg-white hover:border border-secondary hover:text-secondary text-sm transition shadow-sm cursor-pointer">Confirm</button>
     </div>
+  </div>
+</div>
+
+<!-- ==================== 6. LOW STOCK REPORT MODAL ==================== -->
+<div id="low-stock-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden items-center justify-center p-4 transition-all duration-200">
+  <div class="bg-white w-full max-w-3xl rounded-2xl shadow-2xl border border-slate-100 overflow-hidden flex flex-col max-h-[90vh]">
+
+    <div class="flex items-center justify-between p-5 border-b border-slate-100 bg-slate-50/50">
+      <div class="flex items-center gap-3">
+        <div class="p-2.5 bg-orange-100 text-orange-600 rounded-xl font-bold">
+          <i class="fa-solid fa-triangle-exclamation text-lg"></i>
+        </div>
+        <div>
+          <h3 class="text-lg font-bold text-slate-800">Low Stock Report</h3>
+          <p class="text-xs text-slate-400">Preview muna bago i-download as PDF</p>
+        </div>
+      </div>
+      <button id="close-low-stock-modal-btn" type="button" class="text-slate-400 hover:text-slate-600 p-2 rounded-xl hover:bg-slate-100 transition cursor-pointer">
+        <i class="fa-solid fa-xmark text-lg"></i>
+      </button>
+    </div>
+
+    <!-- Ito ang ico-convert sa PDF -->
+    <div id="low-stock-report-area" class="p-6 overflow-y-auto flex-1 space-y-5 bg-white">
+      <div class="flex items-center justify-between border-b border-slate-200 pb-4">
+        <div>
+          <h2 class="text-2xl font-extrabold text-slate-800">SariServe Store</h2>
+          <p class="text-xs text-slate-500">Restock List (Low &amp; Out of Stock)</p>
+        </div>
+        <div class="text-right">
+          <p class="text-xs font-semibold text-slate-400">Generated On:</p>
+          <p id="low-stock-date" class="text-xs font-bold text-slate-700"></p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-3 gap-3">
+        <div class="p-3.5 bg-slate-50 border border-slate-200 rounded-xl">
+          <p class="text-xs text-slate-500 font-medium">Items to Restock</p>
+          <p id="low-stock-total" class="text-lg font-bold text-slate-800">0</p>
+        </div>
+        <div class="p-3.5 bg-slate-50 border border-slate-200 rounded-xl">
+          <p class="text-xs text-slate-500 font-medium">Low Stock</p>
+          <p id="low-stock-low-count" class="text-lg font-bold text-orange-600">0</p>
+        </div>
+        <div class="p-3.5 bg-slate-50 border border-slate-200 rounded-xl">
+          <p class="text-xs text-slate-500 font-medium">Out of Stock</p>
+          <p id="low-stock-out-count" class="text-lg font-bold text-red-600">0</p>
+        </div>
+      </div>
+
+      <div class="border border-slate-200 rounded-xl overflow-hidden">
+        <table class="w-full text-left text-xs">
+          <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold">
+            <tr>
+              <th class="py-2.5 px-3">Product</th>
+              <th class="py-2.5 px-3">Category</th>
+              <th class="py-2.5 px-3 text-center">Stock</th>
+              <th class="py-2.5 px-3">Status</th>
+              <th class="py-2.5 px-3 w-28">Qty to Order</th>
+            </tr>
+          </thead>
+          <tbody id="low-stock-tbody" class="divide-y divide-slate-100 text-slate-700"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="p-5 border-t border-slate-100 flex items-center justify-between bg-slate-50">
+      <p class="text-xs text-slate-400">PDF will be saved directly to your downloads.</p>
+      <div class="flex items-center gap-3">
+        <button id="cancel-low-stock-modal-btn" type="button" class="px-5 py-2.5 rounded-xl border border-slate-200 font-semibold text-slate-600 hover:bg-slate-100 text-sm transition cursor-pointer">Cancel</button>
+        <button id="download-low-stock-pdf-btn" type="button" class="px-5 py-2.5 rounded-xl bg-emerald-600 font-semibold text-white hover:bg-emerald-700 text-sm transition shadow-sm flex items-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
+          <i class="fa-solid fa-file-pdf"></i> Export PDF
+        </button>
+      </div>
+    </div>
+
   </div>
 </div>
 

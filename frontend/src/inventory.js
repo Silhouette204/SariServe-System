@@ -1,5 +1,130 @@
+import html2canvas from 'html2canvas-pro';
+import jsPDF from 'jspdf';
+
 import { showToast } from './toast.js';
 import { API_BASE } from './config.js';
+
+
+const LOW_STOCK_THRESHOLD = 10;
+
+function getLowItems() {
+  return inventoryItems
+    .filter((i) => i.stock <= LOW_STOCK_THRESHOLD)  // kasama ang Out of Stock
+    .sort((a, b) => a.stock - b.stock);             // pinaka-urgent sa taas
+}
+
+
+function openLowStockModal() {
+  const lowItems = getLowItems();
+  const outCount = lowItems.filter((i) => i.stock === 0).length;
+
+  document.getElementById('low-stock-date').textContent =
+    new Date().toLocaleDateString('en-PH', { year: 'numeric', month: 'long', day: 'numeric' });
+  document.getElementById('low-stock-total').textContent = lowItems.length;
+  document.getElementById('low-stock-low-count').textContent = lowItems.length - outCount;
+  document.getElementById('low-stock-out-count').textContent = outCount;
+
+  const tbody = document.getElementById('low-stock-tbody');
+  tbody.innerHTML = lowItems.length
+    ? lowItems.map((item) => {
+        const status = getStockStatus(item.stock);
+        return `
+          <tr>
+            <td class="py-2.5 px-3 font-semibold">${item.name}</td>
+            <td class="py-2.5 px-3">${item.category ?? '-'}</td>
+            <td class="py-2.5 px-3 text-center font-bold">${item.stock}</td>
+            <td class="py-2.5 px-3">
+              <span class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset ${status.class}">${status.label}</span>
+            </td>
+            <td class="py-2.5 px-3"><div class="border-b border-slate-300 h-5"></div></td>
+          </tr>`;
+      }).join('')
+    : `<tr><td colspan="5" class="py-6 px-3 text-center text-slate-400">Walang low stock items ngayon.</td></tr>`;
+
+  document.getElementById('download-low-stock-pdf-btn').disabled = lowItems.length === 0;
+  toggleModal('low-stock-modal', true);
+}
+
+async function downloadLowStockPdf() {
+  const reportEl = document.getElementById('low-stock-report-area');
+  const btn = document.getElementById('download-low-stock-pdf-btn');
+  if (!reportEl) return;
+
+  btn.disabled = true;
+
+  // Tanggalin pansamantala ang scroll/height limit para makuha ang BUONG listahan
+  const original = {
+    overflow: reportEl.style.overflow,
+    height: reportEl.style.height,
+    maxHeight: reportEl.style.maxHeight,
+  };
+  reportEl.style.overflow = 'visible';
+  reportEl.style.height = 'auto';
+  reportEl.style.maxHeight = 'none';
+
+  try {
+    const canvas = await html2canvas(reportEl, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: '#ffffff',
+      logging: false,
+      height: reportEl.scrollHeight,
+      windowHeight: reportEl.scrollHeight,
+    });
+
+    const pdf = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
+    const margin = 10;
+    const usableWidth = pdf.internal.pageSize.getWidth() - margin * 2;
+    const usableHeight = pdf.internal.pageSize.getHeight() - margin * 2;
+
+    // Ilang pixel ng canvas ang katumbas ng 1mm, at ilang pixel ang kasya sa isang page
+    const pxPerMm = canvas.width / usableWidth;
+    const pagePx = Math.floor(usableHeight * pxPerMm);
+
+    let renderedPx = 0;
+    let pageIndex = 0;
+
+    while (renderedPx < canvas.height) {
+      const slicePx = Math.min(pagePx, canvas.height - renderedPx);
+
+      // Gumawa ng pansamantalang canvas na hiwa lang ng buong larawan
+      const slice = document.createElement('canvas');
+      slice.width = canvas.width;
+      slice.height = slicePx;
+      slice.getContext('2d').drawImage(
+        canvas, 0, renderedPx, canvas.width, slicePx, // kunin mula rito
+        0, 0, canvas.width, slicePx                   // ilagay dito
+      );
+
+      if (pageIndex > 0) pdf.addPage();
+      pdf.addImage(slice.toDataURL('image/jpeg', 0.95), 'JPEG', margin, margin, usableWidth, slicePx / pxPerMm);
+
+      renderedPx += slicePx;
+      pageIndex++;
+    }
+
+    pdf.save(`SariServe-Low-Stock-${new Date().toLocaleDateString('en-CA')}.pdf`);
+    showToast('Low stock list downloaded! Check your downloads folder.', 'success');
+  } catch (error) {
+    console.error('Error generating PDF:', error);
+    showToast('Failed to generate the PDF. Please try again later', 'error');
+  } finally {
+    reportEl.style.overflow = original.overflow;
+    reportEl.style.height = original.height;
+    reportEl.style.maxHeight = original.maxHeight;
+    btn.disabled = false;
+  }
+}
+
+function initLowStockModal() {
+  document.getElementById('open-low-stock-modal-btn')?.addEventListener('click', openLowStockModal);
+  document.getElementById('close-low-stock-modal-btn')?.addEventListener('click', () => toggleModal('low-stock-modal', false));
+  document.getElementById('cancel-low-stock-modal-btn')?.addEventListener('click', () => toggleModal('low-stock-modal', false));
+  document.getElementById('download-low-stock-pdf-btn')?.addEventListener('click', downloadLowStockPdf);
+  document.getElementById('low-stock-modal')?.addEventListener('click', (e) => {
+    if (e.target.id === 'low-stock-modal') toggleModal('low-stock-modal', false); // click sa backdrop
+  });
+}
 
 let inventoryItems = [];
 let targetDeleteId = null;
@@ -106,6 +231,7 @@ const findItem = (id) => inventoryItems.find((i) => String(i._id || i.id) === St
 export async function initInventory() {
   initModals();
   initStockModals();
+  initLowStockModal();
   initRowMenu();
   await fetchInventory();
   setupSearchAndFilters();
@@ -132,7 +258,7 @@ function getStockStatus(stock) {
       label: 'Out of Stock',
       class: 'bg-red-50 text-red-700 ring-red-600/20'
     };
-  } else if (stock <= 10) {
+  } else if (stock <= LOW_STOCK_THRESHOLD) {
     return {
       label: 'Low Stock',
       class: 'bg-orange-50 text-orange-700 ring-orange-600/20'
@@ -247,8 +373,8 @@ export function renderInventoryAdjustmentTable(items) {
 // 5. UPDATE KPI METRICS
 export function updateKPIs(items) {
   const total = items.length;
-  const inStock = items.filter(i => i.stock > 10).length;
-  const lowStock = items.filter(i => i.stock > 0 && i.stock <= 10).length;
+  const inStock = items.filter(i => i.stock > LOW_STOCK_THRESHOLD).length;
+  const lowStock = items.filter(i => i.stock > 0 && i.stock <= LOW_STOCK_THRESHOLD).length;
   const outOfStock = items.filter(i => i.stock === 0).length;
 
   const kpiElements = document.querySelectorAll('#inventory-dashboard .text-2xl.font-bold span');
