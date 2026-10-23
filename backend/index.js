@@ -8,6 +8,7 @@ import utangRouter from './routes/utang.js';
 import authRouter from './routes/auth.js';
 import session from 'express-session'; //middleware
 import googleAuthRoutes from './routes/google-auth.js';
+import { requireAuth } from './middleware/requireAuth.js';
 
 const app = express();
 
@@ -49,10 +50,10 @@ app.get('/', (req, res) => {
   res.send('SariServe API is running');
 });
 
-app.use('/api/inventory', inventoryRouter);
-app.use('/api/dashboard', dashboardRouter);
-app.use('/api/sales', salesRouter);
-app.use('/api/utang', utangRouter);
+app.use('/api/inventory', requireAuth, inventoryRouter);
+app.use('/api/dashboard', requireAuth, dashboardRouter);
+app.use('/api/sales', requireAuth, salesRouter);
+app.use('/api/utang', requireAuth, utangRouter);
 app.use('/api/local-auth', authRouter);
 app.use('/api/auth/google', googleAuthRoutes);
 
