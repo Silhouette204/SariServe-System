@@ -21,6 +21,8 @@ function percentChange(current, previous) {
 router.get('/stats', async (req, res) => {
   try {
 
+    const userId = req.session.userId;
+
     res.set('Cache-Control', 'no-store');
 
     const now = new Date();
@@ -43,25 +45,25 @@ router.get('/stats', async (req, res) => {
 
     await Promise.all([
       prisma.sale.findMany({
-        where: { createdAt: { gte: todayStart, lt: tomorrowStart } },
+        where: { userId, createdAt: { gte: todayStart, lt: tomorrowStart } },
         include: {
           items: { include: { product: { include: { category: true } } } },
         },
       }),
   
       prisma.sale.findMany({
-        where: { createdAt: { gte: yesterdayStart, lt: todayStart } },
+        where: { userId, createdAt: { gte: yesterdayStart, lt: todayStart } },
       }),
   
-      prisma.product.count(),
+      prisma.product.count({ where: { userId } }),
   
       prisma.product.findMany({
-        where: { stock: { lte: 5 } },
+        where: { userId, stock: { lte: 5 } },
         orderBy: { stock: 'asc' },
       }),
   
       prisma.sale.findMany({
-        where: { createdAt: { gte: weekStart } },
+        where: { userId, createdAt: { gte: weekStart } },
         include: {
           items: { include: { product: { include: { category: true } } } },
         },
@@ -70,29 +72,31 @@ router.get('/stats', async (req, res) => {
   
       // BAGO: bilang ng products na existed na bago mag-umaga ngayon
       prisma.product.count({
-        where: { createdAt: { lt: todayStart } },
+        where: { userId, createdAt: { lt: todayStart } },
       }),
   
       // BAGO: kailangan natin ng kasalukuyang stock ng LAHAT ng products
       // para ma-reconstruct ang "kahapong stock" nila
       prisma.product.findMany({
+        where: { userId },
         select: { id: true, stock: true },
       }),
   
       // BAGO: mga binenta NGAYONG ARAW LANG (para i-reverse)
       prisma.saleItem.findMany({
-        where: { sale: { createdAt: { gte: todayStart, lt: tomorrowStart } } },
+        where: { sale: { userId, createdAt: { gte: todayStart, lt: tomorrowStart } } },
         select: { productId: true, quantity: true },
       }),
   
       // BAGO: mga adjustment NGAYONG ARAW LANG (para i-reverse)
       prisma.stockAdjustment.findMany({
-        where: { createdAt: { gte: todayStart, lt: tomorrowStart } },
+        where: { product: { userId }, createdAt: { gte: todayStart, lt: tomorrowStart } },
         select: { productId: true, amount: true },
       }),
 
        // ← MOVED TO LAST, matching where `utangCustomers` sits in the destructuring
       prisma.customer.findMany({
+        where: { userId },
         include: {transactions: true, payments: true}, 
       }),
     ]);
@@ -225,6 +229,7 @@ const todaySalesChangeVsYesterday = percentChange(
     };
 
     const recentSales = await prisma.sale.findMany({
+      where: { userId }, 
       take: 10,
       orderBy: { createdAt: 'desc' },
       include: {

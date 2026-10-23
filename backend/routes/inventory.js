@@ -6,7 +6,11 @@ const router = express.Router();
 // GET /api/inventory — kunin lahat ng products
 router.get('/', async (req, res) => {
   try {
+
+    const userId = req.session.userId;
+
     const products = await prisma.product.findMany({
+      where: { userId },
       include: { category: true },
       orderBy: { name: 'asc' },
     });
@@ -27,6 +31,9 @@ router.get('/', async (req, res) => {
 // POST /api/inventory — gumawa ng bagong product
 router.post('/', async (req, res) => {
   try {
+
+    const userId = req.session.userId;
+
     const { name, category, price, stock } = req.body;
 
     if (!name || price == null) {
@@ -38,6 +45,7 @@ router.post('/', async (req, res) => {
         name,
         price,
         stock: stock ? Number(stock) : 0,
+        user: { connect: { id: userId } },
         category: category
           ? { connect: { name: category } }
           : undefined,
@@ -58,11 +66,14 @@ router.post('/', async (req, res) => {
 // POST /api/inventory/:id/sale — mag-record ng benta
 router.post('/:id/sale', async (req, res) => {
   try {
+
+    const userId = req.session.userId;
+
     const { id } = req.params;
     const quantity = Number(req.body.quantity);
 
-    const product = await prisma.product.findUnique({
-      where: { id: Number(id) },
+    const product = await prisma.product.findFirst({
+      where: { id: Number(id), userId },
     });
 
     if (!product) {
@@ -88,6 +99,7 @@ router.post('/:id/sale', async (req, res) => {
       }),
       prisma.sale.create({
         data: {
+          userId,
           totalAmount,
           items: {
             create: [
@@ -112,12 +124,15 @@ router.post('/:id/sale', async (req, res) => {
 // POST /api/inventory/:id/adjustment — mag-record ng stock adjustment
 router.post('/:id/adjustment', async (req, res) => {
   try {
+
+    const userId = req.session.userId;
+
     const { id } = req.params;
     const amount = Number(req.body.amount);
     const { reason } = req.body;
 
-    const product = await prisma.product.findUnique({
-      where: { id: Number(id) },
+    const product = await prisma.product.findFirst({
+      where: { id: Number(id), userId },
     });
 
     if (!product) {
@@ -156,6 +171,9 @@ router.post('/:id/adjustment', async (req, res) => {
 // PUT /api/inventory/:id — i-update ang product
 router.put('/:id', async (req, res) => {
   try {
+
+    const userId = req.session.userId;
+
     const id = Number(req.params.id);
     const { name, category, price } = req.body;
 
@@ -168,6 +186,9 @@ router.put('/:id', async (req, res) => {
         error: 'Name, category, at price ay required',
       });
     }
+
+    const owned = await prisma.product.findFirst({ where: { id, userId } });
+    if (!owned) return res.status(404).json({ error: 'Product not found' });
 
     const updatedProduct = await prisma.product.update({
       where: { id },
@@ -201,11 +222,17 @@ router.put('/:id', async (req, res) => {
 // DELETE /api/inventory/:id — burahin ang product
 router.delete('/:id', async (req, res) => {
   try {
+
+    const userId = req.session.userId;
+
     const id = Number(req.params.id);
 
     if (!Number.isInteger(id) || id <= 0) {
       return res.status(400).json({ error: 'Invalid product ID' });
     }
+
+    const owned = await prisma.product.findFirst({ where: { id, userId } });
+    if (!owned) return res.status(404).json({ error: 'Product not found' });
 
     await prisma.product.delete({
       where: { id },

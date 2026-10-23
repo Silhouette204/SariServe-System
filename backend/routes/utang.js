@@ -58,10 +58,14 @@ function computeCustomerStatus(customer, now) {
 // ===== GET /api/utang — listahan ng lahat ng customers =====
 router.get('/', async (req, res) => {
   try {
+
+    const userId = req.session.userId;
+
     res.set('Cache-Control', 'no-store');
     const now = new Date();
 
     const customers = await prisma.customer.findMany({
+      where: { userId },
       include: { transactions: true, payments: true },
       orderBy: { createdAt: 'desc' },
     });
@@ -90,6 +94,9 @@ router.get('/', async (req, res) => {
 // ===== POST /api/utang — magdagdag ng bagong customer + unang utang =====
 router.post('/', async (req, res) => {
   try {
+
+    const userId = req.session.userId;
+
     const { name, phone, email, initialUtang } = req.body;
 
     if (!name || !phone || initialUtang == null) {
@@ -101,6 +108,7 @@ router.post('/', async (req, res) => {
         name,
         phone,
         email: email || null,
+        userId,
         transactions: {
           create: [{ amount: Number(initialUtang), customerName: name }],
         },
@@ -127,6 +135,9 @@ router.post('/', async (req, res) => {
 // ===== POST /api/utang/:id/debt — magdagdag ng bagong utang sa existing customer =====
 router.post('/:id/debt', async (req, res) => {
   try {
+
+    const userId = req.session.userId;
+
     const id = Number(req.params.id);
     const { amount } = req.body;
 
@@ -134,8 +145,8 @@ router.post('/:id/debt', async (req, res) => {
       return res.status(400).json({ error: 'Invalid amount' });
     }
 
-    const customer = await prisma.customer.findUnique({
-      where: { id },
+    const customer = await prisma.customer.findFirst({
+      where: { id, userId },
       include: { transactions: true, payments: true },
     });
 
@@ -168,6 +179,9 @@ router.post('/:id/debt', async (req, res) => {
 // ===== POST /api/utang/:id/payment — mag-record ng bayad =====
 router.post('/:id/payment', async (req, res) => {
   try {
+
+    const userId = req.session.userId;
+
     const id = Number(req.params.id);
     const { amount } = req.body;
 
@@ -175,8 +189,8 @@ router.post('/:id/payment', async (req, res) => {
       return res.status(400).json({ error: 'Invalid amount' });
     }
 
-    const customer = await prisma.customer.findUnique({
-      where: { id },
+    const customer = await prisma.customer.findFirst({
+      where: { id, userId },
       include: { transactions: true, payments: true },
     });
 
@@ -216,10 +230,14 @@ router.post('/:id/payment', async (req, res) => {
 // ===== GET /api/utang/stats — KPI cards =====
 router.get('/stats', async (req, res) => {
   try {
+
+    const userId = req.session.userId;
+
     res.set('Cache-Control', 'no-store');
     const now = new Date();
 
     const customers = await prisma.customer.findMany({
+      where: { userId },
       include: { transactions: true, payments: true },
     });
 
@@ -256,9 +274,13 @@ router.get('/stats', async (req, res) => {
 // ===== GET /api/utang/payments/recent — lahat ng payments, pinagsama =====
 router.get('/payments/recent', async (req, res) => {
   try {
+
+    const userId = req.session.userId;
+
     res.set('Cache-Control', 'no-store');
 
     const payments = await prisma.utangPayment.findMany({
+      where: { customer: { userId } },
       include: { customer: true },
       orderBy: { paidAt: 'desc' },
       take: 20,
@@ -280,10 +302,13 @@ router.get('/payments/recent', async (req, res) => {
 // ===== DELETE /api/utang/:id — burahin ang isang fully paid customer =====
 router.delete('/:id', async (req, res) => {
   try {
+
+    const userId = req.session.userId;
+
     const id = Number(req.params.id);
 
-    const customer = await prisma.customer.findUnique({
-      where: { id },
+    const customer = await prisma.customer.findFirst({
+      where: { id, userId },
       include: { transactions: true, payments: true },
     });
 

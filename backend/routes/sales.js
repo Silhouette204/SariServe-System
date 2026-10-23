@@ -3,6 +3,15 @@ import prisma from '../lib/prisma.js';
 
 const router = express.Router();
 
+
+function toLocalDateKey(date) {
+  const d = new Date(date);
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 // Helper: simula ng araw (12:00 AM) ng isang date
 function startOfDay(date) {
   const d = new Date(date);
@@ -57,6 +66,8 @@ function getTimeframeRange(timeframe, now) {
 router.get('/dashboard', async (req, res) => {
   try {
 
+    const userId = req.session.userId;
+
     res.set('Cache-Control', 'no-store');
 
     const timeframe = req.query.timeframe || 'this-week';
@@ -80,29 +91,30 @@ router.get('/dashboard', async (req, res) => {
     const [todaySales, yesterdaySales, monthSales, prevMonthSales, chartSales, recentSales] =
       await Promise.all([
         prisma.sale.findMany({
-          where: { createdAt: { gte: todayStart, lt: tomorrowStart } },
+          where: {userId, createdAt: { gte: todayStart, lt: tomorrowStart } },
           include: { items: true },
         }),
     
         prisma.sale.findMany({
-          where: { createdAt: { gte: yesterdayStart, lt: todayStart } },
+          where: {userId, createdAt: { gte: yesterdayStart, lt: todayStart } },
         }),
     
         prisma.sale.findMany({
-          where: { createdAt: { gte: monthStart, lt: tomorrowStart } },
+          where: {userId, createdAt: { gte: monthStart, lt: tomorrowStart } },
         }),
     
         // BAGO: sales mula nakaraang buwan — para sa Monthly Revenue % change
         prisma.sale.findMany({
-          where: { createdAt: { gte: prevMonthStart, lt: prevMonthEnd } },
+          where: {userId, createdAt: { gte: prevMonthStart, lt: prevMonthEnd } },
         }),
     
         prisma.sale.findMany({
-          where: { createdAt: { gte: start, lt: end } },
+          where: { userId, createdAt: { gte: start, lt: end } },
           orderBy: { createdAt: 'asc' },
         }),
     
         prisma.sale.findMany({
+          where: {userId},
           take: 10,
           orderBy: { createdAt: 'desc' },
           include: { items: { include: { product: true } } },
@@ -143,16 +155,15 @@ const completedDays = now.getDate();
       for (let i = 0; i < dayCount; i++) {
         const date = new Date(start);
         date.setDate(start.getDate() + i);
-        const key = date.toISOString().slice(0, 10);
+        const key = toLocalDateKey(date); 
         labels.push(date.toLocaleDateString('en-PH', { weekday: 'short' }));
         buckets.set(key, 0);
       }
 
-      chartSales.forEach((sale) => {
-        const key = new Date(sale.createdAt).toISOString().slice(0, 10);
-        buckets.set(key, (buckets.get(key) || 0) + peso(sale.totalAmount));
-      });
-
+ chartSales.forEach((sale) => {
+  const key = toLocalDateKey(sale.createdAt);   // ← dapat pareho sa buckets
+  buckets.set(key, (buckets.get(key) || 0) + peso(sale.totalAmount));
+});
       buckets.forEach((amount) => values.push(amount));
     } else {
       // groupBy === 'week' (para sa last-month) — 4 na weekly buckets
@@ -209,7 +220,7 @@ const completedDays = now.getDate();
       .map(([productId]) => productId);
 
     const topProductDetails = await prisma.product.findMany({
-      where: { id: { in: topProductIds } },
+      where: { id: { in: topProductIds }, userId },
     });
 
     const topProducts = topProductIds.map((id) => {
